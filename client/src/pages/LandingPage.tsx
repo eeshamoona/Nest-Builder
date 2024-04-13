@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Link, animateScroll as scroll } from "react-scroll";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 
 interface SectionProps {
   id: string;
@@ -13,6 +14,13 @@ interface SectionProps {
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const auth = UserAuth();
+
+  useEffect(() => {
+    if (auth?.user) {
+      navigate("/dashboard");
+    }
+  }, [auth, navigate]);
 
   const styles: { [key: string]: React.CSSProperties } = {
     section: {

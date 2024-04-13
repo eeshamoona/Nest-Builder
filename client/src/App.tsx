@@ -4,6 +4,7 @@ import Protected from "./components/Protected";
 import SignInPage from "./pages/SignInPage";
 import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
+import SearchPage from "./pages/SearchPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { AuthContextProvider } from "./context/AuthContext";
 import "./App.css";
@@ -19,6 +20,14 @@ function App() {
               element={
                 <Protected>
                   <Dashboard />
+                </Protected>
+              }
+            />
+            <Route
+              path="/search-prompt"
+              element={
+                <Protected>
+                  <SearchPage />
                 </Protected>
               }
             />

@@ -1,8 +1,10 @@
-import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
-  const auth = useAuth();
+  const auth = UserAuth();
+  const navigate = useNavigate();
 
   const signOut = async () => {
     try {
@@ -39,6 +41,19 @@ const Dashboard = () => {
       color: "white",
       cursor: "pointer",
     },
+    secondaryButton: {
+      marginTop: "20px",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      backgroundColor: "#6C757D",
+      color: "white",
+      cursor: "pointer",
+    },
+    buttonContainer: {
+      display: "flex",
+      gap: "10px",
+    },
   };
 
   return (
@@ -59,9 +74,17 @@ const Dashboard = () => {
         Last login {formatDistanceToNow(auth?.user?.lastLogin || new Date())}{" "}
         ago
       </p>
-      <button style={styles.button} onClick={signOut}>
-        Sign Out
-      </button>
+      <div style={styles.buttonContainer}>
+        <button style={styles.secondaryButton} onClick={signOut}>
+          Sign Out
+        </button>
+        <button
+          style={styles.button}
+          onClick={() => navigate("/search-prompt")}
+        >
+          Try a Search Prompt
+        </button>
+      </div>
     </div>
   );
 };

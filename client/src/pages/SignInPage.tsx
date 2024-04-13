@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { UserAuth } from "../context/AuthContext";
 import GoogleButton from "react-google-button";
 import { useEffect } from "react";
 
 const SignInPage = () => {
-  const auth = useAuth();
+  const auth = UserAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
