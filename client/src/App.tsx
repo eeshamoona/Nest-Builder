@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import LandingPage from "./pages/LandingPage";
 import SearchPage from "./pages/SearchPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import CategoriesPage from "./pages/CategoriesPage";
+import UserProfilePage from "./pages/UserProfilePage";
 import { AuthContextProvider } from "./context/AuthContext";
 import "./App.css";
 
@@ -28,6 +30,22 @@ function App() {
               element={
                 <Protected>
                   <SearchPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/categories"
+              element={
+                <Protected>
+                  <CategoriesPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/user-profile"
+              element={
+                <Protected>
+                  <UserProfilePage />
                 </Protected>
               }
             />

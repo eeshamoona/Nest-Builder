@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
+import { useEffect } from "react";
+import { database } from "../firebase.config";
+import { ref, set } from "firebase/database";
 
 const Dashboard = () => {
   const auth = UserAuth();
@@ -13,6 +16,19 @@ const Dashboard = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (auth?.user) {
+      const userRef = ref(database, `users/${auth.user.id}`);
+      set(userRef, {
+        name: auth.user.name,
+        email: auth.user.email,
+        photoURL: auth.user.photoURL,
+        createdAt: auth.user.createdAt.toISOString(),
+        lastLogin: new Date().toISOString(),
+      });
+    }
+  }, [auth]);
 
   const styles: { [key: string]: React.CSSProperties } = {
     container: {
@@ -80,7 +96,7 @@ const Dashboard = () => {
         </button>
         <button
           style={styles.button}
-          onClick={() => navigate("/search-prompt")}
+          onClick={() => navigate("/categories")}
         >
           Try a Search Prompt
         </button>
