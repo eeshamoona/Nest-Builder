@@ -1,13 +1,22 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfileData } from "../services/UserProfileServices";
+import {
+  getProfileData,
+  transformApiResponse,
+} from "../services/UserProfileServices";
+import { UserAuth } from "../context/AuthContext";
+import { database } from "../firebase.config";
+import { ref, set } from "firebase/database";
+import { CategoryModel } from "../models/CategoryModel";
+import CategoryCard from "../components/CategoryCard";
 
 const UserProfilePage = () => {
+  const auth = UserAuth();
   const navigate = useNavigate();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
-  const [profileData, setProfileData] = React.useState<any>(null);
+  const [profileData, setProfileData] = React.useState<CategoryModel[]>([]);
 
   const goBack = () => {
     navigate(-1);
@@ -60,6 +69,12 @@ const UserProfilePage = () => {
       width: "100%",
       textWrap: "pretty" as "pretty",
     },
+    buttonContainer: {
+      display: "flex",
+      width: "100%",
+      flexDirection: "row" as "row",
+      justifyContent: "space-between",
+    },
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,25 +88,48 @@ const UserProfilePage = () => {
   const uploadFile = async () => {
     setLoading(true);
 
-    if (!fileInput.current || fileInput.current.files?.length === 0) {
+    const file = fileInput.current?.files?.[0];
+    if (!fileInput.current || !file) {
       console.log("No file selected");
-      return;
-    }
-
-    const file = fileInput.current.files?.[0];
-    if (!file) {
-      console.log("No file selected");
+      alert("Please select a file");
+      setLoading(false);
       return;
     }
 
     try {
       const data = await getProfileData(file);
-      setProfileData(data);
+      if (!data) {
+        console.error("Error: No data found");
+        setLoading(false);
+        return;
+      }
+
+      const newCateogries = transformApiResponse(data);
+      setProfileData(newCateogries);
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaveCategories = () => {
+    console.log("Saving categories");
+    if (!auth?.user) {
+      console.error("Error: User not found");
+      return;
+    }
+
+    const db = database;
+    profileData.forEach((category) => {
+      const categoryRef = ref(
+        db,
+        `users/${auth.user?.id}/categories/${category.title}`
+      );
+      set(categoryRef, category);
+    });
+
+    console.log("Categories saved");
   };
 
   return (
@@ -113,9 +151,18 @@ const UserProfilePage = () => {
           onChange={handleFileChange}
           style={styles.fileInput}
         />
-        <button style={styles.button} onClick={uploadFile}>
-          Upload
-        </button>
+        <div style={styles.buttonContainer}>
+          <button style={styles.button} onClick={uploadFile}>
+            Upload
+          </button>
+          <button
+            style={styles.button}
+            onClick={handleSaveCategories}
+            hidden={profileData.length === 0}
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -123,12 +170,9 @@ const UserProfilePage = () => {
           <progress value={undefined} />
         </div>
       ) : (
-        profileData && (
-          <div>
-            <h2 style={styles.subtitle}>Profile Details</h2>
-            <pre style={styles.preText}>{profileData}</pre>
-          </div>
-        )
+        profileData.map((category) => (
+          <CategoryCard key={category.title} {...category} />
+        ))
       )}
     </div>
   );

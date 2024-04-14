@@ -1,3 +1,24 @@
+import { CategoryModel } from "../models/CategoryModel";
+
+export interface ApiResponse {
+  [category: string]: {
+    properties: {
+      userPreferences: {
+        description: string;
+      };
+      environmentDescriptors: {
+        description: string[];
+      };
+      relatedSubcategories: {
+        description: string[];
+      };
+      confidence: {
+        description: string;
+      };
+    };
+  };
+}
+
 const SYSTEM_INSTRUCTION = `
 Extract the JSON output of this .txt file I'm going to upload, and analyze the google maps search history to create a profile on this user. 
 
@@ -27,12 +48,10 @@ The profile should be about their lifestyle preferences, and broken down into ge
 The user will use those categories patterns to further explore new options in that category.
 `;
 
-export const getProfileData = (file: File): Promise<any> => {
+export const getProfileData = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("system_instruction", SYSTEM_INSTRUCTION);
-
-  console.log("Getting Profile Data...");
 
   return fetch("http://localhost:5000/generate-profile", {
     method: "POST",
@@ -45,11 +64,29 @@ export const getProfileData = (file: File): Promise<any> => {
       return response.json();
     })
     .then((data) => {
-      //TODO: Write to the user's database -> categories with preferences, subcategories, and confidence level
-      return data;
+      return JSON.parse(data) as ApiResponse;
     })
     .catch((error) => {
       console.error("Error:", error);
       throw error;
     });
 };
+export function transformApiResponse(data: ApiResponse): CategoryModel[] {
+  const categories: CategoryModel[] = [];
+
+  for (const category of Object.keys(data)) {
+    const properties = data[category].properties;
+    const categoryModel: CategoryModel = {
+      title: category,
+      userPreferences: properties.userPreferences.description || "",
+      environmentDescriptors:
+        properties.environmentDescriptors.description || [],
+      relatedSubcategories: properties.relatedSubcategories.description || [],
+      confidence: parseFloat(properties.confidence.description) || 0,
+    };
+
+    categories.push(categoryModel);
+  }
+
+  return categories;
+}

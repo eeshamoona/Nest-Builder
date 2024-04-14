@@ -14,8 +14,7 @@ def generate_profile(file, system_instruction):
   }
 
   JSON_PROMPT = """
-  Please provide the list of category recommendations in a structured JSON array with items that match the following model:
-  [
+  IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
     {
       "<category_name>": {
         "properties": {
@@ -34,7 +33,6 @@ def generate_profile(file, system_instruction):
         }
       }
     }
-  ]
   """
   system_instruction = system_instruction + " " + JSON_PROMPT
   
@@ -46,8 +44,6 @@ def generate_profile(file, system_instruction):
 
   sample_file = genai.upload_file(path=file_path, display_name="googleTakeoutData.txt")
 
-  print(sample_file.name)
-
   model = genai.GenerativeModel(
     "models/gemini-1.5-pro-latest",
     system_instruction=system_instruction,
@@ -56,5 +52,4 @@ def generate_profile(file, system_instruction):
 
   response = model.generate_content(["Follow the system instructions", sample_file.name])
 
-  print(response.text)
   return response.text

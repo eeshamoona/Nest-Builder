@@ -4,30 +4,36 @@ import { useEffect } from "react";
 import { database } from "../firebase.config";
 import { ref, get } from "firebase/database";
 import { useNavigate } from "react-router-dom";
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { CategoryModel } from "../models/CategoryModel";
+import { Link } from "react-router-dom";
 
 const CategoriesPage = () => {
   const auth = UserAuth();
   const navigate = useNavigate();
 
-  const [categories, setCategories] = React.useState<Category[]>([]);
+  const [categories, setCategories] = React.useState<CategoryModel[]>([]);
 
   useEffect(() => {
-    if (auth?.user) {
-      const userRef = ref(database, `users/${auth.user.id}`);
-      get(userRef).then((snapshot) => {
-        const data = snapshot.val();
-        if (!data || !data.categories) {
-          return;
+    const fetchCategories = async () => {
+      if (auth?.user) {
+        const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
+        const categoriesSnapshot = await get(categoriesRef);
+        const categoriesData = categoriesSnapshot.val();
+
+        if (categoriesData) {
+          const categoriesArray = Object.entries(categoriesData).map(
+            ([id, category]) => ({
+              ...(category as CategoryModel),
+              id,
+            })
+          );
+          setCategories(categoriesArray);
         }
-        setCategories(data.categories);
-      });
-    }
-  }, [auth]);
+      }
+    };
+
+    fetchCategories();
+  }, [auth?.user]);
 
   const styles = {
     container: {
@@ -66,12 +72,29 @@ const CategoriesPage = () => {
       gap: "1rem",
     },
     list: {
-      listStyleType: "none",
-      paddingLeft: "0",
-      width: "100%",
       display: "flex",
-      flexDirection: "column" as "column",
+      flexDirection: "row" as "row",
+      flexWrap: "wrap" as "wrap",
+      justifyContent: "space-between",
+    },
+    card: {
+      display: "flex",
+      justifyContent: "center",
       alignItems: "center",
+      width: "200px",
+      height: "200px",
+      margin: "10px",
+      padding: "20px",
+      backgroundColor: "#f5f5f5",
+      borderRadius: "10px",
+      textDecoration: "none",
+      color: "black",
+      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)", // add box shadow for depth
+      transition: "0.3s", // add transition for smooth hover effects
+      "&:hover": {
+        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // increase box shadow on hover
+        transform: "scale(1.05)", // slightly increase size on hover
+      },
     },
     listItem: {
       marginBottom: "10px",
@@ -84,7 +107,6 @@ const CategoriesPage = () => {
       fontSize: "18px",
     },
   };
-
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Categories</h1>
@@ -102,17 +124,22 @@ const CategoriesPage = () => {
           Try a Search Prompt
         </button>
       </div>
-      {categories.length > 0 ? (
-        <ul style={styles.list}>
-          {categories.map((category) => (
-            <li key={category.id} style={styles.listItem}>
-              {category.name}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p style={styles.noCategories}>No categories found</p>
-      )}
+
+      <div style={styles.list}>
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <Link
+              to={`/search-prompt/${category.title}`}
+              style={styles.card}
+              key={category.title}
+            >
+              <div style={styles.listItem}>{category.title}</div>
+            </Link>
+          ))
+        ) : (
+          <div style={styles.noCategories}>No Categories Found</div>
+        )}
+      </div>
     </div>
   );
 };

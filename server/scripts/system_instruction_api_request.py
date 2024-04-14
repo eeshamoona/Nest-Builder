@@ -10,7 +10,7 @@ def generate_content(system_instruction, search_prompt):
   genai.configure(api_key=API_KEY)
 
   JSON_PROMPT = """
-  Please provide the list of recommendations in a structured JSON array format that matches the following model:
+  IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
   {
     'type': 'object',
     'properties': {
