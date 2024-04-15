@@ -1,75 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CSSProperties } from "react";
-import {
-  generateAPIRequest,
-  getUserData,
-} from "../services/SearchPromptServices";
+import { generateAPIRequest } from "../services/SearchPromptServices";
 import { UserAuth } from "../context/AuthContext";
 import ResultCard from "../components/ResultCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { database } from "../firebase.config";
+import { ref, get } from "firebase/database";
+import {
+  PRICE_OPTIONS,
+  ACCESS_OPTIONS,
+  ADDITIONAL_VIBE_OPTIONS,
+  DEFAULT_PRIORITIES,
+  DEFAULT_USER_PREFERENCES,
+} from "../constants/SearchPageConstants";
 
 const SearchPage = () => {
   const auth = UserAuth();
   const navigate = useNavigate();
-  const [category, setCategory] = useState("restaurants");
-  const [access, setAccess] = useState("walking");
-  const [price, setPrice] = useState("inexpensive");
-  const [vibe, setVibe] = useState("fun");
-  const [priority1, setPriority1] = useState("safety");
-  const [priority2, setPriority2] = useState("cleanliness");
-  const [priority3, setPriority3] = useState("walkability");
+  const [subCategoryOptions, setSubCategoryOptions] = useState([] as any[]);
+  const [environmentDescriptorOptions, setEnvironmentDescriptorOptions] =
+    useState([] as any[]);
+
+  const [category, setCategory] = useState(subCategoryOptions[0] || "");
+  const [access, setAccess] = useState(ACCESS_OPTIONS[0] || "");
+  const [price, setPrice] = useState(PRICE_OPTIONS[0] || "");
+  const [vibe, setVibe] = useState(
+    environmentDescriptorOptions[0] || ADDITIONAL_VIBE_OPTIONS[0] || ""
+  );
+
+  const { categoryTitle } = useParams<{ categoryTitle: string }>();
+
+  const [priority1, setPriority1] = useState(DEFAULT_PRIORITIES[0] || "");
+  const [priority2, setPriority2] = useState(DEFAULT_PRIORITIES[1] || "");
+  const [priority3, setPriority3] = useState(DEFAULT_PRIORITIES[3] || "");
+
+  const [additionalUserProfileDetails, setAdditionalUserProfileDetails] =
+    useState("");
 
   const [userPanelOpen, setUserPanelOpen] = useState(false);
   const [response, setResponse] = useState([] as any[]);
   const [loading, setLoading] = useState(false);
 
-  const categories = [
-    "restaurants",
-    "parks",
-    "museums",
-    "fast food",
-    "gyms",
-    "grocery stores",
-    "shopping malls",
-    "theaters",
-    "coffee shops",
-    "libraries",
-  ];
-  const accesses = ["walking", "biking", "driving", "taking public transit"];
-  const prices = [
-    "free ($)",
-    "very inexpensive ($-$$)",
-    "inexpensive ($$)",
-    "moderate ($$-$$$)",
-    "above average ($$$)",
-    "expensive ($$$-$$$$)",
-    "luxurious ($$$$$)",
-  ];
-  const vibes = [
-    "feminine",
-    "fun",
-    "supportive",
-    "energetic",
-    "relaxed",
-    "luxurious",
-    "minimalist",
-    "artistic",
-    "vintage",
-    "modern",
-    "eclectic",
-  ];
-  const priorities = [
-    "safety",
-    "cleanliness",
-    "walkability",
-    "accessibility",
-    "convenience",
-    "affordability",
-    "quietness",
-    "community",
-    "amenities",
-    "green spaces",
-  ];
+  useEffect(() => {
+    if (!auth?.user) {
+      navigate("/");
+    }
+
+    const fetchCategories = async () => {
+      if (auth?.user && categoryTitle) {
+        const categoriesRef = ref(
+          database,
+          `users/${auth.user.id}/categories/${categoryTitle}`
+        );
+        const categoriesSnapshot = await get(categoriesRef);
+        const categoriesData = categoriesSnapshot.val();
+
+        setSubCategoryOptions(categoriesData.relatedSubcategories || []);
+        const combinedVibes = [
+          ...(categoriesData.environmentDescriptors || []),
+          ...(ADDITIONAL_VIBE_OPTIONS || []),
+        ];
+        const uniqueVibes = Array.from(new Set(combinedVibes));
+        setEnvironmentDescriptorOptions(uniqueVibes);
+        // TODO: Add user preferences to the user's profile
+        console.log(
+          DEFAULT_USER_PREFERENCES +
+            " " +
+            (categoriesData.userPreferences || "")
+        );
+        setAdditionalUserProfileDetails(
+          DEFAULT_USER_PREFERENCES +
+            ". " +
+            (categoriesData.userPreferences || "")
+        );
+      } else if (auth?.user) {
+        const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
+        const categoriesSnapshot = await get(categoriesRef);
+        const categoriesData = categoriesSnapshot.val();
+
+        //get all category titles
+        const categoryTitles = Object.keys(categoriesData);
+        setSubCategoryOptions(categoryTitles);
+        setEnvironmentDescriptorOptions(ADDITIONAL_VIBE_OPTIONS);
+        //TODO: Replace this with overall description of the user's preferences from their profile
+        setAdditionalUserProfileDetails(DEFAULT_USER_PREFERENCES);
+      }
+    };
+
+    fetchCategories();
+  }, [auth, categoryTitle, navigate]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const baseButton = {
     padding: "10px 20px",
@@ -136,6 +159,19 @@ const SearchPage = () => {
       justifyContent: "end",
       gap: "1rem",
     },
+    title: { color: "black" },
+    arrowButton: {
+      padding: "10px",
+      border: "none",
+      backgroundColor: "transparent",
+      borderRadius: "5px",
+      cursor: "pointer",
+    },
+    titleContainer: {
+      display: "flex",
+      justifyContent: "start",
+      gap: "1rem",
+    },
   };
 
   const runPrompt = async () => {
@@ -148,15 +184,29 @@ const SearchPage = () => {
       vibe,
       priority1,
       priority2,
-      priority3
+      priority3,
+      additionalUserProfileDetails
     );
     setResponse(response);
     setLoading(false);
   };
 
+  const getSearchPageTitle = () => {
+    if (categoryTitle) {
+      return `Search ${categoryTitle}`;
+    } else {
+      return "General Search Page";
+    }
+  };
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Search Page</h1>
+      <div style={styles.titleContainer}>
+        <button onClick={goBack} style={styles.arrowButton}>
+          &larr;
+        </button>
+        <h1 style={styles.title}>{getSearchPageTitle()}</h1>
+      </div>
       <div style={styles.userContainer}>
         <img
           style={styles.image}
@@ -181,7 +231,7 @@ const SearchPage = () => {
               Hey, {auth?.user?.name.split(" ")[0]}! This is the info we are
               using in this query:
             </h4>
-            <p style={styles.userData}>{getUserData(auth?.user?.id)}</p>
+            <p style={styles.userData}>{additionalUserProfileDetails}</p>
           </div>
         ) : (
           <></>
@@ -194,7 +244,7 @@ const SearchPage = () => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          {categories.map((c) => (
+          {subCategoryOptions.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -206,7 +256,7 @@ const SearchPage = () => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          {categories.map((c) => (
+          {subCategoryOptions.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -218,7 +268,7 @@ const SearchPage = () => {
           value={access}
           onChange={(e) => setAccess(e.target.value)}
         >
-          {accesses.map((a) => (
+          {ACCESS_OPTIONS.map((a) => (
             <option key={a} value={a}>
               {a}
             </option>
@@ -230,7 +280,7 @@ const SearchPage = () => {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         >
-          {prices.map((p) => (
+          {PRICE_OPTIONS.map((p) => (
             <option key={p} value={p}>
               {p}
             </option>
@@ -242,7 +292,7 @@ const SearchPage = () => {
           value={vibe}
           onChange={(e) => setVibe(e.target.value)}
         >
-          {vibes.map((v) => (
+          {environmentDescriptorOptions.map((v) => (
             <option key={v} value={v}>
               {v}
             </option>
@@ -254,7 +304,7 @@ const SearchPage = () => {
           value={priority1}
           onChange={(e) => setPriority1(e.target.value)}
         >
-          {priorities.map((p) => (
+          {DEFAULT_PRIORITIES.map((p) => (
             <option key={p} value={p}>
               {p}
             </option>
@@ -266,7 +316,7 @@ const SearchPage = () => {
           value={priority2}
           onChange={(e) => setPriority2(e.target.value)}
         >
-          {priorities.map((p) => (
+          {DEFAULT_PRIORITIES.map((p) => (
             <option key={p} value={p}>
               {p}
             </option>
@@ -278,7 +328,7 @@ const SearchPage = () => {
           value={priority3}
           onChange={(e) => setPriority3(e.target.value)}
         >
-          {priorities.map((p) => (
+          {DEFAULT_PRIORITIES.map((p) => (
             <option key={p} value={p}>
               {p}
             </option>

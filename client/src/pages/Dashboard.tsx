@@ -32,12 +32,11 @@ const Dashboard = () => {
           if (!userData.name && auth.user?.name) updates.name = auth.user.name;
           if (!userData.email && auth.user?.email)
             updates.email = auth.user.email;
-          if (!userData.photoURL && auth.user?.photoURL)
-            updates.photoURL = auth.user?.photoURL;
           if (!userData.createdAt && auth.user?.createdAt)
             updates.createdAt = new Date(auth.user?.createdAt.toISOString());
 
           updates.lastLogin = new Date(new Date().toISOString());
+          updates.photoURL = auth.user?.photoURL;
 
           update(userRef, updates);
         } else {

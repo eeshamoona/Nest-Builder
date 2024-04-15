@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getProfileData,
@@ -6,7 +6,7 @@ import {
 } from "../services/UserProfileServices";
 import { UserAuth } from "../context/AuthContext";
 import { database } from "../firebase.config";
-import { ref, set } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { CategoryModel } from "../models/CategoryModel";
 import CategoryCard from "../components/CategoryCard";
 
@@ -16,14 +16,57 @@ const UserProfilePage = () => {
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
-  const [profileData, setProfileData] = React.useState<CategoryModel[]>([]);
+  const [originalProfileData, setOriginalProfileData] = React.useState<
+    CategoryModel[]
+  >([]);
+
+  const [newProfileData, setNewProfileData] = React.useState<CategoryModel[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (auth?.user) {
+        const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
+        const categoriesSnapshot = await get(categoriesRef);
+        const categoriesData = categoriesSnapshot.val();
+
+        if (categoriesData) {
+          const categoriesArray = Object.entries(categoriesData).map(
+            ([id, category]) => ({
+              ...(category as CategoryModel),
+              id,
+            })
+          );
+          setOriginalProfileData(categoriesArray);
+        }
+      }
+    };
+
+    fetchCategories();
+  }, [auth?.user]);
 
   const goBack = () => {
     navigate(-1);
   };
 
   const styles = {
-    container: { margin: "20px" },
+    container: {
+      margin: "1rem",
+    },
+    profileContainer: {
+      display: "flex",
+      gap: "1rem",
+      margin: "10px",
+    },
+    scrollableContainer: {
+      flex: "1 1 0",
+      overflowY: "auto" as "auto",
+      margin: "10px",
+      padding: "10px",
+      border: "1px solid #ccc",
+      borderRadius: "4px",
+    },
     title: { color: "black" },
     arrowButton: {
       padding: "10px",
@@ -65,19 +108,17 @@ const UserProfilePage = () => {
       border: "1px solid #ddd",
       borderRadius: "5px",
     },
-    preText: {
-      width: "100%",
-      textWrap: "pretty" as "pretty",
-    },
     buttonContainer: {
       display: "flex",
       width: "100%",
       flexDirection: "row" as "row",
       justifyContent: "space-between",
     },
+    progressBar: { display: "flex", justifyContent: "center" },
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProfileData([]);
     const file = event.target.files?.[0];
     if (file && !file.name.endsWith(".txt")) {
       alert("Please select a .txt file");
@@ -105,7 +146,7 @@ const UserProfilePage = () => {
       }
 
       const newCateogries = transformApiResponse(data);
-      setProfileData(newCateogries);
+      setNewProfileData(newCateogries);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -121,13 +162,16 @@ const UserProfilePage = () => {
     }
 
     const db = database;
-    profileData.forEach((category) => {
+    newProfileData.forEach((category) => {
       const categoryRef = ref(
         db,
         `users/${auth.user?.id}/categories/${category.title}`
       );
       set(categoryRef, category);
     });
+
+    setOriginalProfileData(newProfileData);
+    setNewProfileData([]);
 
     console.log("Categories saved");
   };
@@ -158,7 +202,7 @@ const UserProfilePage = () => {
           <button
             style={styles.button}
             onClick={handleSaveCategories}
-            hidden={profileData.length === 0}
+            hidden={newProfileData && newProfileData.length === 0}
           >
             Save
           </button>
@@ -166,13 +210,28 @@ const UserProfilePage = () => {
       </div>
 
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={styles.progressBar}>
           <progress value={undefined} />
         </div>
       ) : (
-        profileData.map((category) => (
-          <CategoryCard key={category.title} {...category} />
-        ))
+        <div style={styles.profileContainer}>
+          <div style={styles.scrollableContainer}>
+            {originalProfileData
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((category) => (
+                <CategoryCard key={category.title} {...category} />
+              ))}
+          </div>
+          {newProfileData && newProfileData.length > 0 && (
+            <div style={styles.scrollableContainer}>
+              {newProfileData
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map((category) => (
+                  <CategoryCard key={category.title} {...category} />
+                ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -26,7 +26,7 @@ function App() {
               }
             />
             <Route
-              path="/search-prompt"
+              path="/search-prompt/:categoryTitle?"
               element={
                 <Protected>
                   <SearchPage />
@@ -51,6 +51,7 @@ function App() {
             />
             <Route path="/" element={<LandingPage />} />
             <Route path="/signIn" element={<SignInPage />} />
+            <Route path="/not-found" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Router>

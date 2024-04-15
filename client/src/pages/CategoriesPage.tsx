@@ -72,29 +72,23 @@ const CategoriesPage = () => {
       gap: "1rem",
     },
     list: {
-      display: "flex",
-      flexDirection: "row" as "row",
-      flexWrap: "wrap" as "wrap",
-      justifyContent: "space-between",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr 1fr",
+      gap: "20px",
+      marginTop: "20px",
     },
     card: {
       display: "flex",
+      flexDirection: "column" as "column",
       justifyContent: "center",
       alignItems: "center",
-      width: "200px",
-      height: "200px",
-      margin: "10px",
       padding: "20px",
-      backgroundColor: "#f5f5f5",
+      backgroundColor: "#fafafa",
       borderRadius: "10px",
       textDecoration: "none",
       color: "black",
-      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)", // add box shadow for depth
-      transition: "0.3s", // add transition for smooth hover effects
-      "&:hover": {
-        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)", // increase box shadow on hover
-        transform: "scale(1.05)", // slightly increase size on hover
-      },
+      boxShadow:
+        "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px",
     },
     listItem: {
       marginBottom: "10px",

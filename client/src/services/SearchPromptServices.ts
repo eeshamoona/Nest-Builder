@@ -2,15 +2,6 @@ const getPreamblePrompt = () => {
   return `Hey Gemini AI, you are tasked to take one the role of a lifestyle coach who helps people in Chicago find places that fit their routine. You will provide recommendations using Google Maps and review the recommendations and give me more personalized summary of the places based on reviews and photos in correlation to this user's data and preferences. IMPORTANT: Your output of the reccomendations MUST INCLUDE: the place, the location, the star review rating, add to the descriptions the personalized summary of what I would like or dislike about the location based on reviews and pictures, & a final recommendation.`;
 };
 
-const getUserData = (userId?: string) => {
-  if (!userId) {
-    return "User ID is not provided.";
-  }
-  const userData = `I'm a 23 year old new grad software engineer living in River North, Chicago. Zip code = 60654. I have a daily gym routine and usually go there in the mornings. I love Italian cuisine for lunch and frequent dog parks, probably suggesting I have a pet or want one`;
-
-  return userData;
-};
-
 const getSearchPrompt = (
   category: string,
   access: string,
@@ -31,10 +22,10 @@ const generateAPIRequest = async (
   vibe: string,
   priority1: string,
   priority2: string,
-  priority3: string
+  priority3: string,
+  userPreferences: string
 ) => {
   const preamble = getPreamblePrompt();
-  const userData = getUserData(userId);
   const searchPrompt = getSearchPrompt(
     category,
     access,
@@ -51,7 +42,7 @@ const generateAPIRequest = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      system_instruction: preamble + userData,
+      system_instruction: preamble + userPreferences,
       search_prompt: searchPrompt,
     }),
   })
@@ -62,4 +53,4 @@ const generateAPIRequest = async (
     });
 };
 
-export { getPreamblePrompt, getUserData, getSearchPrompt, generateAPIRequest };
+export { getPreamblePrompt, getSearchPrompt, generateAPIRequest };
