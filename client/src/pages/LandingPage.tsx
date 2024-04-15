@@ -85,7 +85,7 @@ const LandingPage: React.FC = () => {
     () => [
       {
         id: "hero",
-        title: "Welcome to Nest Builder",
+        title: "Welcome to Nested",
         content: (
           <div
             style={{
@@ -95,7 +95,7 @@ const LandingPage: React.FC = () => {
             }}
           >
             <p>
-              Moving to a new city is overwhelming. Nest Builder, powered by
+              Moving to a new city is overwhelming. Nested, powered by
               Gemini AI and Google Maps, eliminates stress by finding essential
               amenities near you. From gyms to grocery stores, explore options
               based on location, budget, and lifestyle.

@@ -112,7 +112,7 @@ const Dashboard = () => {
       <p>Hi, {auth?.user?.name}!</p>
       <p>Your email is: {auth?.user?.email}</p>
       <p>
-        Nest Builder since{" "}
+        Nesting since{" "}
         {formatDistanceToNow(auth?.user?.createdAt || new Date())} ago
       </p>{" "}
       <p>

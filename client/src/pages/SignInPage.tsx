@@ -44,7 +44,7 @@ const SignInPage = () => {
           navigate("/");
         }}
       >
-        Nest Builder
+        Nested
       </h1>
       {auth?.loading ? (
         <p>Loading...</p>
