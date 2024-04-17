@@ -11,6 +11,7 @@ import {
   ACCESS_OPTIONS,
   ADDITIONAL_VIBE_OPTIONS,
   DEFAULT_PRIORITIES,
+  DEFAULT_CATEGORIES,
   DEFAULT_USER_PREFERENCES,
 } from "../constants/SearchPageConstants";
 
@@ -78,9 +79,14 @@ const SearchPage = () => {
         const categoriesSnapshot = await get(categoriesRef);
         const categoriesData = categoriesSnapshot.val();
 
-        //get all category titles
-        const categoryTitles = Object.keys(categoriesData);
-        setSubCategoryOptions(categoryTitles);
+        if (!categoriesData) {
+          setSubCategoryOptions(DEFAULT_CATEGORIES);
+          return;
+        } else {
+          const categoryTitles = Object.keys(categoriesData);
+          setSubCategoryOptions(categoryTitles);
+        }
+
         setEnvironmentDescriptorOptions(ADDITIONAL_VIBE_OPTIONS);
         //TODO: Replace this with overall description of the user's preferences from their profile
         setAdditionalUserProfileDetails(DEFAULT_USER_PREFERENCES);

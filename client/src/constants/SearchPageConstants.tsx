@@ -43,6 +43,15 @@ const DEFAULT_PRIORITIES = [
   "Quiet",
 ];
 
+const DEFAULT_CATEGORIES = [
+  "Restaurants",
+  "Bars",
+  "Coffee Shops",
+  "Grocery Stores",
+  "Parks",
+  "Gyms",
+];
+
 const DEFAULT_USER_PREFERENCES = `I'm a 23 year old new grad software engineer living in River North, Chicago. Zip code = 60654. I have a daily gym routine and usually go there in the mornings. I love Italian cuisine for lunch and frequent dog parks, probably suggesting I have a pet or want one`;
 
 export {
@@ -50,5 +59,6 @@ export {
   ACCESS_OPTIONS,
   ADDITIONAL_VIBE_OPTIONS,
   DEFAULT_PRIORITIES,
+  DEFAULT_CATEGORIES,
   DEFAULT_USER_PREFERENCES,
 };
