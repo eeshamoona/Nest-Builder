@@ -1,8 +1,14 @@
-import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
+import { useCallback, useEffect } from "react";
+import { database } from "../firebase.config";
+import { ref, set, update, get } from "firebase/database";
+import UserModel from "../models/UserModel";
 
 const Dashboard = () => {
-  const auth = useAuth();
+  const auth = UserAuth();
+  const navigate = useNavigate();
 
   const signOut = async () => {
     try {
@@ -11,6 +17,47 @@ const Dashboard = () => {
       console.error(error);
     }
   };
+
+  const updateUser = useCallback(() => {
+    if (auth?.user) {
+      const userRef = ref(database, `users/${auth.user.id}`);
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          const updates: Partial<UserModel> = {
+            lastLogin: new Date(new Date().toISOString()),
+          };
+
+          // only update these fields if they aren't present
+          if (!userData.name && auth.user?.name) updates.name = auth.user.name;
+          if (!userData.email && auth.user?.email)
+            updates.email = auth.user.email;
+          if (!userData.createdAt && auth.user?.createdAt)
+            updates.createdAt = new Date(auth.user?.createdAt.toISOString());
+
+          updates.lastLogin = new Date(new Date().toISOString());
+          updates.photoURL = auth.user?.photoURL;
+
+          update(userRef, updates);
+        } else {
+          // if user data doesn't exist, set it
+          set(userRef, {
+            name: auth.user?.name,
+            email: auth.user?.email,
+            photoURL: auth.user?.photoURL,
+            createdAt: auth.user?.createdAt
+              ? new Date(auth.user.createdAt.toISOString())
+              : new Date(),
+            lastLogin: new Date(new Date().toISOString()),
+          });
+        }
+      });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    updateUser();
+  }, [updateUser]); // removed database from dependency array
 
   const styles: { [key: string]: React.CSSProperties } = {
     container: {
@@ -39,6 +86,19 @@ const Dashboard = () => {
       color: "white",
       cursor: "pointer",
     },
+    secondaryButton: {
+      marginTop: "20px",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      backgroundColor: "#6C757D",
+      color: "white",
+      cursor: "pointer",
+    },
+    buttonContainer: {
+      display: "flex",
+      gap: "10px",
+    },
   };
 
   return (
@@ -52,16 +112,21 @@ const Dashboard = () => {
       <p>Hi, {auth?.user?.name}!</p>
       <p>Your email is: {auth?.user?.email}</p>
       <p>
-        Nest Builder since{" "}
+        Nesting since{" "}
         {formatDistanceToNow(auth?.user?.createdAt || new Date())} ago
       </p>{" "}
       <p>
         Last login {formatDistanceToNow(auth?.user?.lastLogin || new Date())}{" "}
         ago
       </p>
-      <button style={styles.button} onClick={signOut}>
-        Sign Out
-      </button>
+      <div style={styles.buttonContainer}>
+        <button style={styles.secondaryButton} onClick={signOut}>
+          Sign Out
+        </button>
+        <button style={styles.button} onClick={() => navigate("/categories")}>
+          Go to Categories
+        </button>
+      </div>
     </div>
   );
 };

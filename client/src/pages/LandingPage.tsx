@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { Link, animateScroll as scroll } from "react-scroll";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 
 interface SectionProps {
   id: string;
@@ -13,6 +14,13 @@ interface SectionProps {
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const auth = UserAuth();
+
+  useEffect(() => {
+    if (auth?.user) {
+      navigate("/dashboard");
+    }
+  }, [auth, navigate]);
 
   const styles: { [key: string]: React.CSSProperties } = {
     section: {
@@ -77,7 +85,7 @@ const LandingPage: React.FC = () => {
     () => [
       {
         id: "hero",
-        title: "Welcome to Nest Builder",
+        title: "Welcome to Nested",
         content: (
           <div
             style={{
@@ -87,7 +95,7 @@ const LandingPage: React.FC = () => {
             }}
           >
             <p>
-              Moving to a new city is overwhelming. Nest Builder, powered by
+              Moving to a new city is overwhelming. Nested, powered by
               Gemini AI and Google Maps, eliminates stress by finding essential
               amenities near you. From gyms to grocery stores, explore options
               based on location, budget, and lifestyle.
