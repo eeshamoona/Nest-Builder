@@ -8,6 +8,7 @@ import SearchPage from "./pages/SearchPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import MapPage from "./pages/MapPage";
 import { AuthContextProvider } from "./context/AuthContext";
 import "./App.css";
 
@@ -46,6 +47,14 @@ function App() {
               element={
                 <Protected>
                   <UserProfilePage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/map"
+              element={
+                <Protected>
+                  <MapPage />
                 </Protected>
               }
             />

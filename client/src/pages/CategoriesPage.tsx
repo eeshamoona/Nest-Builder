@@ -21,12 +21,10 @@ const CategoriesPage = () => {
         const categoriesData = categoriesSnapshot.val();
 
         if (categoriesData) {
-          const categoriesArray = Object.entries(categoriesData).map(
-            ([id, category]) => ({
-              ...(category as CategoryModel),
-              id,
-            })
-          );
+          const categoriesArray = Object.entries(categoriesData).map(([id, category]) => ({
+            ...(category as CategoryModel),
+            id,
+          }));
           setCategories(categoriesArray);
         }
       }
@@ -87,8 +85,7 @@ const CategoriesPage = () => {
       borderRadius: "10px",
       textDecoration: "none",
       color: "black",
-      boxShadow:
-        "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px",
+      boxShadow: "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px",
     },
     listItem: {
       marginBottom: "10px",
@@ -105,28 +102,21 @@ const CategoriesPage = () => {
     <div style={styles.container}>
       <h1 style={styles.title}>Categories</h1>
       <div style={styles.buttonContainer}>
-        <button
-          onClick={() => navigate("/user-profile")}
-          style={styles.secondaryButton}
-        >
+        <button onClick={() => navigate("/user-profile")} style={styles.secondaryButton}>
           Check My Profile
         </button>
-        <button
-          style={styles.button}
-          onClick={() => navigate("/search-prompt")}
-        >
+        <button style={styles.button} onClick={() => navigate("/search-prompt")}>
           Try a Search Prompt
+        </button>
+        <button style={styles.button} onClick={() => navigate("/map")}>
+          See a Map
         </button>
       </div>
 
       <div style={styles.list}>
         {categories.length > 0 ? (
           categories.map((category) => (
-            <Link
-              to={`/search-prompt/${category.title}`}
-              style={styles.card}
-              key={category.title}
-            >
+            <Link to={`/search-prompt/${category.title}`} style={styles.card} key={category.title}>
               <div style={styles.listItem}>{category.title}</div>
             </Link>
           ))
