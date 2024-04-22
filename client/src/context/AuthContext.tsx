@@ -93,8 +93,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setLoading(true);
     try {
       console.log("Signing in with Google");
-      await signInWithRedirect(auth, provider);
-      await storeGoogleToken();
+      await signInWithRedirect(auth, provider).then(async () => {
+        console.log("Signed in with Google");
+        await storeGoogleToken();
+      });
     } catch (error) {
       console.error("Error signing in with Google: ", error);
     }

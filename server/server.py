@@ -11,10 +11,18 @@ import os
 from scripts.system_instruction_api_request import generate_content
 from scripts.profile_extractor_api_request import generate_profile
 from scripts.people_info_api_request import fetch_people_info
+from scripts.google_drive_file_extractor import download_file
 
 app = Flask(__name__)
-CORS(app)  # new
+CORS(app)  
 
+@app.route('/get-google-drive-file', methods=['POST'])
+def get_google_drive_file_route():
+    data = request.get_json()
+    file_id = data.get('file_id', '')
+    oauth_token = data.get('oauth_token', '')
+    result = download_file(file_id, oauth_token)
+    return result
 
 @app.route('/fetch-people-info', methods=['POST'])
 def fetch_people_info_route():

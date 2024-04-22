@@ -59,13 +59,24 @@ const OnboardingPage = () => {
       color: "white",
       cursor: "pointer",
     },
+    stepLabel: {
+      cursor: "pointer",
+    },
   };
   return (
     <div style={styles.container}>
       <Stepper activeStep={activeStep}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+        {steps.map((label, index) => (
+          <Step
+            key={label}
+            onClick={() => {
+              // Only allow user to navigate to previous steps
+              if (index <= activeStep) {
+                setActiveStep(index);
+              }
+            }}
+          >
+            <StepLabel style={styles.stepLabel}>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>
