@@ -7,6 +7,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@google/generative-ai": "^0.6.0",
+    "@googlemaps/js-api-loader": "^1.16.6",
     "@mui/material": "^5.15.15",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -32,7 +33,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start":"GENERATE_SOURCEMAP=false react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -56,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@types/google.maps": "^3.55.7",
     "@types/react-scroll": "^1.8.10"
   }
 }

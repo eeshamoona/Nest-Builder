@@ -30,11 +30,12 @@ interface AuthContextProviderProps {
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        await storeGoogleToken();
         const { displayName, email, uid, photoURL, metadata } = user;
 
         setUser({
@@ -67,7 +68,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
             console.log("No token from credential. Credential: ", credential);
           } else {
             localStorage.setItem("accessToken", token);
-            console.log("Token stored successfully. Token: ", token);
+            console.log("Token stored successfull!");
           }
         } else {
           console.log("No credential from result. Result: ", result);
@@ -105,6 +106,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const logOut = async () => {
     setLoading(true);
+    localStorage.removeItem("accessToken");
     await signOut(auth);
     setLoading(false);
   };

@@ -12,7 +12,6 @@ const OnboardMethod = () => {
   const auth = UserAuth();
   const [birthday, setBirthday] = useState<string>("");
   const [gender, setGender] = useState<string>("");
-  const [addresses, setAddresses] = useState<any[]>([]);
 
   const [openPicker] = GoogleDrivePicker();
 
@@ -143,11 +142,11 @@ const OnboardMethod = () => {
       if (googleInfo?.addresses) {
         //TODO: Confirm this is the way to destructure the address
         userAddresses = googleInfo.addresses[0]?.formattedValue;
+        console.log("FOUND AN ADDRESS: ", userAddresses);
       }
 
       setBirthday(formatBirthday(userBirthday));
       setGender(userGender);
-      setAddresses(userAddresses);
     }
   }, [birthday, gender]);
 
@@ -158,18 +157,18 @@ const OnboardMethod = () => {
   const styles = {
     container: {
       display: "flex",
-      flexDirection: "row" as "row", // Explicitly set the type
+      flexDirection: "row" as "row",
       justifyContent: "space-between",
       padding: "20px",
     },
     halfWidth: {
-      width: "48%", // Reduced to account for potential padding/margin
-      boxSizing: "border-box" as "border-box", // To include padding and border in element's total width
+      width: "48%",
+      boxSizing: "border-box" as "border-box",
     },
     paper: {
       padding: "20px",
-      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // More subtle shadow
-      borderRadius: "8px", // Rounded corners
+      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+      borderRadius: "8px",
     },
     input: {
       width: "100%",
@@ -179,10 +178,10 @@ const OnboardMethod = () => {
       borderRadius: "4px",
     },
     button: {
-      backgroundColor: "#007BFF", // Use Bootstrap primary color
+      backgroundColor: "#007BFF",
       color: "white",
       padding: "10px 20px",
-      fontSize: "1rem", // Use rem for scalable font size
+      fontSize: "1rem",
       border: "none",
       borderRadius: "4px",
       cursor: "pointer",
@@ -229,13 +228,6 @@ const OnboardMethod = () => {
               placeholder="Gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              value={addresses}
-              onChange={(e) => setAddresses([e.target.value])}
               style={styles.input}
             />
           </div>
