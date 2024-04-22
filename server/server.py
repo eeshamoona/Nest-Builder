@@ -10,9 +10,18 @@ import os
 
 from scripts.system_instruction_api_request import generate_content
 from scripts.profile_extractor_api_request import generate_profile
+from scripts.people_info_api_request import fetch_people_info
 
 app = Flask(__name__)
 CORS(app)  # new
+
+
+@app.route('/fetch-people-info', methods=['POST'])
+def fetch_people_info_route():
+    data = request.get_json()
+    token = data.get('token', '')
+    result = fetch_people_info(token)
+    return jsonify(result)
 
 @app.route('/generate-content', methods=['POST'])
 def generate_content_route():

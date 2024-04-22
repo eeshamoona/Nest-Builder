@@ -10,11 +10,14 @@ import CategoriesPage from "./pages/CategoriesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import { AuthContextProvider } from "./context/AuthContext";
 import "./App.css";
+import OnboardingPage from "./pages/OnboardingPage";
+// import { OAuthContextProvider } from "./context/OAuthContext";
 
 function App() {
   return (
     <div className="App">
       <AuthContextProvider>
+        {/* <OAuthContextProvider> */}
         <Router>
           <Routes>
             <Route
@@ -49,12 +52,21 @@ function App() {
                 </Protected>
               }
             />
+            <Route
+              path="/onboarding"
+              element={
+                <Protected>
+                  <OnboardingPage />
+                </Protected>
+              }
+            />
             <Route path="/" element={<LandingPage />} />
             <Route path="/signIn" element={<SignInPage />} />
             <Route path="/not-found" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Router>
+        {/* </OAuthContextProvider> */}
       </AuthContextProvider>
     </div>
   );

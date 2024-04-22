@@ -57,7 +57,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     updateUser();
-  }, [updateUser]); // removed database from dependency array
+  }, [auth?.user, updateUser]); // removed database from dependency array
 
   const styles: { [key: string]: React.CSSProperties } = {
     container: {
@@ -112,8 +112,8 @@ const Dashboard = () => {
       <p>Hi, {auth?.user?.name}!</p>
       <p>Your email is: {auth?.user?.email}</p>
       <p>
-        Nesting since{" "}
-        {formatDistanceToNow(auth?.user?.createdAt || new Date())} ago
+        Nesting since {formatDistanceToNow(auth?.user?.createdAt || new Date())}{" "}
+        ago
       </p>{" "}
       <p>
         Last login {formatDistanceToNow(auth?.user?.lastLogin || new Date())}{" "}
@@ -125,6 +125,9 @@ const Dashboard = () => {
         </button>
         <button style={styles.button} onClick={() => navigate("/categories")}>
           Go to Categories
+        </button>
+        <button style={styles.button} onClick={() => navigate("/onboarding")}>
+          Go to Onboarding Flow
         </button>
       </div>
     </div>
