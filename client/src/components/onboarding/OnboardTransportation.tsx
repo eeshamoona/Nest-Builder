@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
+import { OnboardPageProps } from "../../models/OnboardPageProps";
 
 type TransportationMethod = "car" | "bike" | "publicTransport" | "walking";
 
-const OnboardTransportation = () => {
+const OnboardTransportation = (props: OnboardPageProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const [homeAddress, setHomeAddress] = useState(
@@ -96,6 +97,15 @@ const OnboardTransportation = () => {
       }
     });
   };
+
+  const saveData = useCallback(() => {
+    // Save data logic here...
+    console.log("Save Data: ", { homeAddress, transportation });
+  }, [homeAddress, transportation]);
+
+  useEffect(() => {
+    props.registerSave(saveData);
+  }, [props, props.registerSave, saveData]);
 
   useEffect(() => {
     //TODO: Get user's home address from the database

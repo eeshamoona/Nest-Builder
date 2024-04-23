@@ -12,30 +12,8 @@ def generate_profile(file, system_instruction):
 
   GENERATION_CONFIG = {
     "temperature": 1,
+  
   }
-
-  JSON_PROMPT = """
-  IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
-    {
-      "<category_name>": {
-        "properties": {
-          "userPreferences": {
-            "description": "A paragraph about what the user usually prefers in this category based on the file input, important for context on the user, do not repeat the subcategories here if they are already in the subcategories field"
-          },
-          "environmentDescriptors": {
-            "description": "A list of 6 adjectives that describe the environment of the category, the user will pick some of these to describe the category"
-          },
-          "relatedSubcategories": {
-            "description": "A list of subcategories that are related to this category (e.g. for a restaurant category, the subcategories could be cuisines like 'Italian', 'Mexican', etc.)"
-          },
-          "confidence": {
-            "description": "A number between 0 (not confident) and 1 (confident) that represents how confident you are in the recommendations for this category"
-          }
-        }
-      }
-    }
-  """
-  system_instruction = system_instruction + " " + JSON_PROMPT
   
   # Create a temporary file and save the uploaded file to it
   temp_file = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)

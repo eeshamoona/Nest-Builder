@@ -48,10 +48,31 @@ The profile should be about their lifestyle preferences, and broken down into ge
 The user will use those categories patterns to further explore new options in that category.
 `;
 
+const JSON_STRUCTURE = `
+IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
+    {
+      "<category_name>": {
+        "properties": {
+          "userPreferences": {
+            "description": "A paragraph about what the user usually prefers in this category based on the file input, important for context on the user, do not repeat the subcategories here if they are already in the subcategories field"
+          },
+          "environmentDescriptors": {
+            "description": "A list of 6 adjectives that describe the environment of the category, the user will pick some of these to describe the category"
+          },
+          "relatedSubcategories": {
+            "description": "A list of subcategories that are related to this category (e.g. for a restaurant category, the subcategories could be cuisines like 'Italian', 'Mexican', etc.)"
+          },
+          "confidence": {
+            "description": "A number between 0 (not confident) and 1 (confident) that represents how confident you are in the recommendations for this category"
+          }
+        }
+      }
+    }
+    `;
 export const getProfileData = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("system_instruction", SYSTEM_INSTRUCTION);
+  formData.append("system_instruction", SYSTEM_INSTRUCTION + JSON_STRUCTURE);
 
   return fetch("http://localhost:5000/generate-profile", {
     method: "POST",

@@ -9,23 +9,6 @@ def generate_content(system_instruction, search_prompt):
   API_KEY = os.getenv('REACT_APP_geminiAIKey', "")
   genai.configure(api_key=API_KEY)
 
-  JSON_PROMPT = """
-  IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
-  {
-    'type': 'object',
-    'properties': {
-      'title': {'type': 'string'},
-      'place': {'type': 'string'},
-      'location': {'type': 'string'},
-      'cost': {'type':'string'},
-      'starReviewRating': {'type': 'number'},
-      'personalizedSummary': {'type': 'string'},
-      'finalRecommendation': {'type': 'string'}
-    }
-  }
-  """  
-  
-  system_instruction = system_instruction + " " + JSON_PROMPT
 
   GENERATION_CONFIG = {
   "temperature": 0.75,

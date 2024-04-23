@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState, Suspense, useCallback, useRef } from "react";
 import { Stepper, Step, StepLabel, CircularProgress } from "@mui/material";
 import OnboardTransportation from "../components/onboarding/OnboardTransportation";
 import OnboardPreferences from "../components/onboarding/OnboardPreferences";
@@ -14,18 +14,21 @@ const steps = [
   "Review",
 ];
 
-const getStepContent = (step: number) => {
+const getStepContent = (
+  step: number,
+  registerSave: (saveData: () => void) => void
+) => {
   switch (step) {
     case 0:
-      return <OnboardMethod />;
+      return <OnboardMethod registerSave={registerSave} />;
     case 1:
-      return <OnboardTransportation />;
+      return <OnboardTransportation registerSave={registerSave} />;
     case 2:
-      return <OnboardPreferences />;
+      return <OnboardPreferences registerSave={registerSave} />;
     case 3:
-      return <OnboardCategories />;
+      return <OnboardCategories registerSave={registerSave} />;
     case 4:
-      return <OnboardReview />;
+      return <OnboardReview registerSave={registerSave} />;
     default:
       return "Unknown step";
   }
@@ -33,8 +36,16 @@ const getStepContent = (step: number) => {
 
 const OnboardingPage = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const saveDataRef = useRef<(() => void) | null>(null);
+
+  const registerSave = useCallback((saveData: () => void) => {
+    saveDataRef.current = saveData;
+  }, []);
 
   const handleNext = () => {
+    if (saveDataRef.current) {
+      saveDataRef.current();
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -81,7 +92,7 @@ const OnboardingPage = () => {
         ))}
       </Stepper>
       <Suspense fallback={<CircularProgress />}>
-        {getStepContent(activeStep)}
+        {getStepContent(activeStep, registerSave)}
       </Suspense>
       <div>
         <button style={styles.button} onClick={handleNext}>

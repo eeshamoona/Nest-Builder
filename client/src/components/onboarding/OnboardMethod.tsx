@@ -2,13 +2,22 @@ import React, { useCallback, useEffect, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { formatBirthday } from "../../utils/RandomUtils";
 import GoogleDrivePicker from "react-google-drive-picker";
-import {
-  getProfileData,
-  transformApiResponse,
-} from "../../services/UserProfileServices";
-import { CategoryModel } from "../../models/CategoryModel";
+import { getProfileData } from "../../services/OnboardingProfileService";
+import { Profile } from "../../services/OnboardingProfileService";
+import { OnboardPageProps } from "../../models/OnboardPageProps";
+import { Tabs, Tab, Box } from "@mui/material";
+// import CategoryCard from "../CategoryCard";
+// import { CategoryModel } from "../../models/CategoryModel";
 
-const OnboardMethod = () => {
+const defaultProfile: Profile = {
+  homeAddress: "",
+  workAddress: "",
+  transportation: {},
+  categories: {},
+  socialPreferences: {},
+};
+
+const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
   const [birthday, setBirthday] = useState<string>("");
   const [gender, setGender] = useState<string>("");
@@ -16,21 +25,26 @@ const OnboardMethod = () => {
   const [openPicker] = GoogleDrivePicker();
 
   const [loading, setLoading] = useState(false);
-  const [newProfileData, setNewProfileData] = useState<CategoryModel[]>([]);
+  const [newProfileData, setNewProfileData] = useState<Profile>(defaultProfile);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setSelectedTab(newValue);
+  };
 
   const uploadFile = async (file: any) => {
     setLoading(true);
 
     try {
-      const data = await getProfileData(file);
+      const data: Profile = await getProfileData(file);
       if (!data) {
         console.error("Error: No data found");
         setLoading(false);
         return;
       }
 
-      const newCateogries = transformApiResponse(data);
-      setNewProfileData(newCateogries);
+      setNewProfileData(data);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -154,6 +168,15 @@ const OnboardMethod = () => {
     fetchGoogleInfo();
   }, [fetchGoogleInfo]);
 
+  const saveData = useCallback(() => {
+    // Save data logic here...
+    console.log("Save Data: ", { birthday: birthday, gender: gender });
+  }, [birthday, gender]);
+
+  useEffect(() => {
+    props.registerSave(saveData);
+  }, [props, props.registerSave, saveData]);
+
   const styles = {
     container: {
       display: "flex",
@@ -241,14 +264,51 @@ const OnboardMethod = () => {
           </p>
           <button onClick={handlePickerOpen}>Open Google Drive Picker</button>
           {loading && <div>Loading...</div>}
-          {newProfileData.length > 0 && (
+          {newProfileData && (
             <div>
-              <h6>New Profile Data:</h6>
-              <ul>
-                {newProfileData.map((category) => (
-                  <li key={category.title}>{category.title}</li>
-                ))}
-              </ul>
+              <Tabs
+                value={selectedTab}
+                onChange={handleChange}
+                orientation="vertical"
+              >
+                <Tab label="Home Address" />
+                <Tab label="Work Address" />
+                <Tab label="Transportation" />
+                <Tab label="Categories" />
+                <Tab label="Social Preferences" />
+              </Tabs>
+              {selectedTab === 0 && <Box>{newProfileData.homeAddress}</Box>}
+              {selectedTab === 1 && <Box>{newProfileData.workAddress}</Box>}
+              {selectedTab === 2 && (
+                <Box>
+                  {JSON.stringify(newProfileData.transportation, null, 2)}
+                </Box>
+              )}
+              {selectedTab === 3 && (
+                <Box>
+                  {/* {newProfileData.categories &&
+                    Object.keys(newProfileData.categories).map(
+                      (categoryKey: string) => {
+                        const categoryProperties = newProfileData.categories[
+                          categoryKey
+                        ] as CategoryModel;
+                        return (
+                          <CategoryCard
+                            key={categoryKey}
+                            {...categoryProperties}
+                          />
+                        );
+                      }
+                    )} */}
+
+                  {JSON.stringify(newProfileData.categories, null, 2)}
+                </Box>
+              )}
+              {selectedTab === 4 && (
+                <Box>
+                  {JSON.stringify(newProfileData.socialPreferences, null, 2)}
+                </Box>
+              )}
             </div>
           )}
         </div>

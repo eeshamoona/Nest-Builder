@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { database } from "../../firebase.config";
 import { ref, get } from "firebase/database";
 import CategoryCard from "../CategoryCard";
 import { CategoryModel } from "../../models/CategoryModel";
+import { OnboardPageProps } from "../../models/OnboardPageProps";
 
-const OnboardCategories = () => {
+const OnboardCategories = (props: OnboardPageProps) => {
   const [originalProfileData, setOriginalProfileData] = React.useState<
     CategoryModel[]
   >([]);
@@ -32,6 +33,15 @@ const OnboardCategories = () => {
 
     fetchCategories();
   }, [auth?.user]);
+
+  const saveData = useCallback(() => {
+    // Save data logic here...
+    console.log("Save Data: ", { originalProfileData });
+  }, [originalProfileData]);
+
+  useEffect(() => {
+    props.registerSave(saveData);
+  }, [props, props.registerSave, saveData]);
 
   const styles = {
     container: {
