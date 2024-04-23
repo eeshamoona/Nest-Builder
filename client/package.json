@@ -2,15 +2,15 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000/",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@google/generative-ai": "^0.6.0",
+    "@googlemaps/js-api-loader": "^1.16.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/firebase": "^3.2.1",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.96",
     "@types/react": "^18.2.75",
     "@types/react-dom": "^18.2.24",
     "child_process": "^1.0.2",
@@ -27,7 +27,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -51,6 +51,7 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^20.12.7",
     "@types/react-scroll": "^1.8.10"
   }
 }

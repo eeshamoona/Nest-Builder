@@ -105,7 +105,7 @@ const LandingPage: React.FC = () => {
         ),
         buttonText: "Get Started",
         buttonAction: () => {
-          navigate("/signIn");
+          navigate("/login");
         },
       },
       {
@@ -135,7 +135,7 @@ const LandingPage: React.FC = () => {
         ),
         buttonText: "Try with Google",
         buttonAction: () => {
-          navigate("/signIn");
+          navigate("/login");
         },
       },
     ],

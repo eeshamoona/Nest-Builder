@@ -1,9 +1,10 @@
+import React, { CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
-  const styles: { [key: string]: React.CSSProperties } = {
+  const styles: { [key: string]: CSSProperties } = {
     container: {
       display: "flex",
       flexDirection: "column",

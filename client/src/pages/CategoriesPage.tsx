@@ -29,11 +29,13 @@ const CategoriesPage = () => {
           );
           setCategories(categoriesArray);
         }
+      } else {
+        navigate("/login");
       }
     };
 
     fetchCategories();
-  }, [auth?.user]);
+  }, [auth?.user, navigate]);
 
   const styles = {
     container: {
