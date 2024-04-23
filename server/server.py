@@ -8,8 +8,8 @@ from werkzeug.utils import secure_filename
 import tempfile
 import os
 
-from scripts.system_instruction_api_request import generate_content
-from scripts.profile_extractor_api_request import generate_profile
+from scripts.system_instructions import generate_content
+from scripts.file_input_system_instructions import generate_content_with_file
 
 app = Flask(__name__)
 CORS(app)  # new
@@ -35,7 +35,7 @@ def generate_profile_route():
 
   try:
     print("Generating profile...", file, system_instruction)
-    result = generate_profile(file, system_instruction)
+    result = generate_content_with_file(file, system_instruction)
     print("Profile generated successfully")
   except Exception as e:
     print(f"Error while generating profile: {e}")

@@ -14,6 +14,21 @@ const getSearchPrompt = (
   return `Prompt: Hey, let's find more ${category}! We are going to look for ${category} that you can access via ${access}, that is ${price} price range, and the vibes are ${vibe}. Also, we are making sure your number one priority, ${priority1}, second priority ${priority2}, and third priority ${priority3}, are kept in mind!`;
 };
 
+const JSON_PROMPT = `
+IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
+{
+  'type': 'object',
+  'properties': {
+    'title': {'type': 'string'},
+    'place': {'type': 'string'},
+    'location': {'type': 'string'},
+    'cost': {'type':'string'},
+    'starReviewRating': {'type': 'number'},
+    'personalizedSummary': {'type': 'string'},
+    'finalRecommendation': {'type': 'string'}
+  }
+}`;
+
 const generateAPIRequest = async (
   userId: string,
   category: string,
@@ -42,7 +57,7 @@ const generateAPIRequest = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      system_instruction: preamble + userPreferences,
+      system_instruction: preamble + userPreferences + JSON_PROMPT,
       search_prompt: searchPrompt,
     }),
   })

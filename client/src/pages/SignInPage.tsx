@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
 import GoogleButton from "react-google-button";
@@ -8,6 +9,7 @@ const SignInPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to dashboard if user is already signed in
     if (auth?.user) {
       navigate("/dashboard");
     }

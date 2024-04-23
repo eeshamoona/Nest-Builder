@@ -5,7 +5,7 @@ import google.generativeai as genai
 
 load_dotenv()
 
-def generate_profile(file, system_instruction):
+def generate_content_with_file(file, system_instruction):
   API_KEY = os.getenv('REACT_APP_geminiAIKey', "")
   genai.configure(api_key=API_KEY)
 
