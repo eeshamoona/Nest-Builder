@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
@@ -10,15 +11,8 @@ const Dashboard = () => {
   const auth = UserAuth();
   const navigate = useNavigate();
 
-  const signOut = async () => {
-    try {
-      auth?.logOut && (await auth.logOut());
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const updateUser = useCallback(() => {
+  //Write user's data to the database
+  const updateUserInfo = useCallback(() => {
     if (auth?.user) {
       const userRef = ref(database, `users/${auth.user.id}`);
       get(userRef).then((snapshot) => {
@@ -56,8 +50,21 @@ const Dashboard = () => {
   }, [auth]);
 
   useEffect(() => {
-    updateUser();
-  }, [auth?.user, updateUser]); // removed database from dependency array
+    // Redirect to sign in page if user is not signed in
+    if (!auth?.user) {
+      navigate("/login");
+    } else {
+      updateUserInfo();
+    }
+  }, [auth, navigate, updateUserInfo]);
+
+  const signOut = async () => {
+    try {
+      auth?.logOut && (await auth.logOut());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const styles: { [key: string]: React.CSSProperties } = {
     container: {

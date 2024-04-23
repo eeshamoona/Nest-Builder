@@ -40,11 +40,13 @@ const UserProfilePage = () => {
           );
           setOriginalProfileData(categoriesArray);
         }
+      } else {
+        navigate("/login");
       }
     };
 
     fetchCategories();
-  }, [auth?.user]);
+  }, [auth?.user, navigate]);
 
   const goBack = () => {
     navigate(-1);

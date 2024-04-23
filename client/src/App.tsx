@@ -9,6 +9,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import { AuthContextProvider } from "./context/AuthContext";
+import { Loader } from "@googlemaps/js-api-loader";
 import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
 import { Loader } from "@googlemaps/js-api-loader";
@@ -75,7 +76,7 @@ function App() {
               }
             />
             <Route path="/" element={<LandingPage />} />
-            <Route path="/signIn" element={<SignInPage />} />
+            <Route path="/login" element={<SignInPage />} />
             <Route path="/not-found" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

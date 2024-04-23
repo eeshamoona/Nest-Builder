@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CSSProperties } from "react";
 import { generateAPIRequest } from "../services/SearchPromptServices";
 import { UserAuth } from "../context/AuthContext";
@@ -43,11 +43,8 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!auth?.user) {
-      navigate("/");
-    }
-
     const fetchCategories = async () => {
+      // If the user is logged in and a category title is provided, fetch the subcategories and vibes for that category
       if (auth?.user && categoryTitle) {
         const categoriesRef = ref(
           database,
@@ -74,7 +71,9 @@ const SearchPage = () => {
             ". " +
             (categoriesData.userPreferences || "")
         );
-      } else if (auth?.user) {
+      }
+      // If the user is logged in but no category title is provided, fetch the default categories and vibes
+      else if (auth?.user) {
         const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
         const categoriesSnapshot = await get(categoriesRef);
         const categoriesData = categoriesSnapshot.val();
@@ -90,6 +89,8 @@ const SearchPage = () => {
         setEnvironmentDescriptorOptions(ADDITIONAL_VIBE_OPTIONS);
         //TODO: Replace this with overall description of the user's preferences from their profile
         setAdditionalUserProfileDetails(DEFAULT_USER_PREFERENCES);
+      } else {
+        navigate("/login");
       }
     };
 
@@ -98,14 +99,6 @@ const SearchPage = () => {
 
   const goBack = () => {
     navigate(-1);
-  };
-
-  const baseButton = {
-    padding: "10px 20px",
-    borderRadius: "5px",
-    border: "none",
-    color: "white",
-    cursor: "pointer",
   };
 
   const styles: { [key: string]: CSSProperties } = {
@@ -118,7 +111,11 @@ const SearchPage = () => {
       margin: "0 5px",
     },
     button: {
-      ...baseButton,
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      color: "white",
+      cursor: "pointer",
       backgroundColor: "#007BFF",
       marginTop: "20px",
     },
@@ -149,7 +146,11 @@ const SearchPage = () => {
       marginBottom: "20px",
     },
     secondaryButton: {
-      ...baseButton,
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      color: "white",
+      cursor: "pointer",
       backgroundColor: "#6C757D",
     },
     image: {
@@ -197,6 +198,7 @@ const SearchPage = () => {
     setLoading(false);
   };
 
+  // Helper function to get the title of the search page
   const getSearchPageTitle = () => {
     if (categoryTitle) {
       return `Search ${categoryTitle}`;

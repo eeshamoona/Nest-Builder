@@ -48,7 +48,7 @@ The profile should be about their lifestyle preferences, and broken down into ge
 The user will use those categories patterns to further explore new options in that category.
 `;
 
-const JSON_STRUCTURE = `
+const JSON_PROMPT = `
 IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
     {
       "<category_name>": {
@@ -68,11 +68,12 @@ IMPORTANT: Your ONLY output should be an array of category recommendations in a 
         }
       }
     }
-    `;
+`;
+
 export const getProfileData = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("system_instruction", SYSTEM_INSTRUCTION + JSON_STRUCTURE);
+  formData.append("system_instruction", SYSTEM_INSTRUCTION + JSON_PROMPT);
 
   return fetch("http://localhost:5000/generate-profile", {
     method: "POST",
