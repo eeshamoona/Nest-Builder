@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { formatBirthday } from "../../utils/RandomUtils";
 import GoogleDrivePicker from "react-google-drive-picker";
-import { getProfileData } from "../../services/OnboardingProfileService";
-import { Profile } from "../../services/OnboardingProfileService";
+import { getProfileData } from "../../services/FullOnboardingProfileService";
+import { Profile } from "../../services/FullOnboardingProfileService";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { Tabs, Tab, Box } from "@mui/material";
 // import CategoryCard from "../CategoryCard";
@@ -263,8 +263,9 @@ const OnboardMethod = (props: OnboardPageProps) => {
             first...
           </p>
           <button onClick={handlePickerOpen}>Open Google Drive Picker</button>
-          {loading && <div>Loading...</div>}
-          {newProfileData && (
+          {loading ? (
+            <progress value={undefined} />
+          ) : (
             <div>
               <Tabs
                 value={selectedTab}

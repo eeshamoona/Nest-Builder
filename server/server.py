@@ -41,25 +41,21 @@ def generate_content_route():
 
 @app.route('/generate-profile', methods=['POST'])
 def generate_profile_route():
-  print("Processing request in generate_profile_route")
   
   if 'file' not in request.files:
-    print("No file in request")
     return 'No file part'
   
   file = request.files['file']
   system_instruction = request.form.get('system_instruction', '')
 
   try:
-    print("Generating profile...", file, system_instruction)
     result = generate_content_with_file(file, system_instruction)
-    print("Profile generated successfully")
   except Exception as e:
-    print(f"Error while generating profile: {e}")
     raise
 
-  print("Sending response...", result)
-  return jsonify(result.replace("```json\n", "").replace("```", "")), 200
+  print("Result MAN:", result)
+
+  return result
 # Route for seeing a data
 @app.route('/')
 def get_time():

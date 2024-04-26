@@ -12,7 +12,6 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { Loader } from "@googlemaps/js-api-loader";
 import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
-import { Loader } from "@googlemaps/js-api-loader";
 
 function App() {
   useEffect(() => {
