@@ -1,49 +1,12 @@
 import { CategoryModel } from "../models/CategoryModel";
-
-export interface TransporationResponseType {
-  description: string;
-  selected: {
-    description: string;
-  };
-  radius: {
-    description: string;
-  };
-}
-
-export interface SocialPreferenceResponseType {
-  name: {
-    description: string;
-  };
-  description: {
-    description: string;
-  };
-}
-
-export interface TransportationType {
-  selected: boolean;
-  radius: string;
-}
-
-interface TransportationDetails {
-  selected: boolean;
-  radius: number | null;
-}
-
+import { TransportationModel } from "../models/TransporationModel";
+import { SocialPreferenceModel } from "../models/SocialPreferenceModel";
 export interface Profile {
   homeAddress: string;
   workAddress: string;
-  transportation: {
-    [key: string]: {
-      selected: boolean;
-      radius: number;
-    };
-  };
-  categories: {
-    [key: string]: CategoryModel;
-  };
-  socialPreferences: {
-    [key: string]: SocialPreferenceResponseType;
-  };
+  transportation: TransportationModel[];
+  categories: CategoryModel[];
+  socialPreferences: SocialPreferenceModel[];
 }
 
 const baseInstruction = `
@@ -67,65 +30,43 @@ function createAddressInstruction() {
 
 function createTransportationInstruction() {
   return `
-  "transportation": {
-    "description": "Specify the user's preferred transportation options for reaching places, feel free to write null if not sure",
-    "<type1>": {
-      "description": "This transportation type (e.g., 'walking', 'biking', 'driving', 'train',...).",
-      "selected": {
-        "description": "Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, 'radius' will not be applicable."
-      },
-      "radius": {
-        "description": "Numeric value (in miles) representing the comfortable travel radius when using this type. This is not applicable if 'selected' is false."
-      }
+  [
+    {
+      "method": "string", // The method of transportation (e.g., "walking", "biking", "driving", "train"...)
+      "selected": "boolean", // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, 'radius' will not be applicable
+      "radius": "number" // Numeric value in miles representing the travel radius, applicable if 'selected' is true
     },
-    // ... more transportation options
-  },
+    // Add more transportation options in similar format as needed
+  ]
   `;
 }
 
 function createCategoriesInstruction() {
   return `
-  "categories": {
-    "description": "This object stores information about different categories of places the user might be interested in.",
-    "<category_name1>": {
-      "description": "This key represents a specific category of places (e.g., 'restaurant', 'entertainment', 'shopping', ....).",
-      "properties": {
-        "userPreferences": {
-          "description": "A brief description about what the user usually prefers in this category based on the file input, patterns and preferrences"
-        },
-        "environmentDescriptors": {
-          "description": "Up to 6 adjectives describing the environment the user prefers for this category in Title Case"
-        },
-        "relatedSubcategories": {
-          "description": "A list of subcategories related to this main category (e.g., cuisines for restaurants, types of shops for shopping, ...)."
-        },
-        "costPreference": {
-          "description": "Text string representing the user's preferred cost range for this category (e.g., '$', '$$', $$$, $$$$)."
-        },
-        "confidence": {
-          "description": "Numeric value between 0 (not confident) and 1 (confident) representing confidence in recommendations for this category."
-        }
-      }
-    },
-    // ... other categories
-  },
+  "categories": [
+    {
+      "title": "string", // The name of the category, such as 'restaurant', 'entertainment', or 'shopping'. This title is used to classify the type of destinations or interests for recommendations.
+      "userPreferences": "string", // A detailed description of the user's preferences within this category, based on analysis of past behavior and expressed interests. This might include preferred cuisine types in restaurants or favorite genres in entertainment.
+      "environmentDescriptors": ["string"], // An array of adjectives that describe the desired ambiance or environment of places in this category, such as 'lively', 'quiet', 'family-friendly', or 'romantic'.
+      "relatedSubcategories": ["string"], // A list of subcategories that further define the main category, such as specific types of cuisines under the 'restaurant' category or different forms of entertainment like 'cinema' or 'live music'.
+      "costPreference": "string", // A description of the user's budgetary preference for this category, represented as a price range using symbols like '$' for inexpensive through '$$$$' for high end.
+      "confidence": "number" // A numeric value between 0 and 1 that indicates the system's confidence level in the accuracy of the recommendations based on the user's past choices and preferences.
+    }
+    // Additional category objects can be added here in the same format
+  ]
   `;
 }
 
 function createSocialPreferencesInstruction() {
   return `
-  "socialPreferences": {
-    "description": "This list represents the user's social preferences for various general descriptors found in Google Maps 'About' sections.",
-    "[]": {
-      "description": "Each element represents a single social preference.",
-      "name": {
-        "description": "Text string specifying the name of the preference (e.g., 'Accessible', 'Safety',Affordable', 'Family-friendly', 'Historic', 'Pet-Friendly', 'Quiet', ...)."
-      },
-      "description": {
-        "description": "Text string describing what the user finds important about this social preference (e.g., 'Ramps available for easy access')."
-      }
+  "socialPreferences": [
+    {
+      "name": "string", // The name of the preference (e.g., 'Accessible', 'Safety', ...)
+      "selected": "boolean", // Indicates if this preference is important to the user (true) or not (false)
+      "description": "string" // Description of the preference and its significance to the user
     }
-  }
+    // More social preferences can be added here in the same format
+  ]
   `;
 }
 
@@ -177,122 +118,116 @@ function sendProfileRequest(instructionPart: string, file: File) {
 }
 
 export const getProfileData = async (file: File): Promise<Profile> => {
-  const [addressInfo, transportationInfo] = await Promise.all([
-    sendProfileRequest(createAddressInstruction(), file),
-    sendProfileRequest(createTransportationInstruction(), file),
-  ]);
+  // const [
+  //   addressInfo,
+  //   transportationInfo,
+  //   categoriesInfo,
+  //   socialPreferencesInfo,
+  // ] = await Promise.all([
+  //   sendProfileRequest(createAddressInstruction(), file),
+  //   sendProfileRequest(createTransportationInstruction(), file),
+  //   sendProfileRequest(createCategoriesInstruction(), file),
+  //   sendProfileRequest(createSocialPreferencesInstruction(), file),
+  // ]);
 
+  const combinedInstructionsA =
+    createAddressInstruction() + createTransportationInstruction();
+  // createCategoriesInstruction() +
+  // createSocialPreferencesInstruction();
+
+  const combinedInstructionsB =
+    createCategoriesInstruction() + createSocialPreferencesInstruction();
+
+  const profileA = await sendProfileRequest(combinedInstructionsA, file);
+  const profileB = await sendProfileRequest(combinedInstructionsB, file);
+  const profileData = { ...profileA, ...profileB };
   // const transportationInfo = {
   //   transportation: {
   //     walking: {
-  //       description: "Walking",
-  //       selected: {
-  //         description: "true",
-  //       },
-  //       radius: {
-  //         description: "1",
-  //       },
+  //       selected: true,
+  //       radius: 1,
   //     },
   //     biking: {
-  //       description: "Biking",
-  //       selected: {
-  //         description: "false",
-  //       },
-  //       radius: {
-  //         description: "0",
-  //       },
+  //       selected: false,
+  //       radius: null,
   //     },
   //     driving: {
-  //       description: "Driving",
-  //       selected: {
-  //         description: "false",
-  //       },
-  //       radius: {
-  //         description: "0",
-  //       },
+  //       selected: true,
+  //       radius: 10,
+  //     },
+  //     train: {
+  //       selected: false,
+  //       radius: null,
   //     },
   //   },
   // };
 
-  const categoriesInfo = {
-    categories: {
-      restaurant: {
-        title: "Restaurant",
-        userPreferences: "User usually prefers fast food restaurants",
-        environmentDescriptors: [
-          "Casual",
-          "Friendly",
-          "Comfortable",
-          "Cozy",
-          "Welcoming",
-          "Inviting",
-        ],
-        relatedSubcategories: [
-          "Fast Food",
-          "American",
-          "Burgers",
-          "Sandwiches",
-          "Salads",
-          "Wraps",
-        ],
-        confidence: 0.8,
-      },
-      entertainment: {
-        title: "Entertainment",
-        userPreferences: "User usually prefers movie theaters",
-        environmentDescriptors: [
-          "Exciting",
-          "Fun",
-          "Entertaining",
-          "Enjoyable",
-          "Thrilling",
-          "Engaging",
-        ],
-        relatedSubcategories: [
-          "Movies",
-          "Popcorn",
-          "Snacks",
-          "Drinks",
-          "Candy",
-          "3D",
-          "IMAX",
-        ],
-        confidence: 0.7,
-      },
-    },
-  };
-  const socialPreferencesInfo = {
-    socialPreferences: {
-      accessible: {
-        name: { description: "Accessible" },
-        description: { description: "Ramps available for easy access" },
-      },
-      safety: {
-        name: { description: "Safety" },
-        description: { description: "Security cameras and guards on site" },
-      },
-    },
-  };
+  // const categoriesInfo = {
+  //   categories: {
+  //     restaurant: {
+  //       title: "Restaurant",
+  //       userPreferences: "User usually prefers fast food restaurants",
+  //       environmentDescriptors: [
+  //         "Casual",
+  //         "Friendly",
+  //         "Comfortable",
+  //         "Cozy",
+  //         "Welcoming",
+  //         "Inviting",
+  //       ],
+  //       relatedSubcategories: [
+  //         "Fast Food",
+  //         "American",
+  //         "Burgers",
+  //         "Sandwiches",
+  //         "Salads",
+  //         "Wraps",
+  //       ],
+  //       confidence: 0.8,
+  //     },
+  //     entertainment: {
+  //       title: "Entertainment",
+  //       userPreferences: "User usually prefers movie theaters",
+  //       environmentDescriptors: [
+  //         "Exciting",
+  //         "Fun",
+  //         "Entertaining",
+  //         "Enjoyable",
+  //         "Thrilling",
+  //         "Engaging",
+  //       ],
+  //       relatedSubcategories: [
+  //         "Movies",
+  //         "Popcorn",
+  //         "Snacks",
+  //         "Drinks",
+  //         "Candy",
+  //         "3D",
+  //         "IMAX",
+  //       ],
+  //       confidence: 0.7,
+  //     },
+  //   },
+  // };
+  // const socialPreferencesInfo = {
+  //   socialPreferences: {
+  //     accessible: {
+  //       name: { description: "Accessible" },
+  //       description: { description: "Ramps available for easy access" },
+  //     },
+  //     safety: {
+  //       name: { description: "Safety" },
+  //       description: { description: "Security cameras and guards on site" },
+  //     },
+  //   },
+  // };
 
-  let transportation_info: {
-    [key: string]: { selected: boolean; radius: number };
-  } = {};
-
-  for (let [transport_type, details] of Object.entries(
-    transportationInfo["transportation"]
-  )) {
-    let typedDetails = details as TransportationDetails;
-    transportation_info[transport_type] = {
-      selected: typedDetails.selected,
-      radius: typedDetails.radius || 0, // Use 0 if radius is undefined
-    };
-  }
-
-  return {
-    homeAddress: addressInfo.homeAddress,
-    workAddress: addressInfo.workAddress,
-    transportation: transportation_info,
-    categories: categoriesInfo.categories,
-    socialPreferences: socialPreferencesInfo.socialPreferences,
-  };
+  // return {
+  //   homeAddress: addressInfo.homeAddress,
+  //   workAddress: addressInfo.workAddress,
+  //   transportation: transportationInfo.transportation,
+  //   categories: categoriesInfo.categories,
+  //   socialPreferences: socialPreferencesInfo.socialPreferences,
+  // };
+  return profileData;
 };

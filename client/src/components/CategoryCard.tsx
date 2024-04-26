@@ -54,6 +54,10 @@ const CategoryCard = (category: CategoryModel) => {
         {category.userPreferences}
       </p>
       <p style={styles.description}>
+        <span style={styles.label}>Cost Preference:</span>{" "}
+        {category.costPreference}
+      </p>
+      <p style={styles.description}>
         <span style={styles.label}>Environment Descriptors:</span>
         {category.environmentDescriptors.map((descriptor, index) => (
           <span key={index} style={styles.token}>

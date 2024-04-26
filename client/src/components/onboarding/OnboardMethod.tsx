@@ -6,15 +6,42 @@ import { getProfileData } from "../../services/FullOnboardingProfileService";
 import { Profile } from "../../services/FullOnboardingProfileService";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { Tabs, Tab, Box } from "@mui/material";
+import { CategoryModel } from "../../models/CategoryModel";
+import CategoryCard from "../CategoryCard";
+import SocialPreferenceCard from "../SocialPreferenceCard";
+import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
+import { TransportationModel } from "../../models/TransporationModel";
+import TransportationCard from "../TransportationCard";
 // import CategoryCard from "../CategoryCard";
 // import { CategoryModel } from "../../models/CategoryModel";
 
 const defaultProfile: Profile = {
   homeAddress: "",
   workAddress: "",
-  transportation: {},
-  categories: {},
-  socialPreferences: {},
+  transportation: [
+    {
+      method: "car",
+      radius: 0,
+      selected: false,
+    },
+    {
+      method: "bike",
+      radius: 0,
+      selected: false,
+    },
+    {
+      method: "publicTransport",
+      radius: 0,
+      selected: false,
+    },
+    {
+      method: "walking",
+      radius: 0,
+      selected: false,
+    },
+  ],
+  categories: [],
+  socialPreferences: [],
 };
 
 const OnboardMethod = (props: OnboardPageProps) => {
@@ -282,32 +309,47 @@ const OnboardMethod = (props: OnboardPageProps) => {
               {selectedTab === 1 && <Box>{newProfileData.workAddress}</Box>}
               {selectedTab === 2 && (
                 <Box>
-                  {JSON.stringify(newProfileData.transportation, null, 2)}
+                  {newProfileData.transportation &&
+                    newProfileData.transportation.map(
+                      (transportation: TransportationModel) => (
+                        <TransportationCard
+                          key={transportation.method}
+                          transportation={transportation}
+                          onSelectedChange={() => {}}
+                          onRadiusChange={() => {}}
+                          {...transportation}
+                        />
+                      )
+                    )}
                 </Box>
               )}
               {selectedTab === 3 && (
-                <Box>
-                  {/* {newProfileData.categories &&
-                    Object.keys(newProfileData.categories).map(
-                      (categoryKey: string) => {
-                        const categoryProperties = newProfileData.categories[
-                          categoryKey
-                        ] as CategoryModel;
-                        return (
-                          <CategoryCard
-                            key={categoryKey}
-                            {...categoryProperties}
-                          />
-                        );
-                      }
-                    )} */}
-
-                  {JSON.stringify(newProfileData.categories, null, 2)}
+                <Box style={{ overflowY: "auto", maxHeight: "100vh" }}>
+                  {newProfileData.categories &&
+                    newProfileData.categories.map((category: CategoryModel) => (
+                      <CategoryCard key={category.title} {...category} />
+                    ))}
                 </Box>
               )}
               {selectedTab === 4 && (
-                <Box>
-                  {JSON.stringify(newProfileData.socialPreferences, null, 2)}
+                <Box
+                  style={{
+                    display: "grid",
+                    columnGap: "1rem",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                  }}
+                >
+                  {newProfileData.socialPreferences &&
+                    newProfileData.socialPreferences.map(
+                      (socialPreference: SocialPreferenceModel) => (
+                        <SocialPreferenceCard
+                          key={socialPreference.name}
+                          socialPreference={socialPreference}
+                          onSelect={() => {}}
+                          {...socialPreference}
+                        />
+                      )
+                    )}
                 </Box>
               )}
             </div>

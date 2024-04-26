@@ -16,6 +16,12 @@ def extract_json_from_output(output):
     if match:
         # Extracting the JSON string from the regex match
         json_string = match.group(1)
+        
+        # Correctly handle escape sequences
+        json_string = json_string.replace(r'\"', '"')  # Unescape escaped double quotes
+        json_string = json_string.replace('\\', '\\\\')  # Escape backslashes
+        json_string = json_string.replace('\\\\\\"', '\\"')  # Correct over-escaped double quotes
+        
         # Converting the JSON string into a Python dictionary
         try:
             return json.loads(json_string)
@@ -57,12 +63,12 @@ def generate_content_with_file(file, system_instruction):
       safety_settings=SAFETY_SETTINGS,
   )
 
+
   response = model.generate_content(["Follow the system instructions", content])
 
   try:
-    print(response.text)
+    print("Original Response", response.text)
     newText = extract_json_from_output(response.text)
-    print(newText)
   except ValueError:
     # If the response doesn't contain text, check if the prompt was blocked.
     print(response.prompt_feedback)
