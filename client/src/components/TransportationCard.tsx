@@ -57,11 +57,16 @@ const TransportationCard = (props: TransportationCardProps) => {
         step="0.1"
         max="10"
         name={props.transportation.method}
-        value={props.transportation.radius}
+        value={
+          props.transportation.radius != null ? props.transportation.radius : ""
+        }
         onChange={handleSliderChange}
         style={styles.range}
       />
-      <label style={styles.label}>{props.transportation.radius} miles</label>
+      <label style={styles.label}>
+        {props.transportation.radius != null ? props.transportation.radius : 0}{" "}
+        miles
+      </label>
     </div>
   );
 };

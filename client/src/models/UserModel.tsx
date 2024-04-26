@@ -5,6 +5,8 @@ type User = {
   photoURL: string;
   createdAt: Date;
   lastLogin: Date;
+  homeAddress: string;
+  workAddress: string;
 };
 
 export default User;

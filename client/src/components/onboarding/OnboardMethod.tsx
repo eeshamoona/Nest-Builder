@@ -2,7 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { formatBirthday } from "../../utils/RandomUtils";
 import GoogleDrivePicker from "react-google-drive-picker";
-import { getProfileData } from "../../services/FullOnboardingProfileService";
+import {
+  createAddressInstruction,
+  createCategoriesInstruction,
+  createSocialPreferencesInstruction,
+  createTransportationInstruction,
+  sendProfileRequest,
+} from "../../services/FullOnboardingProfileService";
 import { Profile } from "../../services/FullOnboardingProfileService";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { Tabs, Tab, Box } from "@mui/material";
@@ -12,34 +18,14 @@ import SocialPreferenceCard from "../SocialPreferenceCard";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import { TransportationModel } from "../../models/TransporationModel";
 import TransportationCard from "../TransportationCard";
-// import CategoryCard from "../CategoryCard";
-// import { CategoryModel } from "../../models/CategoryModel";
+import { ref, set, update, get } from "firebase/database";
+import { database } from "../../firebase.config";
+import UserModel from "../../models/UserModel";
 
 const defaultProfile: Profile = {
   homeAddress: "",
   workAddress: "",
-  transportation: [
-    {
-      method: "car",
-      radius: 0,
-      selected: false,
-    },
-    {
-      method: "bike",
-      radius: 0,
-      selected: false,
-    },
-    {
-      method: "publicTransport",
-      radius: 0,
-      selected: false,
-    },
-    {
-      method: "walking",
-      radius: 0,
-      selected: false,
-    },
-  ],
+  transportation: [],
   categories: [],
   socialPreferences: [],
 };
@@ -48,11 +34,19 @@ const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
   const [birthday, setBirthday] = useState<string>("");
   const [gender, setGender] = useState<string>("");
-
   const [openPicker] = GoogleDrivePicker();
-
   const [loading, setLoading] = useState(false);
   const [newProfileData, setNewProfileData] = useState<Profile>(defaultProfile);
+  const [addressInstructionStatus, setAddressInstructionStatus] =
+    useState(false);
+  const [transportationInstructionStatus, setTransportationInstructionStatus] =
+    useState(false);
+  const [categoriesInstructionStatus, setCategoriesInstructionStatus] =
+    useState(false);
+  const [
+    socialPreferencesInstructionStatus,
+    setSocialPreferencesInstructionStatus,
+  ] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -60,26 +54,151 @@ const OnboardMethod = (props: OnboardPageProps) => {
     setSelectedTab(newValue);
   };
 
+  const getAddressData = useCallback(
+    async (file: any) => {
+      try {
+        const addressInstruction = createAddressInstruction();
+        const addressData = await sendProfileRequest(addressInstruction, file);
+        console.log("Address Data: ", addressData);
+        if (auth?.user) {
+          const userRef = ref(database, `users/${auth.user.id}`);
+          get(userRef)
+            .then((snapshot) => {
+              if (snapshot.exists()) {
+                const updates: Partial<UserModel> = {
+                  homeAddress: addressData.homeAddress,
+                  workAddress: addressData.workAddress,
+                };
+
+                update(userRef, updates);
+              }
+            })
+            .catch((error) => {
+              console.error("Error updating user data:", error);
+            });
+        }
+        setNewProfileData((prevData) => ({
+          ...prevData,
+          homeAddress: addressData.homeAddress,
+          workAddress: addressData.workAddress,
+        }));
+        setAddressInstructionStatus(true);
+      } catch (error) {
+        console.error("Error getting address data:", error);
+      }
+    },
+    [auth?.user]
+  );
+
+  const getTransportationData = useCallback(
+    async (file: any) => {
+      try {
+        const transportationInstruction = createTransportationInstruction();
+        const transportationData = await sendProfileRequest(
+          transportationInstruction,
+          file
+        );
+        console.log("Transportation Data: ", transportationData);
+        if (auth?.user) {
+          const updates: TransportationModel[] =
+            transportationData.transportation;
+          updates.forEach((transportation) => {
+            const userRef = ref(
+              database,
+              `users/${auth.user?.id}/transportations/${transportation.method}`
+            );
+            set(userRef, transportation).catch((error) => {
+              console.error("Error updating user data:", error);
+            });
+          });
+        }
+        setNewProfileData((prevData) => ({
+          ...prevData,
+          transportation: transportationData.transportation,
+        }));
+        setTransportationInstructionStatus(true);
+      } catch (error) {
+        console.error("Error getting transportation data:", error);
+      }
+    },
+    [auth?.user]
+  );
+
+  const getCategoriesData = useCallback(
+    async (file: any) => {
+      const categoriesInstruction = createCategoriesInstruction();
+      const categoriesData = await sendProfileRequest(
+        categoriesInstruction,
+        file
+      );
+      console.log("Categories Data: ", categoriesData);
+      if (auth?.user) {
+        const updates: CategoryModel[] = categoriesData.categories;
+        updates.forEach((category) => {
+          const userRef = ref(
+            database,
+            `users/${auth.user?.id}/categories/${category.title}`
+          );
+          set(userRef, category).catch((error) => {
+            console.error("Error updating user data:", error);
+          });
+        });
+      }
+      setNewProfileData((prevData) => ({
+        ...prevData,
+        categories: categoriesData.categories,
+      }));
+      setCategoriesInstructionStatus(true);
+    },
+    [auth?.user]
+  );
+
+  const getSocialPreferencesData = useCallback(
+    async (file: any) => {
+      const socialPreferencesInstruction = createSocialPreferencesInstruction();
+      const socialPreferencesData = await sendProfileRequest(
+        socialPreferencesInstruction,
+        file
+      );
+      console.log("Social Preferences Data: ", socialPreferencesData);
+      if (auth?.user) {
+        const updates: SocialPreferenceModel[] =
+          socialPreferencesData.socialPreferences;
+        updates.forEach((socialPreference) => {
+          const userRef = ref(
+            database,
+            `users/${auth.user?.id}/socialPreferences/${socialPreference.name}`
+          );
+          set(userRef, socialPreference).catch((error) => {
+            console.error("Error updating user data:", error);
+          });
+        });
+      }
+      setNewProfileData((prevData) => ({
+        ...prevData,
+        socialPreferences: socialPreferencesData.socialPreferences,
+      }));
+      setSocialPreferencesInstructionStatus(true);
+    },
+    [auth?.user]
+  );
+
   const uploadFile = async (file: any) => {
     setLoading(true);
+    setAddressInstructionStatus(false);
+    setTransportationInstructionStatus(false);
+    setCategoriesInstructionStatus(false);
+    setSocialPreferencesInstructionStatus(false);
 
-    try {
-      const data: Profile = await getProfileData(file);
-      if (!data) {
-        console.error("Error: No data found");
-        setLoading(false);
-        return;
-      }
+    await getAddressData(file);
+    await getTransportationData(file);
+    await getCategoriesData(file);
+    await getSocialPreferencesData(file);
 
-      setNewProfileData(data);
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
-  const handlePickerOpen = () => {
+  const handleGoogleDrivePickerOpen = () => {
     const token = localStorage.getItem("accessToken") || "";
     if (!token) {
       console.error("No token found");
@@ -132,7 +251,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     });
   };
 
-  //TODO: Get from backend?? but will they go through this onboarding process again?
+  //TODO: Make this into a service in FullOnboardingProfileService
   const fetchGoogleInfo = useCallback(async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -192,8 +311,23 @@ const OnboardMethod = (props: OnboardPageProps) => {
   }, [birthday, gender]);
 
   useEffect(() => {
-    fetchGoogleInfo();
-  }, [fetchGoogleInfo]);
+    if (auth?.user) {
+      const userRef = ref(database, `users/${auth.user.id}`);
+      get(userRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const user = snapshot.val();
+            setBirthday(formatBirthday(user.birthday || null));
+            setGender(user.gender || "");
+          } else {
+            fetchGoogleInfo();
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting user data:", error);
+        });
+    }
+  }, [auth?.user, fetchGoogleInfo]);
 
   const saveData = useCallback(() => {
     // Save data logic here...
@@ -241,7 +375,6 @@ const OnboardMethod = (props: OnboardPageProps) => {
   return (
     <>
       <h1>Let's Get Started!</h1>
-
       <div style={styles.container}>
         <div style={styles.halfWidth}>
           <div style={styles.paper}>
@@ -281,6 +414,20 @@ const OnboardMethod = (props: OnboardPageProps) => {
               style={styles.input}
             />
           </div>
+          <div>
+            Address Instruction: {addressInstructionStatus ? "✅" : "❌"}
+          </div>
+          <div>
+            Transportation Instruction:{" "}
+            {transportationInstructionStatus ? "✅" : "❌"}
+          </div>
+          <div>
+            Categories Instruction: {categoriesInstructionStatus ? "✅" : "❌"}
+          </div>
+          <div>
+            Social Preferences Instruction:{" "}
+            {socialPreferencesInstructionStatus ? "✅" : "❌"}
+          </div>
         </div>
         <div style={styles.halfWidth}>
           <h3>Onboard your data [Optional]</h3>
@@ -289,7 +436,9 @@ const OnboardMethod = (props: OnboardPageProps) => {
             and give more accurate reccomendations! Follow this tutorial
             first...
           </p>
-          <button onClick={handlePickerOpen}>Open Google Drive Picker</button>
+          <button onClick={handleGoogleDrivePickerOpen}>
+            Open Google Drive Picker
+          </button>
           {loading ? (
             <progress value={undefined} />
           ) : (
@@ -309,6 +458,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
               {selectedTab === 1 && <Box>{newProfileData.workAddress}</Box>}
               {selectedTab === 2 && (
                 <Box>
+                  {JSON.stringify(newProfileData.transportation)}
                   {newProfileData.transportation &&
                     newProfileData.transportation.map(
                       (transportation: TransportationModel) => (

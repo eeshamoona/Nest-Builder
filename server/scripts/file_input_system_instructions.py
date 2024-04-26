@@ -2,8 +2,10 @@ import tempfile
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
+from google.api_core.exceptions import DeadlineExceeded, ResourceExhausted
 import re
 import json
+import time
 
 load_dotenv()
 
@@ -17,17 +19,18 @@ def extract_json_from_output(output):
         # Extracting the JSON string from the regex match
         json_string = match.group(1)
         
-        # Correctly handle escape sequences
-        json_string = json_string.replace(r'\"', '"')  # Unescape escaped double quotes
-        json_string = json_string.replace('\\', '\\\\')  # Escape backslashes
-        json_string = json_string.replace('\\\\\\"', '\\"')  # Correct over-escaped double quotes
+        # Correctly handling escape sequences
+        # First, ensure backslashes are correctly interpreted
+        json_string = json_string.replace('\\\\', '\\')
+        # Then replace escaped double quotes
+        json_string = json_string.replace('\\"', '"')
         
         # Converting the JSON string into a Python dictionary
         try:
             return json.loads(json_string)
         except json.JSONDecodeError as e:
             print("Error decoding JSON:", e)
-            return None
+            raise e
     else:
         print("No JSON found")
         return None
@@ -66,15 +69,35 @@ def generate_content_with_file(file, system_instruction):
 
   response = model.generate_content(["Follow the system instructions", content])
 
-  try:
-    print("Original Response", response.text)
-    newText = extract_json_from_output(response.text)
-  except ValueError:
-    # If the response doesn't contain text, check if the prompt was blocked.
-    print(response.prompt_feedback)
-    # Also check the finish reason to see if the response was blocked.
-    print(response.candidates[0].finish_reason)
-    # If the finish reason was SAFETY, the safety ratings have more details.
-    print(response.candidates[0].safety_ratings)
+  response = None
+
+  for _ in range(2):  # Retry up to 2 times
+      try:
+          response = model.generate_content(["Follow the system instructions", content])
+          print("Original Response", response.text)
+          newText = extract_json_from_output(response.text)
+          break  # If successful, break the loop
+      except DeadlineExceeded:
+          print("Deadline exceeded. Retrying in 1 second...")
+          time.sleep(1)
+      except json.JSONDecodeError:
+          print("JSON decode error. Retrying in 1 second...")
+          time.sleep(1)
+      except ResourceExhausted:
+          print("Resource exhausted. Retrying in 10 second...")
+          time.sleep(10)
+      except ValueError:
+          print("A value error occurred. Retrying in 1 second...")
+          # If the response doesn't contain text, check if the prompt was blocked.
+          if response is not None:
+              print(response.prompt_feedback)
+              # Also check the finish reason to see if the response was blocked.
+              print(response.candidates[0].finish_reason)
+              # If the finish reason was SAFETY, the safety ratings have more details.
+              print(response.candidates[0].safety_ratings)
+          time.sleep(1)  # Wait for 1 second
+  else:  # If all retries fail
+      print("Failed to generate content after 2 attempts.")
+      return None
 
   return newText
