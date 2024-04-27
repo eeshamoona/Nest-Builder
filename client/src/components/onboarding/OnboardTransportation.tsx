@@ -1,8 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
+import { get, ref, set, update } from "firebase/database";
+import { database } from "../../firebase.config";
+import { TransportationModel } from "../../models/TransporationModel";
+import TransportationMethodItem from "../TransportationMethodItem";
+import { Paper } from "@mui/material";
 
-type TransportationMethod = "car" | "bike" | "publicTransport" | "walking";
+type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
 const OnboardTransportation = (props: OnboardPageProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -14,10 +19,11 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
   //TODO: Add min to max radius range in either ft or miles for each transportation method
   const [transportation, setTransportation] = useState({
-    car: { selected: false, radius: 0, color: "yellow" },
-    bike: { selected: false, radius: 0, color: "green" },
-    publicTransport: { selected: false, radius: 0, color: "red" },
     walking: { selected: false, radius: 0, color: "blue" },
+    biking: { selected: false, radius: 0, color: "green" },
+    driving: { selected: false, radius: 0, color: "orange" },
+    bus: { selected: false, radius: 0, color: "red" },
+    train: { selected: false, radius: 0, color: "purple" },
   });
 
   const circlesRef = useRef<google.maps.Circle[]>([]);
@@ -78,7 +84,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
     }
   }, [transportation]);
 
-  const goToAddress = () => {
+  const goToAddress = useCallback(() => {
     const geocoder = new google.maps.Geocoder();
 
     geocoder.geocode({ address: homeAddress }, (results, status) => {
@@ -96,12 +102,41 @@ const OnboardTransportation = (props: OnboardPageProps) => {
         alert("Geocode was not successful for the following reason: " + status);
       }
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeAddress]);
 
-  const saveData = useCallback(() => {
-    // Save data logic here...
+  const saveData = useCallback(async () => {
     console.log("Save Data: ", { homeAddress, transportation });
-  }, [homeAddress, transportation]);
+
+    if (auth?.user) {
+      const updates: TransportationModel[] = Object.entries(transportation).map(
+        ([method, { selected, radius }]) => {
+          return {
+            method,
+            selected,
+            radius,
+          };
+        }
+      );
+
+      const updatePromises = updates.map((transportation) => {
+        const transportationRef = ref(
+          database,
+          `users/${auth.user?.id}/transportations/${transportation.method}`
+        );
+        return set(transportationRef, transportation);
+      });
+
+      try {
+        await Promise.all(updatePromises);
+
+        const userRef = ref(database, `users/${auth.user.id}`);
+        await update(userRef, { homeAddress });
+      } catch (error) {
+        console.error("Error updating user data:", error);
+      }
+    }
+  }, [auth?.user, homeAddress, transportation]);
 
   useEffect(() => {
     props.registerSave(saveData);
@@ -109,18 +144,62 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
   useEffect(() => {
     //TODO: Get user's home address from the database
+    if (auth?.user) {
+      const transportationRef = ref(
+        database,
+        `users/${auth.user.id}/transportations`
+      );
+      get(transportationRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const transportationData = snapshot.val();
+          console.log("Transportation Data: ", transportationData);
+
+          setTransportation((prevState) => {
+            const updatedTransportation: typeof transportation = {
+              ...prevState,
+            };
+
+            Object.entries(transportationData).forEach(([key, value]) => {
+              if (key in updatedTransportation && typeof value === "object") {
+                updatedTransportation[
+                  key as keyof typeof updatedTransportation
+                ] = {
+                  ...updatedTransportation[
+                    key as keyof typeof updatedTransportation
+                  ],
+                  ...value,
+                };
+              }
+            });
+
+            return updatedTransportation;
+          });
+        }
+      });
+
+      const userRef = ref(database, `users/${auth.user.id}`);
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          if (userData.homeAddress) {
+            setHomeAddress(userData.homeAddress);
+            goToAddress();
+          }
+        }
+      });
+    }
+
     if (mapRef.current) {
       const mapOptions: google.maps.MapOptions = {
         center: { lat: 37.422, lng: -122.084 },
-        zoom: 15,
+        zoom: 13,
         mapId: auth?.user?.id || "",
       };
 
       mapInstance.current = new google.maps.Map(mapRef.current, mapOptions);
       goToAddress();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth?.user, goToAddress]);
 
   useEffect(() => {
     createCircles();
@@ -153,8 +232,8 @@ const OnboardTransportation = (props: OnboardPageProps) => {
     },
     sidebar: {
       marginLeft: "1rem",
+      padding: " 0 1rem",
       height: "100%",
-      backgroundColor: "lightgray",
     },
     label: (color: string) => ({
       display: "block",
@@ -189,49 +268,25 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
           <div ref={mapRef} style={styles.map}></div>
         </div>
-        <div style={styles.sidebar}>
-          <h5>Transportation Methods</h5>
+        <Paper style={styles.sidebar}>
+          <h3>Transportation Methods</h3>
           {Object.entries(transportation).map(
             ([method, { selected, radius }]) => {
               const transportationMethod = method as TransportationMethod;
               return (
-                <div key={method} style={styles.container}>
-                  <label
-                    style={styles.label(
-                      transportation[transportationMethod].color
-                    )}
-                  >
-                    <input
-                      type="checkbox"
-                      name={method}
-                      checked={selected}
-                      onChange={handleCheckboxChange}
-                      style={styles.checkbox}
-                    />
-                    {method}
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    step={0.1}
-                    max="10"
-                    name={method}
-                    value={radius}
-                    onChange={handleSliderChange}
-                    style={styles.range}
-                  />
-                  <label
-                    style={styles.label(
-                      transportation[transportationMethod].color
-                    )}
-                  >
-                    {radius} miles
-                  </label>
-                </div>
+                <TransportationMethodItem
+                  key={method}
+                  method={method}
+                  selected={selected}
+                  radius={radius}
+                  color={transportation[transportationMethod].color}
+                  handleCheckboxChange={handleCheckboxChange}
+                  handleSliderChange={handleSliderChange}
+                />
               );
             }
           )}
-        </div>
+        </Paper>
       </div>
     </>
   );

@@ -32,7 +32,7 @@ const defaultProfile: Profile = {
 
 const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
-  const [birthday, setBirthday] = useState<string>("");
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const [gender, setGender] = useState<string>("");
   const [openPicker] = GoogleDrivePicker();
   const [loading, setLoading] = useState(false);
@@ -102,6 +102,16 @@ const OnboardMethod = (props: OnboardPageProps) => {
         if (auth?.user) {
           const updates: TransportationModel[] =
             transportationData.transportation;
+
+          //first clear any existing transportation
+          const userRef = ref(
+            database,
+            `users/${auth.user.id}/transportations`
+          );
+          update(userRef, {}).catch((error) => {
+            console.error("Error updating user data:", error);
+          });
+
           updates.forEach((transportation) => {
             const userRef = ref(
               database,
@@ -134,6 +144,13 @@ const OnboardMethod = (props: OnboardPageProps) => {
       console.log("Categories Data: ", categoriesData);
       if (auth?.user) {
         const updates: CategoryModel[] = categoriesData.categories;
+
+        //first clear any existing categories
+        const userRef = ref(database, `users/${auth.user.id}/categories`);
+        update(userRef, {}).catch((error) => {
+          console.error("Error updating user data:", error);
+        });
+
         updates.forEach((category) => {
           const userRef = ref(
             database,
@@ -164,6 +181,16 @@ const OnboardMethod = (props: OnboardPageProps) => {
       if (auth?.user) {
         const updates: SocialPreferenceModel[] =
           socialPreferencesData.socialPreferences;
+
+        //first clear any existing social preferences
+        const userRef = ref(
+          database,
+          `users/${auth.user.id}/socialPreferences`
+        );
+        update(userRef, {}).catch((error) => {
+          console.error("Error updating user data:", error);
+        });
+
         updates.forEach((socialPreference) => {
           const userRef = ref(
             database,
@@ -305,7 +332,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
         console.log("FOUND AN ADDRESS: ", userAddresses);
       }
 
-      setBirthday(formatBirthday(userBirthday));
+      setBirthday(userBirthday);
       setGender(userGender);
     }
   }, [birthday, gender]);
@@ -317,10 +344,12 @@ const OnboardMethod = (props: OnboardPageProps) => {
         .then((snapshot) => {
           if (snapshot.exists()) {
             const user = snapshot.val();
-            setBirthday(formatBirthday(user.birthday || null));
-            setGender(user.gender || "");
-          } else {
-            fetchGoogleInfo();
+            if (user.birthday && user.gender) {
+              setBirthday(user.birthday);
+              setGender(user.gender);
+            } else {
+              fetchGoogleInfo();
+            }
           }
         })
         .catch((error) => {
@@ -332,7 +361,13 @@ const OnboardMethod = (props: OnboardPageProps) => {
   const saveData = useCallback(() => {
     // Save data logic here...
     console.log("Save Data: ", { birthday: birthday, gender: gender });
-  }, [birthday, gender]);
+    if (auth?.user) {
+      const userRef = ref(database, `users/${auth.user.id}`);
+      update(userRef, { birthday: birthday, gender: gender }).catch((error) => {
+        console.error("Error updating user data:", error);
+      });
+    }
+  }, [auth?.user, birthday, gender]);
 
   useEffect(() => {
     props.registerSave(saveData);
@@ -402,8 +437,8 @@ const OnboardMethod = (props: OnboardPageProps) => {
             <input
               type="text"
               placeholder="Birthday"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
+              value={formatBirthday(birthday)}
+              onChange={(e) => setBirthday(new Date(e.target.value))}
               style={styles.input}
             />
             <input

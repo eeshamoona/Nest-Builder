@@ -52,9 +52,6 @@ def generate_profile_route():
     result = generate_content_with_file(file, system_instruction)
   except Exception as e:
     raise
-
-  print("Result MAN:", result)
-
   return result
 # Route for seeing a data
 @app.route('/')

@@ -32,7 +32,7 @@ export function createTransportationInstruction() {
   return `
     "transportation": [
       {
-        "method": "string", // The method of transportation (e.g., "walking", "biking", "driving", "train"...)
+        "method": "string", // The method of transportation (e.g., "walking", "biking", "driving", "train", "bus",...)
         "selected": "boolean",  // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, 'radius' will not be applicable
         "radius": "number" // Numeric value in miles representing the travel radius, applicable if 'selected' is true
       },
@@ -46,7 +46,7 @@ export function createCategoriesInstruction() {
     "categories": [
       {
         "title": "string", // The name of the category, such as 'restaurant', 'entertainment', or 'shopping'. This title is used to classify the type of destinations or interests for recommendations.
-        "userPreferences": "string", // A detailed description of the user's preferences within this category, based on analysis of past behavior and expressed interests. This might include preferred cuisine types in restaurants or favorite genres in entertainment.
+        "userPreferences": "string", // A detailed narrative that captures the user’s specific likes, dislikes, and inclinations within this category, synthesized from historical data and explicit user inputs. This section should provide a rich, nuanced profile that aids in tailoring recommendations more precisely. It may include preferred brands, frequency of visits, typical spending per visit, favored times for visits, and any particular attributes or services that resonate with the user."
         "environmentDescriptors": ["string"], // An array of adjectives that describe the desired ambiance or environment of places in this category, such as 'lively', 'quiet', 'family-friendly', or 'romantic'.
         "relatedSubcategories": ["string"], // A list of subcategories that further define the main category, such as specific types of cuisines under the 'restaurant' category or different forms of entertainment like 'cinema' or 'live music'.
         "costPreference": "string", // A description of the user's budgetary preference for this category, represented as a price range using symbols like '$' for inexpensive through '$$$$' for high end.

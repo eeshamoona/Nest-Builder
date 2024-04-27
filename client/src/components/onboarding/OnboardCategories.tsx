@@ -75,7 +75,7 @@ const OnboardCategories = (props: OnboardPageProps) => {
       <div style={styles.profileContainer}>
         <div style={styles.scrollableContainer}>
           {originalProfileData
-            .sort((a, b) => a.title.localeCompare(b.title))
+            .sort((a, b) => b.confidence - a.confidence)
             .map((category) => (
               <CategoryCard key={category.title} {...category} />
             ))}

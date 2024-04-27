@@ -48,6 +48,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           lastLogin: new Date(metadata.lastSignInTime || ""),
           homeAddress: "",
           workAddress: "",
+          birthday: null,
+          gender: "",
         });
       } else {
         setUser(null);

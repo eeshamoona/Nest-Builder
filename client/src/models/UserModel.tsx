@@ -7,6 +7,8 @@ type User = {
   lastLogin: Date;
   homeAddress: string;
   workAddress: string;
+  birthday: Date | null;
+  gender: string;
 };
 
 export default User;
