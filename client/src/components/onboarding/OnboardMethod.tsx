@@ -253,6 +253,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
   //TODO: Make this into a service in FullOnboardingProfileService
   const fetchGoogleInfo = useCallback(async () => {
+    console.log("Entered fetchGoogleInfo");
     const token = localStorage.getItem("accessToken");
     if (!token) {
       console.error("No token found");
@@ -260,6 +261,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     }
 
     if (!birthday || !gender) {
+      console.log("Calling fetch-people-info");
       const response = await fetch("http://localhost:5000/fetch-people-info", {
         method: "POST",
         headers: {
@@ -315,12 +317,22 @@ const OnboardMethod = (props: OnboardPageProps) => {
       const userRef = ref(database, `users/${auth.user.id}`);
       get(userRef)
         .then((snapshot) => {
+          // if (snapshot.exists()) {
+          //   const user = snapshot.val();
+          //   setBirthday(formatBirthday(user.birthday || null));
+          //   setGender(user.gender || "");
+          // } else {
+          //   fetchGoogleInfo();
+          // }
           if (snapshot.exists()) {
             const user = snapshot.val();
-            setBirthday(formatBirthday(user.birthday || null));
-            setGender(user.gender || "");
-          } else {
-            fetchGoogleInfo();
+            if (user.birthday) {
+              setBirthday(formatBirthday(user.birthday || null));
+              setGender(user.gender || "");
+            }
+            else {
+              fetchGoogleInfo();
+            }
           }
         })
         .catch((error) => {

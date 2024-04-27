@@ -12,6 +12,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { Loader } from "@googlemaps/js-api-loader";
 import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
+import NestPage from "./pages/NestPage";
 
 function App() {
   useEffect(() => {
@@ -71,6 +72,14 @@ function App() {
               element={
                 <Protected>
                   <OnboardingPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/my-nest"
+              element={
+                <Protected>
+                  <NestPage />
                 </Protected>
               }
             />
