@@ -22,15 +22,15 @@ const LandingPage: React.FC = () => {
     }
   }, [auth, navigate]);
 
-  const styles: { [key: string]: React.CSSProperties } = {
+  const styles = {
     section: {
       height: "100vh",
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "column" as "column",
       justifyContent: "center",
       alignItems: "center",
       padding: "20px",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
       backgroundColor: "#f4f4f4",
       color: "#333",
     },
@@ -45,13 +45,13 @@ const LandingPage: React.FC = () => {
       fontSize: "1em",
     },
     header: {
-      position: "fixed",
+      position: "fixed" as "fixed",
       top: 0,
       height: "5vh",
       width: "100%",
       zIndex: 1000,
       padding: "10px 20px",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
       backgroundColor: "#f4f4f4",
     },
     nav: {
@@ -72,7 +72,7 @@ const LandingPage: React.FC = () => {
       fontSize: "1.2em",
     },
     footer: {
-      position: "fixed",
+      position: "fixed" as "fixed",
       left: 0,
       bottom: 0,
       width: "100%",
@@ -95,10 +95,10 @@ const LandingPage: React.FC = () => {
             }}
           >
             <p>
-              Moving to a new city is overwhelming. Nested, powered by
-              Gemini AI and Google Maps, eliminates stress by finding essential
-              amenities near you. From gyms to grocery stores, explore options
-              based on location, budget, and lifestyle.
+              Moving to a new city is overwhelming. Nested, powered by Gemini AI
+              and Google Maps, eliminates stress by finding essential amenities
+              near you. From gyms to grocery stores, explore options based on
+              location, budget, and lifestyle.
             </p>
             <h3> Find your happily ever after, build your nest.</h3>
           </div>

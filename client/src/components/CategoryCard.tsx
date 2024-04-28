@@ -10,34 +10,6 @@ const styles = {
     margin: "20px",
     backgroundColor: "#F3F5EA",
   },
-  title: {
-    fontSize: "1.5em",
-    color: "#333",
-  },
-  description: {
-    fontSize: "1em",
-    color: "#666",
-  },
-  label: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-  token: {
-    display: "inline-block",
-    margin: "5px",
-    padding: "5px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-  },
-  titleContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  confidence: {
-    marginLeft: "10px",
-    fontSize: "0.8em",
-  },
 };
 
 const CategoryCard = (category: CategoryModel) => {

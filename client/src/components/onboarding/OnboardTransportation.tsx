@@ -10,13 +10,12 @@ import { Paper, Stack, TextField, Typography } from "@mui/material";
 type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
 const OnboardTransportation = (props: OnboardPageProps) => {
+  const auth = UserAuth();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const [homeAddress, setHomeAddress] = useState(
     "1600 Amphitheatre Parkway, Mountain View, CA"
   );
-  const auth = UserAuth();
-
   //TODO: Add min to max radius range in either ft or miles for each transportation method
   const [transportation, setTransportation] = useState({
     walking: { selected: false, radius: 0, color: "blue" },
@@ -144,7 +143,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
   }, [props, props.registerSave, saveData]);
 
   useEffect(() => {
-    //TODO: Get user's home address from the database
     if (auth?.user) {
       const transportationRef = ref(
         database,
@@ -207,11 +205,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
   }, [createCircles, transportation]);
 
   const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "row" as "row",
-      alignItems: "center",
-    },
     map: {
       width: "45vw",
       height: "60vh",
@@ -226,10 +219,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
     input: {
       flex: 1,
     },
-    innerContainer: {
-      display: "flex",
-      flexDirection: "column" as "column",
-    },
     sidebar: {
       flex: 1,
       marginRight: "1rem",
@@ -238,18 +227,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       flexDirection: "column" as "column",
       borderRadius: "0.5rem",
       backgroundColor: "#F3F5EA",
-    },
-    label: (color: string) => ({
-      display: "block",
-      color: color,
-    }),
-    checkbox: {
-      marginRight: "10px",
-    },
-    range: {
-      width: "100%",
-      display: "block",
-      marginBottom: "10px",
     },
   };
 

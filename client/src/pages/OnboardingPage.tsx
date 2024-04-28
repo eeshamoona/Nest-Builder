@@ -1,4 +1,4 @@
-import { useState, Suspense, useCallback, useRef } from "react";
+import { useState, Suspense, useCallback, useRef, useEffect } from "react";
 import {
   Stepper,
   Step,
@@ -12,6 +12,7 @@ import OnboardPreferences from "../components/onboarding/OnboardPreferences";
 import OnboardCategories from "../components/onboarding/OnboardCategories";
 import OnboardReview from "../components/onboarding/OnboardReview";
 import OnboardMethod from "../components/onboarding/OnboardMethod";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   "Intro",
@@ -21,28 +22,14 @@ const steps = [
   "Categories",
 ];
 
-const getStepContent = (
-  step: number,
-  registerSave: (saveData: () => void) => void
-) => {
-  switch (step) {
-    case 0:
-      return <OnboardMethod registerSave={registerSave} />;
-    case 1:
-      return <OnboardTransportation registerSave={registerSave} />;
-    case 2:
-      return <OnboardPreferences registerSave={registerSave} />;
-    case 3:
-      return <OnboardReview registerSave={registerSave} />;
-    case 4:
-      return <OnboardCategories registerSave={registerSave} />;
-
-    default:
-      return "Unknown step";
-  }
+const CustomStepIcon = (props: any) => {
+  return (
+    <StepIcon {...props} style={{ color: "#082100", cursor: "pointer" }} />
+  );
 };
 
 const OnboardingPage = () => {
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const saveDataRef = useRef<(() => void) | null>(null);
 
@@ -57,15 +44,43 @@ const OnboardingPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  const styles: { [key: string]: React.CSSProperties } = {
+  const getStepContent = (
+    step: number,
+    registerSave: (saveData: () => void) => void
+  ) => {
+    switch (step) {
+      case 0:
+        return <OnboardMethod registerSave={registerSave} />;
+      case 1:
+        return <OnboardTransportation registerSave={registerSave} />;
+      case 2:
+        return <OnboardPreferences registerSave={registerSave} />;
+      case 3:
+        return <OnboardReview registerSave={registerSave} />;
+      case 4:
+        return <OnboardCategories registerSave={registerSave} />;
+      default:
+        return null;
+    }
+  };
+
+  const stepContent = getStepContent(activeStep, registerSave);
+
+  useEffect(() => {
+    if (stepContent === null) {
+      navigate("/");
+    }
+  }, [navigate, stepContent]);
+
+  const styles = {
     container: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "column" as "column",
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
       padding: "0 5rem",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
       backgroundColor: "#f9faf6",
     },
 
@@ -78,17 +93,15 @@ const OnboardingPage = () => {
       color: "#C6EEAA",
       cursor: "pointer",
     },
-    stepLabel: {
-      cursor: "pointer",
-    },
   };
 
-  const CustomStepIcon = (props: any) => {
-    return <StepIcon {...props} style={{ color: "#082100" }} />;
-  };
   return (
     <div style={styles.container}>
-      <Stepper activeStep={activeStep} style={{ marginBottom: "1rem" }}>
+      <Stepper
+        activeStep={activeStep}
+        // alternativeLabel
+        style={{ marginBottom: "1rem", width: "100%" }}
+      >
         {steps.map((label, index) => (
           <Step
             key={label}
@@ -99,17 +112,12 @@ const OnboardingPage = () => {
               }
             }}
           >
-            <StepLabel
-              StepIconComponent={CustomStepIcon}
-              style={styles.stepLabel}
-            >
-              {label}
-            </StepLabel>
+            <StepLabel StepIconComponent={CustomStepIcon}>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>
       <Suspense fallback={<CircularProgress />}>
-        {getStepContent(activeStep, registerSave)}
+        {stepContent || <div>Unknown step</div>}
       </Suspense>
       <div>
         <Button style={styles.button} onClick={handleNext}>

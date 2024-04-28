@@ -31,9 +31,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
+  const [openPicker] = GoogleDrivePicker();
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [gender, setGender] = useState<string>("");
-  const [openPicker] = GoogleDrivePicker();
   const [loading, setLoading] = useState(false);
   const [addressInstructionStatus, setAddressInstructionStatus] = useState<
     "loading" | "done" | "error"
@@ -47,6 +47,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     setSocialPreferencesInstructionStatus,
   ] = useState<"loading" | "done" | "error">("loading");
 
+  // Function to generate the address data and save it to the database
   const getAddressData = useCallback(
     async (file: any) => {
       try {
@@ -79,6 +80,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     [auth?.user]
   );
 
+  // Function to generate the transportation data and save it to the database
   const getTransportationData = useCallback(
     async (file: any) => {
       try {
@@ -120,6 +122,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     [auth?.user]
   );
 
+  // Function to generate the categories data and save it to the database
   const getCategoriesData = useCallback(
     async (file: any) => {
       try {
@@ -157,6 +160,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     [auth?.user]
   );
 
+  // Function to generate the social preferences data and save it to the database
   const getSocialPreferencesData = useCallback(
     async (file: any) => {
       try {
@@ -255,14 +259,13 @@ const OnboardMethod = (props: OnboardPageProps) => {
       showUploadFolders: true,
       supportDrives: true,
       multiselect: false,
-      // Other configuration options...
+
       callbackFunction: async (data) => {
         if (data.action === "cancel") {
           console.log("User clicked cancel/close button");
         } else if (data.docs && data.docs.length > 0) {
           console.log(data);
 
-          // Get the file's metadata and download URL
           const file = data.docs[0];
           console.log("File metadata: ", file);
 
@@ -293,6 +296,17 @@ const OnboardMethod = (props: OnboardPageProps) => {
     });
   };
 
+  const saveData = useCallback(() => {
+    // Save data logic here...
+    console.log("Save Data: ", { birthday: birthday, gender: gender });
+    if (auth?.user) {
+      const userRef = ref(database, `users/${auth.user.id}`);
+      update(userRef, { birthday: birthday, gender: gender }).catch((error) => {
+        console.error("Error updating user data:", error);
+      });
+    }
+  }, [auth?.user, birthday, gender]);
+
   //TODO: Make this into a service in FullOnboardingProfileService
   const fetchGoogleInfo = useCallback(async () => {
     const token = localStorage.getItem("accessToken");
@@ -322,7 +336,6 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
       let userBirthday = null;
       let userGender = null;
-      let userAddresses = [];
 
       if (googleInfo?.birthdays) {
         for (const birthday of googleInfo.birthdays) {
@@ -339,12 +352,6 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
       if (googleInfo?.genders) {
         userGender = googleInfo.genders[0]?.formattedValue;
-      }
-
-      if (googleInfo?.addresses) {
-        //TODO: Confirm this is the way to destructure the address
-        userAddresses = googleInfo.addresses[0]?.formattedValue;
-        console.log("FOUND AN ADDRESS: ", userAddresses);
       }
 
       setBirthday(userBirthday);
@@ -373,17 +380,6 @@ const OnboardMethod = (props: OnboardPageProps) => {
     }
   }, [auth?.user, fetchGoogleInfo]);
 
-  const saveData = useCallback(() => {
-    // Save data logic here...
-    console.log("Save Data: ", { birthday: birthday, gender: gender });
-    if (auth?.user) {
-      const userRef = ref(database, `users/${auth.user.id}`);
-      update(userRef, { birthday: birthday, gender: gender }).catch((error) => {
-        console.error("Error updating user data:", error);
-      });
-    }
-  }, [auth?.user, birthday, gender]);
-
   useEffect(() => {
     props.registerSave(saveData);
   }, [props, props.registerSave, saveData]);
@@ -405,22 +401,6 @@ const OnboardMethod = (props: OnboardPageProps) => {
       padding: "1.25rem",
       borderRadius: "0.5rem",
       backgroundColor: "#F3F5EA",
-    },
-    input: {
-      width: "100%",
-      padding: "10px",
-      marginBottom: "20px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-    },
-    button: {
-      backgroundColor: "#007BFF",
-      color: "white",
-      padding: "10px 20px",
-      fontSize: "1rem",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
     },
     statusContainer: {
       display: "flex",

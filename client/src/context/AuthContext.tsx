@@ -88,12 +88,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    provider.addScope("https://www.googleapis.com/auth/user.addresses.read");
     provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
     provider.addScope("https://www.googleapis.com/auth/user.gender.read");
-    provider.addScope("https://www.googleapis.com/auth/user.organization.read");
-    provider.addScope("https://www.googleapis.com/auth/userinfo.email");
-    provider.addScope("https://www.googleapis.com/auth/userinfo.profile");
     provider.addScope("https://www.googleapis.com/auth/drive");
 
     setLoading(true);

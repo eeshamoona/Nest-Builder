@@ -18,7 +18,10 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 
+const GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
+
 const OnboardReview = (props: OnboardPageProps) => {
+  const auth = UserAuth();
   const [lifestylePreferences, setLifestylePreferences] = useState<string>();
   const [addressParts, setAddressParts] = useState<string[]>(); // split the user's address into street, city, state, and zip code
   const [transportationPreferences, setTransportationPreferences] =
@@ -27,7 +30,6 @@ const OnboardReview = (props: OnboardPageProps) => {
     useState<SocialPreferenceModel[]>();
   const [additionalInfo, setAdditionalInfo] = useState<string>();
   const [user, setUser] = useState<User>();
-  const auth = UserAuth();
 
   useEffect(() => {
     if (auth?.user) {
@@ -113,8 +115,6 @@ const OnboardReview = (props: OnboardPageProps) => {
     },
   };
 
-  const geminiInstructions: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
-
   return (
     <div style={styles.container}>
       <Typography variant="h4" sx={{ marginTop: "1rem" }}>
@@ -161,7 +161,10 @@ const OnboardReview = (props: OnboardPageProps) => {
           <Stack direction={"row"} spacing={1}>
             <AutoAwesomeIcon />
             <Typography variant="subtitle2">Generated with Gemini</Typography>
-            <Tooltip sx={{ cursor: "pointer" }} title={geminiInstructions}>
+            <Tooltip
+              sx={{ cursor: "pointer" }}
+              title={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
+            >
               <InfoRoundedIcon />
             </Tooltip>
           </Stack>

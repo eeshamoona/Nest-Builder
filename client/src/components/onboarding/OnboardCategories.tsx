@@ -14,7 +14,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
   const auth = UserAuth();
 
   useEffect(() => {
-    //TODO: instead of getting categories from the backend get it from the file uploaded
     const fetchCategories = async () => {
       if (auth?.user) {
         const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
@@ -37,8 +36,7 @@ const OnboardCategories = (props: OnboardPageProps) => {
   }, [auth?.user]);
 
   const saveData = useCallback(() => {
-    // Save data logic here...
-    console.log("Save Data: ", { originalProfileData });
+    console.log("Need to still save categories: ", { originalProfileData });
   }, [originalProfileData]);
 
   useEffect(() => {
@@ -63,9 +61,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
       flexDirection: "column" as "column",
       gap: "1rem",
       overflowY: "auto" as "auto",
-    },
-    progressBar: {
-      margin: "1rem",
     },
   };
 
