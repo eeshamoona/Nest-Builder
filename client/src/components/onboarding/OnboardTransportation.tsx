@@ -5,7 +5,7 @@ import { get, ref, set, update } from "firebase/database";
 import { database } from "../../firebase.config";
 import { TransportationModel } from "../../models/TransporationModel";
 import TransportationMethodItem from "../TransportationMethodItem";
-import { Paper } from "@mui/material";
+import { Paper, Stack, TextField, Typography } from "@mui/material";
 
 type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
@@ -39,13 +39,14 @@ const OnboardTransportation = (props: OnboardPageProps) => {
     });
   };
 
-  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const method = event.target.name as TransportationMethod;
+  const handleSliderChange = (event: Event, value: number | number[]) => {
+    const target = event.target as HTMLInputElement;
+    const method = target.name as TransportationMethod;
     setTransportation({
       ...transportation,
       [method]: {
         ...transportation[method],
-        radius: Number(event.target.value),
+        radius: Number(value),
       },
     });
   };
@@ -212,8 +213,8 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       alignItems: "center",
     },
     map: {
-      width: "50vw",
-      height: "50vh",
+      width: "45vw",
+      height: "60vh",
     },
     address: {
       display: "flex",
@@ -231,9 +232,13 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       flexDirection: "column" as "column",
     },
     sidebar: {
-      marginLeft: "1rem",
-      padding: " 0 1rem",
+      flex: 1,
+      marginRight: "1rem",
       height: "100%",
+      display: "flex",
+      flexDirection: "column" as "column",
+      borderRadius: "0.5rem",
+      backgroundColor: "#F3F5EA",
     },
     label: (color: string) => ({
       display: "block",
@@ -251,43 +256,65 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
   return (
     <>
-      <h1>Onboard Transportation</h1>
+      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+        How Do You Like to Get Around?
+      </Typography>
 
-      <div style={styles.container}>
-        <div style={styles.innerContainer}>
-          <div style={styles.address}>
-            <label htmlFor="homeAddress">Home Address</label>
-            <input
-              type="text"
-              style={styles.input}
-              value={homeAddress}
-              onChange={(e) => setHomeAddress(e.target.value)}
-            />
-            <button onClick={goToAddress}>Go</button>
-          </div>
-
-          <div ref={mapRef} style={styles.map}></div>
+      <Stack
+        direction={"column"}
+        spacing={2}
+        width={"100%"}
+        sx={{ marginTop: "1rem" }}
+      >
+        <div style={styles.address}>
+          <TextField
+            label="Home Address"
+            style={styles.input}
+            value={homeAddress}
+            onChange={(e) => setHomeAddress(e.target.value)}
+          />
+          <button onClick={goToAddress}>Go</button>
         </div>
-        <Paper style={styles.sidebar}>
-          <h3>Transportation Methods</h3>
-          {Object.entries(transportation).map(
-            ([method, { selected, radius }]) => {
-              const transportationMethod = method as TransportationMethod;
-              return (
-                <TransportationMethodItem
-                  key={method}
-                  method={method}
-                  selected={selected}
-                  radius={radius}
-                  color={transportation[transportationMethod].color}
-                  handleCheckboxChange={handleCheckboxChange}
-                  handleSliderChange={handleSliderChange}
-                />
-              );
-            }
-          )}
-        </Paper>
-      </div>
+        <Stack direction={"row"} spacing={2}>
+          <Paper style={styles.sidebar}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", margin: "1rem", marginBottom: 0 }}
+            >
+              Transportation Methods
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                alignSelf: "center",
+                margin: "1rem",
+                marginBottom: "1.5rem",
+              }}
+            >
+              Select the transportation methods you use and how far you're
+              willing to travel with each method. We'll use this information to
+              help you find the best places to visit.
+            </Typography>
+            {Object.entries(transportation).map(
+              ([method, { selected, radius }]) => {
+                const transportationMethod = method as TransportationMethod;
+                return (
+                  <TransportationMethodItem
+                    key={method}
+                    method={method}
+                    selected={selected}
+                    radius={radius}
+                    color={transportation[transportationMethod].color}
+                    handleCheckboxChange={handleCheckboxChange}
+                    handleSliderChange={handleSliderChange}
+                  />
+                );
+              }
+            )}
+          </Paper>
+          <div ref={mapRef} style={styles.map}></div>
+        </Stack>
+      </Stack>
     </>
   );
 };

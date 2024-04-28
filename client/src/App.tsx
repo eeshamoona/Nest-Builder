@@ -12,6 +12,14 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { Loader } from "@googlemaps/js-api-loader";
 import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import "./App.css";
+
+const THEME = createTheme({
+  typography: {
+    fontFamily: `"Product Sans Regular", "Product Sans Bold", "Product Sans Italic", "Product Sans Light"`,
+  },
+});
 
 function App() {
   useEffect(() => {
@@ -28,60 +36,61 @@ function App() {
       console.log("Google Maps Marker API loaded");
     });
   }, []);
+
   return (
     <div className="App">
-      <AuthContextProvider>
-        {/* <OAuthContextProvider> */}
-        <Router>
-          <Routes>
-            <Route
-              path="/dashboard"
-              element={
-                <Protected>
-                  <Dashboard />
-                </Protected>
-              }
-            />
-            <Route
-              path="/search-prompt/:categoryTitle?"
-              element={
-                <Protected>
-                  <SearchPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/categories"
-              element={
-                <Protected>
-                  <CategoriesPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/user-profile"
-              element={
-                <Protected>
-                  <UserProfilePage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/onboarding"
-              element={
-                <Protected>
-                  <OnboardingPage />
-                </Protected>
-              }
-            />
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<SignInPage />} />
-            <Route path="/not-found" element={<NotFoundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Router>
-        {/* </OAuthContextProvider> */}
-      </AuthContextProvider>
+      <ThemeProvider theme={THEME}>
+        <AuthContextProvider>
+          <Router>
+            <Routes>
+              <Route
+                path="/dashboard"
+                element={
+                  <Protected>
+                    <Dashboard />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/search-prompt/:categoryTitle?"
+                element={
+                  <Protected>
+                    <SearchPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/categories"
+                element={
+                  <Protected>
+                    <CategoriesPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/user-profile"
+                element={
+                  <Protected>
+                    <UserProfilePage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/onboarding"
+                element={
+                  <Protected>
+                    <OnboardingPage />
+                  </Protected>
+                }
+              />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<SignInPage />} />
+              <Route path="/not-found" element={<NotFoundPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Router>
+        </AuthContextProvider>
+      </ThemeProvider>
     </div>
   );
 }

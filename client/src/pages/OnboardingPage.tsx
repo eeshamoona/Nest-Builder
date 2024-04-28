@@ -1,5 +1,12 @@
 import { useState, Suspense, useCallback, useRef } from "react";
-import { Stepper, Step, StepLabel, CircularProgress } from "@mui/material";
+import {
+  Stepper,
+  Step,
+  StepLabel,
+  CircularProgress,
+  StepIcon,
+  Button,
+} from "@mui/material";
 import OnboardTransportation from "../components/onboarding/OnboardTransportation";
 import OnboardPreferences from "../components/onboarding/OnboardPreferences";
 import OnboardCategories from "../components/onboarding/OnboardCategories";
@@ -57,8 +64,9 @@ const OnboardingPage = () => {
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
-      padding: "20px",
+      padding: "0 5rem",
       boxSizing: "border-box",
+      backgroundColor: "#f9faf6",
     },
 
     button: {
@@ -66,17 +74,21 @@ const OnboardingPage = () => {
       padding: "10px 20px",
       borderRadius: "5px",
       border: "none",
-      backgroundColor: "#007BFF",
-      color: "white",
+      backgroundColor: "#082100",
+      color: "#C6EEAA",
       cursor: "pointer",
     },
     stepLabel: {
       cursor: "pointer",
     },
   };
+
+  const CustomStepIcon = (props: any) => {
+    return <StepIcon {...props} style={{ color: "#082100" }} />;
+  };
   return (
     <div style={styles.container}>
-      <Stepper activeStep={activeStep}>
+      <Stepper activeStep={activeStep} style={{ marginBottom: "1rem" }}>
         {steps.map((label, index) => (
           <Step
             key={label}
@@ -87,7 +99,12 @@ const OnboardingPage = () => {
               }
             }}
           >
-            <StepLabel style={styles.stepLabel}>{label}</StepLabel>
+            <StepLabel
+              StepIconComponent={CustomStepIcon}
+              style={styles.stepLabel}
+            >
+              {label}
+            </StepLabel>
           </Step>
         ))}
       </Stepper>
@@ -95,9 +112,9 @@ const OnboardingPage = () => {
         {getStepContent(activeStep, registerSave)}
       </Suspense>
       <div>
-        <button style={styles.button} onClick={handleNext}>
+        <Button style={styles.button} onClick={handleNext}>
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

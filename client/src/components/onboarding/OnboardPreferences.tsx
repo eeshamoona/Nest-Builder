@@ -4,7 +4,8 @@ import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import { UserAuth } from "../../context/AuthContext";
 import { get, ref, update } from "firebase/database";
 import { database } from "../../firebase.config";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { Grid } from "@mui/material";
 
 const OnboardPreferences = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -64,25 +65,31 @@ const OnboardPreferences = (props: OnboardPageProps) => {
   }, [props, props.registerSave, saveData]);
 
   return (
-    <div>
-      <h1>Onboard Preferences</h1>
-      {socialPreferences.map((preference, index) => (
-        <Card
-          key={index}
-          onClick={() => handleCardClick(index)}
-          style={{
-            backgroundColor: preference.selected ? "lightgray" : "white",
-          }}
-          title={preference.description ?? ""}
-        >
-          <CardContent>
-            <Typography variant="h5" component="div">
-              {preference.name}
-            </Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <>
+      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+        What is important to you?
+      </Typography>
+      <Typography variant="body2" sx={{ marginBottom: "2rem" }}>
+        We use these lifestyle preferences to help you narrow down the best
+        places to visit, so please select at least 3. You can always change
+        these later.
+      </Typography>
+
+      <Grid container spacing={2} sx={{ marginBottom: "1rem" }}>
+        {socialPreferences.map((preference, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Button
+              variant={preference.selected ? "contained" : "outlined"}
+              color="success"
+              onClick={() => handleCardClick(index)}
+              fullWidth
+            >
+              <Typography variant="body1">{preference.name}</Typography>
+            </Button>
+          </Grid>
+        ))}
+      </Grid>
+    </>
   );
 };
 

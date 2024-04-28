@@ -26,6 +26,8 @@ import { ref, set, update, get } from "firebase/database";
 import { database } from "../../firebase.config";
 import UserModel from "../../models/UserModel";
 import googleDriveIcon from "../../assets/icons8-google-drive.svg";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -390,7 +392,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
     container: {
       display: "flex",
       flexDirection: "row" as "row",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
       padding: "20px",
     },
     halfWidth: {
@@ -400,9 +402,9 @@ const OnboardMethod = (props: OnboardPageProps) => {
     paper: {
       display: "flex",
       flexDirection: "column" as "column",
-      padding: "1rem",
-      gap: "0.5rem",
+      padding: "1.25rem",
       borderRadius: "0.5rem",
+      backgroundColor: "#F3F5EA",
     },
     input: {
       width: "100%",
@@ -420,6 +422,13 @@ const OnboardMethod = (props: OnboardPageProps) => {
       borderRadius: "4px",
       cursor: "pointer",
     },
+    statusContainer: {
+      display: "flex",
+      flexDirection: "row" as "row",
+      alignItems: "center",
+      gap: "0.5rem",
+    },
+    statusTitle: { fontWeight: "bold", color: "dimgray" },
   };
 
   return (
@@ -431,22 +440,24 @@ const OnboardMethod = (props: OnboardPageProps) => {
         Nested leverages Gemini 1.5 (Google’s LLM) to find places in your new
         city that can facilitate your lifestyle.
       </Typography>
-      <Typography variant="body2" sx={{ marginBottom: "1rem" }}>
+      <Typography variant="body2" gutterBottom>
         First, please answer some questions so Nested can provide better
         suggestions:
       </Typography>
       <div style={styles.container}>
         <div style={styles.halfWidth}>
           <Paper variant="outlined" style={styles.paper}>
-            <Typography variant="h5">Basic Info</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              Basic Info
+            </Typography>
             <Typography
-              variant="subtitle2"
-              sx={{ alignSelf: "center", marginBottom: "1rem" }}
+              variant="body2"
+              sx={{ alignSelf: "center", marginBottom: "1.5rem" }}
             >
               We are pulling this information from your Google Account. If it is
               incorrect, please update it here.
             </Typography>
-            <Stack direction={"row"} spacing={2}>
+            <Stack direction={"row"} spacing={2} sx={{ alignItems: "center" }}>
               <Avatar
                 sx={{ width: 100, height: 100 }}
                 src={auth?.user?.photoURL}
@@ -492,10 +503,12 @@ const OnboardMethod = (props: OnboardPageProps) => {
         </div>
         <div style={styles.halfWidth}>
           <Paper variant="outlined" style={styles.paper}>
-            <Typography variant="h5">AI Onboarding [Optional]</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              AI Onboarding [Optional]
+            </Typography>
             <Typography
-              variant="subtitle2"
-              sx={{ alignSelf: "center", marginBottom: "1rem" }}
+              variant="body2"
+              sx={{ alignSelf: "center", marginBottom: "1.5rem" }}
             >
               Adding your Google Takeout data helps Nested autofill onboarding
               questions to save you time and is not stored. You also have the
@@ -518,59 +531,76 @@ const OnboardMethod = (props: OnboardPageProps) => {
                 />
               }
             >
-              Upload Google Takeout Data
+              <Typography variant="h6">Upload Google Takeout Data</Typography>
             </Button>
 
             {loading ? (
-              <Stack spacing={2}>
-                <Typography variant="body1">
-                  {addressInstructionStatus === "loading" && (
-                    <CircularProgress size={20} />
-                  )}
-                  {addressInstructionStatus === "done" && (
-                    <span style={{ color: "green" }}>✅</span>
-                  )}
-                  {addressInstructionStatus === "error" && (
-                    <span style={{ color: "red" }}>❌</span>
-                  )}{" "}
-                  Location Information
-                </Typography>
-                <Typography variant="body1">
-                  {transportationInstructionStatus === "loading" && (
-                    <CircularProgress size={20} />
-                  )}
-                  {transportationInstructionStatus === "done" && (
-                    <span style={{ color: "green" }}>✅</span>
-                  )}
-                  {transportationInstructionStatus === "error" && (
-                    <span style={{ color: "red" }}>❌</span>
-                  )}{" "}
-                  Transportation Information
-                </Typography>
-                <Typography variant="body1">
-                  {categoriesInstructionStatus === "loading" && (
-                    <CircularProgress size={20} />
-                  )}
-                  {categoriesInstructionStatus === "done" && (
-                    <span style={{ color: "green" }}>✅</span>
-                  )}
-                  {categoriesInstructionStatus === "error" && (
-                    <span style={{ color: "red" }}>❌</span>
-                  )}{" "}
-                  Categories Information
-                </Typography>
-                <Typography variant="body1">
-                  {socialPreferencesInstructionStatus === "loading" && (
-                    <CircularProgress size={20} />
-                  )}
-                  {socialPreferencesInstructionStatus === "done" && (
-                    <span style={{ color: "green" }}>✅</span>
-                  )}
-                  {socialPreferencesInstructionStatus === "error" && (
-                    <span style={{ color: "red" }}>❌</span>
-                  )}{" "}
-                  Social Preferences Information
-                </Typography>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-around"}
+                marginTop={"1.5rem"}
+                marginBottom={"1rem"}
+              >
+                <Stack spacing={1} marginTop={"1rem"}>
+                  <div style={styles.statusContainer}>
+                    {addressInstructionStatus === "loading" && (
+                      <CircularProgress size={20} />
+                    )}
+                    {addressInstructionStatus === "done" && (
+                      <CheckCircleIcon style={{ color: "green" }} />
+                    )}
+                    {addressInstructionStatus === "error" && (
+                      <CancelIcon style={{ color: "red" }} />
+                    )}
+                    <Typography variant="h6" style={styles.statusTitle}>
+                      Location
+                    </Typography>
+                  </div>
+                  <div style={styles.statusContainer}>
+                    {transportationInstructionStatus === "loading" && (
+                      <CircularProgress size={20} />
+                    )}
+                    {transportationInstructionStatus === "done" && (
+                      <CheckCircleIcon style={{ color: "green" }} />
+                    )}
+                    {transportationInstructionStatus === "error" && (
+                      <CancelIcon style={{ color: "red" }} />
+                    )}
+                    <Typography variant="h6" style={styles.statusTitle}>
+                      Transportation
+                    </Typography>
+                  </div>
+                </Stack>
+                <Stack spacing={1} marginTop={"1rem"}>
+                  <div style={styles.statusContainer}>
+                    {categoriesInstructionStatus === "loading" && (
+                      <CircularProgress size={20} />
+                    )}
+                    {categoriesInstructionStatus === "done" && (
+                      <CheckCircleIcon style={{ color: "green" }} />
+                    )}
+                    {categoriesInstructionStatus === "error" && (
+                      <CancelIcon style={{ color: "red" }} />
+                    )}
+                    <Typography variant="h6" style={styles.statusTitle}>
+                      Categories
+                    </Typography>
+                  </div>
+                  <div style={styles.statusContainer}>
+                    {socialPreferencesInstructionStatus === "loading" && (
+                      <CircularProgress size={20} />
+                    )}
+                    {socialPreferencesInstructionStatus === "done" && (
+                      <CheckCircleIcon style={{ color: "green" }} />
+                    )}
+                    {socialPreferencesInstructionStatus === "error" && (
+                      <CancelIcon style={{ color: "red" }} />
+                    )}
+                    <Typography variant="h6" style={styles.statusTitle}>
+                      Social Preferences
+                    </Typography>
+                  </div>
+                </Stack>
               </Stack>
             ) : null}
           </Paper>

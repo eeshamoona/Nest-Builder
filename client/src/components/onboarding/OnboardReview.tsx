@@ -3,7 +3,14 @@ import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { UserAuth } from "../../context/AuthContext";
 import { get, ref } from "firebase/database";
 import { database } from "../../firebase.config";
-import { Paper, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Chip,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import User from "../../models/UserModel";
 import { TransportationModel } from "../../models/TransporationModel";
 import { getAge } from "../../utils/RandomUtils";
@@ -86,7 +93,6 @@ const OnboardReview = (props: OnboardPageProps) => {
       display: "flex",
       flexDirection: "column" as "column",
       alignItems: "center",
-      margin: "1rem",
     },
     paper: {
       display: "flex",
@@ -95,13 +101,14 @@ const OnboardReview = (props: OnboardPageProps) => {
       padding: "20px",
       alignItems: "center",
       backgroundColor: "#F3F5EA",
-      margin: "5rem 10rem",
-      marginTop: "1rem",
+      margin: "1rem 15rem 1rem",
     },
     subContainer: {
       display: "flex",
       flexDirection: "row" as "row",
       margin: "1rem",
+      width: "100%",
+      justifyContent: "space-between",
     },
   };
 
@@ -109,15 +116,19 @@ const OnboardReview = (props: OnboardPageProps) => {
 
   return (
     <div style={styles.container}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
         Review Information
       </Typography>
-      <Typography variant="subtitle1" gutterBottom>
+      <Typography variant="body1" gutterBottom>
         Hey, {user?.name.split(" ")[0]}! This is what Nested has learned from
         your answers and Google takeout data. Is this correct?
       </Typography>
       <Paper elevation={1} style={styles.paper}>
-        <Typography variant="inherit">
+        <Typography
+          variant="body1"
+          sx={{ margin: "1rem 5rem 1rem 0rem" }}
+          gutterBottom
+        >
           I am {user && user.birthday ? getAge(user.birthday) : ""} year old{" "}
           {user?.gender}, and I moved/am moving to{" "}
           {addressParts ? addressParts[1] : ""}. My address is{" "}
@@ -143,16 +154,16 @@ const OnboardReview = (props: OnboardPageProps) => {
             })()}
         </Typography>
         <div style={styles.subContainer}>
-          <Typography variant="h5" fontSize={"large"}>
+          <Typography variant="subtitle1">
             I have the following routines and preferences in my locations:{" "}
           </Typography>
-          <AutoAwesomeIcon />
-          <Typography variant="h6" fontSize={"large"}>
-            Generated with Gemini
-          </Typography>
-          <Tooltip title={geminiInstructions}>
-            <InfoRoundedIcon />
-          </Tooltip>
+          <Stack direction={"row"} spacing={1}>
+            <AutoAwesomeIcon />
+            <Typography variant="subtitle2">Generated with Gemini</Typography>
+            <Tooltip sx={{ cursor: "pointer" }} title={geminiInstructions}>
+              <InfoRoundedIcon />
+            </Tooltip>
+          </Stack>
         </div>
         <TextField
           multiline
@@ -163,19 +174,25 @@ const OnboardReview = (props: OnboardPageProps) => {
           fullWidth
         />
 
-        <Typography variant="subtitle1" gutterBottom>
+        <Typography
+          variant="body1"
+          sx={{ margin: "1rem", marginLeft: 0, marginBottom: "1.5rem" }}
+          gutterBottom
+        >
           When deciding on the places I go frequently, I care about the
           following priorities:{" "}
           {socialPreferences?.map((preference) =>
-            preference.selected ? preference.name + ", " : ""
+            preference.selected ? (
+              <Chip label={preference.name} style={{ margin: "0 5px" }} />
+            ) : null
           )}
         </Typography>
-
         <TextField
           label="Anything else you would like to add?"
           variant="filled"
           fullWidth
-          helperText="You maybe type freely here."
+          color="success"
+          helperText="You may type freely here."
           value={additionalInfo}
           onChange={(e) => setAdditionalInfo(e.target.value)}
         />
