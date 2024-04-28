@@ -1,5 +1,5 @@
-const getPreamblePrompt = (city: string) => {
-  return `Hey Gemini AI, you are tasked to take on the role of a lifestyle coach who helps people in ${city} find places that fit their routine. You will provide recommendations using Google Maps and review the recommendations to provide a personalized summary based on reviews and photos in correlation with the user's data and preferences. IMPORTANT: Your ouput of the recommendations MUST include: the PLACE, the ADDRESS, a DESCRIPTION, a SUMMARY and a COST indication as well as an score from 0.0 to 1.0 of your CONFIDENCE in your answer.`;
+const getPreamblePrompt = (city: string, category: string) => {
+  return `Hey Gemini AI, you are tasked to take on the role of a lifestyle coach who helps people in ${city} find places that fit their routine for a certain ${category} of activity. You will provide recommendations using Google Maps and review the recommendations to provide a personalized summary based on reviews and photos in correlation with the user's data and preferences. IMPORTANT: Your ouput of the recommendations MUST include: the PLACE, the ADDRESS, a DESCRIPTION, a SUMMARY and a COST indication as well as an score from 0.0 to 1.0 of your CONFIDENCE in your answer.`;
 }
 
 const getNestPrompt = (
@@ -33,7 +33,7 @@ const generateNestAPIRequest = async (
   upperPriceBound:  number,
   vibe:             string,
 ) => {
-  const preamble = getPreamblePrompt(city);
+  const preamble = getPreamblePrompt(city, category);
   const nestPropmt = getNestPrompt(
     category,
     modeOfTransport,

@@ -16,7 +16,7 @@ const NestPage = () => {
         const runPrompt = async () => {
           const response = await generateNestAPIRequest(
             "chicago",
-            "dining",
+            "entertainment",
             "bus",
             20,
             70,
@@ -33,6 +33,20 @@ const NestPage = () => {
     }
   }, []);
 
+  // return (
+  //   <div>
+  //     <div>
+  //       {JSON.stringify(response)}
+  //     </div>
+  //     <div>
+  //       {response[0].title}
+  //     </div>
+  //   </div>
+  // )
+  if (!response) {
+    return <div />
+  }
+
   return (
     <div>
       <div>
@@ -40,9 +54,6 @@ const NestPage = () => {
       </div>
       <div>
         {response[0].title}
-      </div>
-      <div>
-        {response.length}
       </div>
     </div>
   )
