@@ -10,8 +10,8 @@ const steps = [
   "Method",
   "Transportation",
   "Preferences",
-  "Categories",
   "Review",
+  "Categories",
 ];
 
 const getStepContent = (
@@ -26,9 +26,10 @@ const getStepContent = (
     case 2:
       return <OnboardPreferences registerSave={registerSave} />;
     case 3:
-      return <OnboardCategories registerSave={registerSave} />;
-    case 4:
       return <OnboardReview registerSave={registerSave} />;
+    case 4:
+      return <OnboardCategories registerSave={registerSave} />;
+
     default:
       return "Unknown step";
   }
@@ -56,7 +57,6 @@ const OnboardingPage = () => {
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
-      backgroundColor: "#f5f5f5",
       padding: "20px",
       boxSizing: "border-box",
     },

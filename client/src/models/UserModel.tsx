@@ -7,7 +7,7 @@ type User = {
   lastLogin: Date;
   homeAddress: string;
   workAddress: string;
-  birthday: Date | null;
+  birthday: string | null;
   gender: string;
 };
 

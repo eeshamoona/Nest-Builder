@@ -14,4 +14,16 @@ const formatBirthday = (birthdayString: Date | null | undefined): string => {
   }
   return `${formattedBirthday} (${age} years old)`;
 };
-export { formatBirthday };
+
+const getAge = (birthDateString: string) => {
+  const birthDate = new Date(birthDateString);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+export { formatBirthday, getAge };

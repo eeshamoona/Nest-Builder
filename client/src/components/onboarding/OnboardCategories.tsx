@@ -11,6 +11,7 @@ const OnboardCategories = (props: OnboardPageProps) => {
     CategoryModel[]
   >([]);
   const auth = UserAuth();
+
   useEffect(() => {
     //TODO: instead of getting categories from the backend get it from the file uploaded
     const fetchCategories = async () => {

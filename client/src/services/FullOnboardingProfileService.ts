@@ -45,28 +45,32 @@ export function createCategoriesInstruction() {
   return `
     "categories": [
       {
-        "title": "string", // The name of the category, such as 'restaurant', 'entertainment', or 'shopping'. This title is used to classify the type of destinations or interests for recommendations.
-        "userPreferences": "string", // A detailed narrative that captures the user’s specific likes, dislikes, and inclinations within this category, synthesized from historical data and explicit user inputs. This section should provide a rich, nuanced profile that aids in tailoring recommendations more precisely. It may include preferred brands, frequency of visits, typical spending per visit, favored times for visits, and any particular attributes or services that resonate with the user."
-        "environmentDescriptors": ["string"], // An array of adjectives that describe the desired ambiance or environment of places in this category, such as 'lively', 'quiet', 'family-friendly', or 'romantic'.
-        "relatedSubcategories": ["string"], // A list of subcategories that further define the main category, such as specific types of cuisines under the 'restaurant' category or different forms of entertainment like 'cinema' or 'live music'.
-        "costPreference": "string", // A description of the user's budgetary preference for this category, represented as a price range using symbols like '$' for inexpensive through '$$$$' for high end.
-        "confidence": "number" // A numeric value between 0 and 1 that indicates the system's confidence level in the accuracy of the recommendations based on the user's past choices and preferences.
+        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping'.
+        "userPreferences": "string", // A narrative that describes user preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
+        "environmentDescriptors": ["string"], // Descriptors for the ambiance of places in this category, e.g., 'lively', 'quiet', 'family-friendly'.
+        "relatedSubcategories": ["string"], // Subcategories within the main category, e.g., types of cuisines or forms of entertainment.
+        "costPreference": "string", // The user's budgetary preference, indicated by a price range.
+        "confidence": "number" // The system's confidence level in its recommendations, on a scale from 0 to 1.
       }
-      // Additional category objects can be added here in the same format
+      // More categories can be added in this format
     ]
   `;
 }
 
 export function createSocialPreferencesInstruction() {
   return `
-    "socialPreferences": [
-      {
-        "name": "string", // The name of the preference (e.g., 'Accessible', 'Safety', ...)
-        "selected": "boolean", // Indicates if this preference is important to the user (true) or not (false)
-        "description": "string" // Description of the preference and its significance to the user
-      }
-      // More social preferences can be added here in the same format
-    ]
+    {
+      "socialPreferences": [
+        {
+          "name": "string", // When looking for locations to go to the user cares about these priorities, for example 'Accessible', 'Safety', 'Affordable', 'Quiet', ...
+          "selected": "boolean", // Indicates if the preference is important to the user
+          "description": "string" // Description of the preference's significance
+        }
+        // More social preferences can be added as needed
+      ],
+      "otherPreferences": ["string"], // A set of 20 additional social preferences and priorities for broader user considerations, for example 'Family Friendly, 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', 'Quiet'
+      "lifestyleParagraph": "string" // A first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone.
+    }
   `;
 }
 

@@ -73,7 +73,7 @@ const OnboardPreferences = (props: OnboardPageProps) => {
           style={{
             backgroundColor: preference.selected ? "lightgray" : "white",
           }}
-          title={preference.description}
+          title={preference.description ?? ""}
         >
           <CardContent>
             <Typography variant="h5" component="div">

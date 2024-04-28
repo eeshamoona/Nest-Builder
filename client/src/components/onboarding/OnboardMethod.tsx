@@ -9,26 +9,23 @@ import {
   createTransportationInstruction,
   sendProfileRequest,
 } from "../../services/FullOnboardingProfileService";
-import { Profile } from "../../services/FullOnboardingProfileService";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
-import { Tabs, Tab, Box } from "@mui/material";
+import {
+  Typography,
+  Paper,
+  TextField,
+  Avatar,
+  Stack,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { CategoryModel } from "../../models/CategoryModel";
-import CategoryCard from "../CategoryCard";
-import SocialPreferenceCard from "../SocialPreferenceCard";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import { TransportationModel } from "../../models/TransporationModel";
-import TransportationCard from "../TransportationCard";
 import { ref, set, update, get } from "firebase/database";
 import { database } from "../../firebase.config";
 import UserModel from "../../models/UserModel";
-
-const defaultProfile: Profile = {
-  homeAddress: "",
-  workAddress: "",
-  transportation: [],
-  categories: [],
-  socialPreferences: [],
-};
+import googleDriveIcon from "../../assets/icons8-google-drive.svg";
 
 const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -36,23 +33,17 @@ const OnboardMethod = (props: OnboardPageProps) => {
   const [gender, setGender] = useState<string>("");
   const [openPicker] = GoogleDrivePicker();
   const [loading, setLoading] = useState(false);
-  const [newProfileData, setNewProfileData] = useState<Profile>(defaultProfile);
-  const [addressInstructionStatus, setAddressInstructionStatus] =
-    useState(false);
+  const [addressInstructionStatus, setAddressInstructionStatus] = useState<
+    "loading" | "done" | "error"
+  >("loading");
   const [transportationInstructionStatus, setTransportationInstructionStatus] =
-    useState(false);
+    useState<"loading" | "done" | "error">("loading");
   const [categoriesInstructionStatus, setCategoriesInstructionStatus] =
-    useState(false);
+    useState<"loading" | "done" | "error">("loading");
   const [
     socialPreferencesInstructionStatus,
     setSocialPreferencesInstructionStatus,
-  ] = useState(false);
-
-  const [selectedTab, setSelectedTab] = useState(0);
-
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setSelectedTab(newValue);
-  };
+  ] = useState<"loading" | "done" | "error">("loading");
 
   const getAddressData = useCallback(
     async (file: any) => {
@@ -77,14 +68,10 @@ const OnboardMethod = (props: OnboardPageProps) => {
               console.error("Error updating user data:", error);
             });
         }
-        setNewProfileData((prevData) => ({
-          ...prevData,
-          homeAddress: addressData.homeAddress,
-          workAddress: addressData.workAddress,
-        }));
-        setAddressInstructionStatus(true);
+        setAddressInstructionStatus("done");
       } catch (error) {
         console.error("Error getting address data:", error);
+        setAddressInstructionStatus("error");
       }
     },
     [auth?.user]
@@ -108,7 +95,7 @@ const OnboardMethod = (props: OnboardPageProps) => {
             database,
             `users/${auth.user.id}/transportations`
           );
-          update(userRef, {}).catch((error) => {
+          set(userRef, {}).catch((error) => {
             console.error("Error updating user data:", error);
           });
 
@@ -122,13 +109,10 @@ const OnboardMethod = (props: OnboardPageProps) => {
             });
           });
         }
-        setNewProfileData((prevData) => ({
-          ...prevData,
-          transportation: transportationData.transportation,
-        }));
-        setTransportationInstructionStatus(true);
+        setTransportationInstructionStatus("done");
       } catch (error) {
         console.error("Error getting transportation data:", error);
+        setTransportationInstructionStatus("error");
       }
     },
     [auth?.user]
@@ -136,93 +120,122 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
   const getCategoriesData = useCallback(
     async (file: any) => {
-      const categoriesInstruction = createCategoriesInstruction();
-      const categoriesData = await sendProfileRequest(
-        categoriesInstruction,
-        file
-      );
-      console.log("Categories Data: ", categoriesData);
-      if (auth?.user) {
-        const updates: CategoryModel[] = categoriesData.categories;
+      try {
+        const categoriesInstruction = createCategoriesInstruction();
+        const categoriesData = await sendProfileRequest(
+          categoriesInstruction,
+          file
+        );
+        console.log("Categories Data: ", categoriesData);
+        if (auth?.user) {
+          const updates: CategoryModel[] = categoriesData.categories;
 
-        //first clear any existing categories
-        const userRef = ref(database, `users/${auth.user.id}/categories`);
-        update(userRef, {}).catch((error) => {
-          console.error("Error updating user data:", error);
-        });
-
-        updates.forEach((category) => {
-          const userRef = ref(
-            database,
-            `users/${auth.user?.id}/categories/${category.title}`
-          );
-          set(userRef, category).catch((error) => {
+          //first clear any existing categories
+          const userRef = ref(database, `users/${auth.user.id}/categories`);
+          set(userRef, {}).catch((error) => {
             console.error("Error updating user data:", error);
           });
-        });
+
+          updates.forEach((category) => {
+            const userRef = ref(
+              database,
+              `users/${auth.user?.id}/categories/${category.title}`
+            );
+            set(userRef, category).catch((error) => {
+              console.error("Error updating user data:", error);
+            });
+          });
+        }
+        setCategoriesInstructionStatus("done");
+      } catch (error) {
+        console.error("Error getting categories data:", error);
+        setCategoriesInstructionStatus("error");
       }
-      setNewProfileData((prevData) => ({
-        ...prevData,
-        categories: categoriesData.categories,
-      }));
-      setCategoriesInstructionStatus(true);
     },
     [auth?.user]
   );
 
   const getSocialPreferencesData = useCallback(
     async (file: any) => {
-      const socialPreferencesInstruction = createSocialPreferencesInstruction();
-      const socialPreferencesData = await sendProfileRequest(
-        socialPreferencesInstruction,
-        file
-      );
-      console.log("Social Preferences Data: ", socialPreferencesData);
-      if (auth?.user) {
-        const updates: SocialPreferenceModel[] =
-          socialPreferencesData.socialPreferences;
-
-        //first clear any existing social preferences
-        const userRef = ref(
-          database,
-          `users/${auth.user.id}/socialPreferences`
+      try {
+        const socialPreferencesInstruction =
+          createSocialPreferencesInstruction();
+        const socialPreferencesData = await sendProfileRequest(
+          socialPreferencesInstruction,
+          file
         );
-        update(userRef, {}).catch((error) => {
-          console.error("Error updating user data:", error);
-        });
+        console.log("Social Preferences Data: ", socialPreferencesData);
+        if (auth?.user) {
+          const socialPreferences: SocialPreferenceModel[] =
+            socialPreferencesData.socialPreferences;
 
-        updates.forEach((socialPreference) => {
+          const otherPreferences: any = socialPreferencesData.otherPreferences;
+          const lifestylePreferences: string =
+            socialPreferencesData.lifestyleParagraph;
+
+          console.log("Other Preferences: ", otherPreferences);
+          console.log("Lifestyle Preferences: ", lifestylePreferences);
+
+          //first clear any existing social preferences
           const userRef = ref(
             database,
-            `users/${auth.user?.id}/socialPreferences/${socialPreference.name}`
+            `users/${auth.user.id}/socialPreferences`
           );
-          set(userRef, socialPreference).catch((error) => {
+          set(userRef, {}).catch((error) => {
             console.error("Error updating user data:", error);
           });
-        });
+
+          socialPreferences.forEach((socialPreference) => {
+            const socialPrefRef = ref(
+              database,
+              `users/${auth.user?.id}/socialPreferences/${socialPreference.name}`
+            );
+            set(socialPrefRef, socialPreference).catch((error) => {
+              console.error("Error updating user data:", error);
+            });
+          });
+
+          otherPreferences.forEach((otherPreference: string) => {
+            const socialPrefRef = ref(
+              database,
+              `users/${auth.user?.id}/socialPreferences/${otherPreference}`
+            );
+            set(socialPrefRef, {
+              name: otherPreference,
+              selected: false,
+            }).catch((error) => {
+              console.error("Error updating user data:", error);
+            });
+          });
+
+          const lifestyleRef = ref(
+            database,
+            `users/${auth.user.id}/lifestylePreferences`
+          );
+          update(lifestyleRef, { lifestylePreferences }).catch((error) => {
+            console.error("Error updating user data:", error);
+          });
+        }
+        setSocialPreferencesInstructionStatus("done");
+      } catch (error) {
+        console.error("Error getting social preferences data:", error);
+        setSocialPreferencesInstructionStatus("error");
       }
-      setNewProfileData((prevData) => ({
-        ...prevData,
-        socialPreferences: socialPreferencesData.socialPreferences,
-      }));
-      setSocialPreferencesInstructionStatus(true);
     },
     [auth?.user]
   );
 
   const uploadFile = async (file: any) => {
     setLoading(true);
-    setAddressInstructionStatus(false);
-    setTransportationInstructionStatus(false);
-    setCategoriesInstructionStatus(false);
-    setSocialPreferencesInstructionStatus(false);
+    setAddressInstructionStatus("loading");
+    setTransportationInstructionStatus("loading");
+    setCategoriesInstructionStatus("loading");
+    setSocialPreferencesInstructionStatus("loading");
 
     await getAddressData(file);
     await getTransportationData(file);
     await getCategoriesData(file);
     await getSocialPreferencesData(file);
-
-    setLoading(false);
   };
 
   const handleGoogleDrivePickerOpen = () => {
@@ -385,9 +398,11 @@ const OnboardMethod = (props: OnboardPageProps) => {
       boxSizing: "border-box" as "border-box",
     },
     paper: {
-      padding: "20px",
-      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px",
+      display: "flex",
+      flexDirection: "column" as "column",
+      padding: "1rem",
+      gap: "0.5rem",
+      borderRadius: "0.5rem",
     },
     input: {
       width: "100%",
@@ -409,136 +424,156 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
   return (
     <>
-      <h1>Let's Get Started!</h1>
+      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+        Let’s Make Your New City Feel Like Home
+      </Typography>
+      <Typography variant="body2">
+        Nested leverages Gemini 1.5 (Google’s LLM) to find places in your new
+        city that can facilitate your lifestyle.
+      </Typography>
+      <Typography variant="body2" sx={{ marginBottom: "1rem" }}>
+        First, please answer some questions so Nested can provide better
+        suggestions:
+      </Typography>
       <div style={styles.container}>
         <div style={styles.halfWidth}>
-          <div style={styles.paper}>
-            <h6>Available User Information</h6>
-            <img
-              src={auth?.user?.photoURL}
-              alt="User"
-              style={{ borderRadius: "50%" }}
-            />
+          <Paper variant="outlined" style={styles.paper}>
+            <Typography variant="h5">Basic Info</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ alignSelf: "center", marginBottom: "1rem" }}
+            >
+              We are pulling this information from your Google Account. If it is
+              incorrect, please update it here.
+            </Typography>
+            <Stack direction={"row"} spacing={2}>
+              <Avatar
+                sx={{ width: 100, height: 100 }}
+                src={auth?.user?.photoURL}
+                alt="UserPicture"
+              />
+              <Stack spacing={2} width={"100%"}>
+                <TextField
+                  size="small"
+                  type="text"
+                  label="Name"
+                  defaultValue={auth?.user?.name}
+                  fullWidth
+                  margin="none"
+                />
+                <TextField
+                  size="small"
+                  type="text"
+                  label="Email"
+                  defaultValue={auth?.user?.email}
+                  fullWidth
+                />
 
-            <input
-              type="text"
-              placeholder="Name"
-              defaultValue={auth?.user?.name}
-              disabled
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Email"
-              defaultValue={auth?.user?.email}
-              disabled
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Birthday"
-              value={formatBirthday(birthday)}
-              onChange={(e) => setBirthday(new Date(e.target.value))}
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-          <div>
-            Address Instruction: {addressInstructionStatus ? "✅" : "❌"}
-          </div>
-          <div>
-            Transportation Instruction:{" "}
-            {transportationInstructionStatus ? "✅" : "❌"}
-          </div>
-          <div>
-            Categories Instruction: {categoriesInstructionStatus ? "✅" : "❌"}
-          </div>
-          <div>
-            Social Preferences Instruction:{" "}
-            {socialPreferencesInstructionStatus ? "✅" : "❌"}
-          </div>
+                <TextField
+                  size="small"
+                  type="text"
+                  label="Birthday"
+                  value={birthday ? formatBirthday(birthday) : ""}
+                  fullWidth
+                  onChange={(e) => setBirthday(new Date(e.target.value))}
+                />
+
+                <TextField
+                  size="small"
+                  type="text"
+                  label="Gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  fullWidth
+                />
+              </Stack>
+            </Stack>
+          </Paper>
         </div>
         <div style={styles.halfWidth}>
-          <h3>Onboard your data [Optional]</h3>
-          <p>
-            Adding your Google Takeout Data can help you autofill your profile
-            and give more accurate reccomendations! Follow this tutorial
-            first...
-          </p>
-          <button onClick={handleGoogleDrivePickerOpen}>
-            Open Google Drive Picker
-          </button>
-          {loading ? (
-            <progress value={undefined} />
-          ) : (
-            <div>
-              <Tabs
-                value={selectedTab}
-                onChange={handleChange}
-                orientation="vertical"
-              >
-                <Tab label="Home Address" />
-                <Tab label="Work Address" />
-                <Tab label="Transportation" />
-                <Tab label="Categories" />
-                <Tab label="Social Preferences" />
-              </Tabs>
-              {selectedTab === 0 && <Box>{newProfileData.homeAddress}</Box>}
-              {selectedTab === 1 && <Box>{newProfileData.workAddress}</Box>}
-              {selectedTab === 2 && (
-                <Box>
-                  {JSON.stringify(newProfileData.transportation)}
-                  {newProfileData.transportation &&
-                    newProfileData.transportation.map(
-                      (transportation: TransportationModel) => (
-                        <TransportationCard
-                          key={transportation.method}
-                          transportation={transportation}
-                          onSelectedChange={() => {}}
-                          onRadiusChange={() => {}}
-                          {...transportation}
-                        />
-                      )
-                    )}
-                </Box>
-              )}
-              {selectedTab === 3 && (
-                <Box style={{ overflowY: "auto", maxHeight: "100vh" }}>
-                  {newProfileData.categories &&
-                    newProfileData.categories.map((category: CategoryModel) => (
-                      <CategoryCard key={category.title} {...category} />
-                    ))}
-                </Box>
-              )}
-              {selectedTab === 4 && (
-                <Box
-                  style={{
-                    display: "grid",
-                    columnGap: "1rem",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                  }}
-                >
-                  {newProfileData.socialPreferences &&
-                    newProfileData.socialPreferences.map(
-                      (socialPreference: SocialPreferenceModel) => (
-                        <SocialPreferenceCard
-                          key={socialPreference.name}
-                          socialPreference={socialPreference}
-                          onSelect={() => {}}
-                          {...socialPreference}
-                        />
-                      )
-                    )}
-                </Box>
-              )}
-            </div>
-          )}
+          <Paper variant="outlined" style={styles.paper}>
+            <Typography variant="h5">AI Onboarding [Optional]</Typography>
+            <Typography
+              variant="subtitle2"
+              sx={{ alignSelf: "center", marginBottom: "1rem" }}
+            >
+              Adding your Google Takeout data helps Nested autofill onboarding
+              questions to save you time and is not stored. You also have the
+              option to answer questions manually, up to you!
+            </Typography>
+
+            <Button
+              component="label"
+              role={undefined}
+              variant="text"
+              color="inherit"
+              tabIndex={-1}
+              fullWidth
+              onClick={handleGoogleDrivePickerOpen}
+              startIcon={
+                <img
+                  style={{ width: "3rem", height: "3rem" }}
+                  src={googleDriveIcon}
+                  alt="Google Drive"
+                />
+              }
+            >
+              Upload Google Takeout Data
+            </Button>
+
+            {loading ? (
+              <Stack spacing={2}>
+                <Typography variant="body1">
+                  {addressInstructionStatus === "loading" && (
+                    <CircularProgress size={20} />
+                  )}
+                  {addressInstructionStatus === "done" && (
+                    <span style={{ color: "green" }}>✅</span>
+                  )}
+                  {addressInstructionStatus === "error" && (
+                    <span style={{ color: "red" }}>❌</span>
+                  )}{" "}
+                  Location Information
+                </Typography>
+                <Typography variant="body1">
+                  {transportationInstructionStatus === "loading" && (
+                    <CircularProgress size={20} />
+                  )}
+                  {transportationInstructionStatus === "done" && (
+                    <span style={{ color: "green" }}>✅</span>
+                  )}
+                  {transportationInstructionStatus === "error" && (
+                    <span style={{ color: "red" }}>❌</span>
+                  )}{" "}
+                  Transportation Information
+                </Typography>
+                <Typography variant="body1">
+                  {categoriesInstructionStatus === "loading" && (
+                    <CircularProgress size={20} />
+                  )}
+                  {categoriesInstructionStatus === "done" && (
+                    <span style={{ color: "green" }}>✅</span>
+                  )}
+                  {categoriesInstructionStatus === "error" && (
+                    <span style={{ color: "red" }}>❌</span>
+                  )}{" "}
+                  Categories Information
+                </Typography>
+                <Typography variant="body1">
+                  {socialPreferencesInstructionStatus === "loading" && (
+                    <CircularProgress size={20} />
+                  )}
+                  {socialPreferencesInstructionStatus === "done" && (
+                    <span style={{ color: "green" }}>✅</span>
+                  )}
+                  {socialPreferencesInstructionStatus === "error" && (
+                    <span style={{ color: "red" }}>❌</span>
+                  )}{" "}
+                  Social Preferences Information
+                </Typography>
+              </Stack>
+            ) : null}
+          </Paper>
         </div>
       </div>
     </>
