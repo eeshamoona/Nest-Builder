@@ -6,6 +6,7 @@ import { database } from "../../firebase.config";
 import { TransportationModel } from "../../models/TransporationModel";
 import TransportationMethodItem from "../TransportationMethodItem";
 import { Paper, Stack, TextField, Typography } from "@mui/material";
+import GoogleAutocomplete from "react-google-autocomplete";
 
 type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
@@ -13,7 +14,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
   const auth = UserAuth();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
-  const [homeAddress, setHomeAddress] = useState(
+  const [homeAddress, setHomeAddress] = useState<string>(
     "1600 Amphitheatre Parkway, Mountain View, CA"
   );
   //TODO: Add min to max radius range in either ft or miles for each transportation method
@@ -26,6 +27,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
   });
 
   const circlesRef = useRef<google.maps.Circle[]>([]);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const method = event.target.name as TransportationMethod;
@@ -69,15 +71,50 @@ const OnboardTransportation = (props: OnboardPageProps) => {
               map: mapInstance.current,
               center: mapInstance.current?.getCenter(),
               radius: Number(radius) * 1609.34, // convert radius from miles to meters
-              strokeColor: transportation[transportationMethod].color,
-              strokeOpacity: 0.2,
-              strokeWeight: 1,
-              fillColor: transportation[transportationMethod].color,
-              fillOpacity: 0.15,
+              strokeColor: "#265728",
+              strokeOpacity: 0.5,
+              strokeWeight: 2,
+              fillColor: "#4caf50",
+              fillOpacity: 0.1,
             });
 
+            //Clear the label with the transportation method
+            markersRef.current.forEach((marker) => {
+              if (
+                (marker.getLabel() as google.maps.MarkerLabel).text ===
+                transportationMethod
+              ) {
+                marker.setMap(null);
+              }
+            });
             // Add the new circle to the circles array
             circlesRef.current.push(circle);
+
+            const earthRadiusMeters = 6371000;
+            const center = circle.getCenter() as google.maps.LatLng;
+            const labelLat =
+              center.lat() +
+              ((radius * 1609.34) / earthRadiusMeters) * (180 / Math.PI);
+
+            // Create a marker at the edge of the circle
+            const marker = new google.maps.Marker({
+              position: { lat: labelLat, lng: center.lng() },
+              map: mapInstance.current,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 0,
+                labelOrigin: new google.maps.Point(0, 0),
+              },
+              label: {
+                text: transportationMethod,
+                color: "#000821",
+                fontSize: "14px",
+                fontWeight: "bold",
+              },
+            });
+
+            // Add the new marker to the markers array
+            markersRef.current.push(marker);
           }
         }
       );
@@ -206,7 +243,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
   const styles = {
     map: {
-      width: "45vw",
+      width: "70vw",
       height: "60vh",
     },
     address: {
@@ -214,14 +251,12 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       flexDirection: "row" as "row",
       alignItems: "center",
       gap: "0.5rem",
-      width: "100%",
     },
     input: {
       flex: 1,
     },
     sidebar: {
       flex: 1,
-      marginRight: "1rem",
       height: "100%",
       display: "flex",
       flexDirection: "column" as "column",
@@ -232,26 +267,48 @@ const OnboardTransportation = (props: OnboardPageProps) => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+      <Typography
+        variant="h4"
+        sx={{ marginTop: "1rem", marginBottom: "2rem", textAlign: "center" }}
+      >
         How Do You Like to Get Around?
       </Typography>
 
-      <Stack
-        direction={"column"}
-        spacing={2}
-        width={"100%"}
-        sx={{ marginTop: "1rem" }}
-      >
-        <div style={styles.address}>
-          <TextField
-            label="Home Address"
-            style={styles.input}
-            value={homeAddress}
-            onChange={(e) => setHomeAddress(e.target.value)}
-          />
-          <button onClick={goToAddress}>Go</button>
-        </div>
-        <Stack direction={"row"} spacing={2}>
+      <Stack direction={"row"} spacing={2}>
+        <Stack direction={"column"} spacing={2} sx={{ marginTop: "1rem" }}>
+          <div style={styles.address}>
+            {/* TODO: This text field is not editable, need to fix */}
+            <TextField
+              variant="outlined"
+              fullWidth
+              InputProps={{
+                inputComponent: ({ inputRef, ...other }) => (
+                  <GoogleAutocomplete
+                    {...other}
+                    apiKey={process.env.REACT_APP_googleMapsAPIKey}
+                    onPlaceSelected={(place: any) => {
+                      if (place && "formatted_address" in place) {
+                        console.log("Place: ", place.formatted_address);
+                        setHomeAddress(place.formatted_address.toString());
+                      } else {
+                        console.log("No valid place selected");
+                      }
+                    }}
+                    value={homeAddress}
+                    onChange={(e: any) => {
+                      console.log("Input: ", e.target.value);
+                    }}
+                    style={styles.input}
+                    options={
+                      {
+                        types: ["address"],
+                      } as google.maps.places.AutocompleteOptions
+                    }
+                  />
+                ),
+              }}
+            />
+          </div>
           <Paper style={styles.sidebar}>
             <Typography
               variant="h5"
@@ -289,8 +346,8 @@ const OnboardTransportation = (props: OnboardPageProps) => {
               }
             )}
           </Paper>
-          <div ref={mapRef} style={styles.map}></div>
         </Stack>
+        <div ref={mapRef} style={styles.map}></div>
       </Stack>
     </>
   );

@@ -44,6 +44,13 @@ const OnboardingPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  const handleBack = () => {
+    if (saveDataRef.current) {
+      saveDataRef.current();
+    }
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   const getStepContent = (
     step: number,
     registerSave: (saveData: () => void) => void
@@ -77,7 +84,7 @@ const OnboardingPage = () => {
       display: "flex",
       flexDirection: "column" as "column",
       alignItems: "center",
-      justifyContent: "center",
+      justifyContent: "space-between",
       height: "100vh",
       padding: "0 5rem",
       boxSizing: "border-box" as "border-box",
@@ -85,13 +92,20 @@ const OnboardingPage = () => {
     },
 
     button: {
-      marginTop: "20px",
+      margin: "1rem",
       padding: "10px 20px",
       borderRadius: "5px",
       border: "none",
       backgroundColor: "#082100",
       color: "#C6EEAA",
       cursor: "pointer",
+    },
+    buttonContainer: {
+      display: "flex",
+      flexDirection: "row" as "row",
+      justifyContent: "space-between",
+      width: "100%",
+      marginBottom: "1rem",
     },
   };
 
@@ -100,7 +114,7 @@ const OnboardingPage = () => {
       <Stepper
         activeStep={activeStep}
         // alternativeLabel
-        style={{ marginBottom: "1rem", width: "100%" }}
+        style={{ margin: "1rem", marginTop: "3rem", width: "100%" }}
       >
         {steps.map((label, index) => (
           <Step
@@ -116,10 +130,15 @@ const OnboardingPage = () => {
           </Step>
         ))}
       </Stepper>
-      <Suspense fallback={<CircularProgress />}>
-        {stepContent || <div>Unknown step</div>}
-      </Suspense>
-      <div>
+      <div style={{ flex: 1, overflow: "auto" }}>
+        <Suspense fallback={<CircularProgress />}>
+          {stepContent || <div>Unknown step</div>}
+        </Suspense>
+      </div>
+      <div style={styles.buttonContainer}>
+        <Button style={styles.button} onClick={handleBack}>
+          Back
+        </Button>
         <Button style={styles.button} onClick={handleNext}>
           Next
         </Button>

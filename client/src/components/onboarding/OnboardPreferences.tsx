@@ -66,10 +66,13 @@ const OnboardPreferences = (props: OnboardPageProps) => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+      <Typography variant="h4" sx={{ marginTop: "1rem", textAlign: "center" }}>
         What is important to you?
       </Typography>
-      <Typography variant="body2" sx={{ marginBottom: "2rem" }}>
+      <Typography
+        variant="body2"
+        sx={{ marginBottom: "2rem", textAlign: "center" }}
+      >
         We use these lifestyle preferences to help you narrow down the best
         places to visit, so please select at least 3. You can always change
         these later.

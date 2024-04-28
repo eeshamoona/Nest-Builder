@@ -45,7 +45,7 @@ export function createCategoriesInstruction() {
   return `
     "categories": [
       {
-        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping'.
+        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping'. Do not include categories that are related to Transportation.
         "userPreferences": "string", // A narrative that describes user preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
         "environmentDescriptors": ["string"], // Descriptors for the ambiance of places in this category, e.g., 'lively', 'quiet', 'family-friendly'.
         "relatedSubcategories": ["string"], // Subcategories within the main category, e.g., types of cuisines or forms of entertainment.
@@ -62,7 +62,7 @@ export function createSocialPreferencesInstruction() {
     {
       "socialPreferences": [
         {
-          "name": "string", // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are not categories of locations or transportation modes, but adjectives describing lifestyle choices.
+          "name": "string", // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are not categories or types of location or transportation, but rather adjectives describing the place or experiences the user prefers
           "selected": "boolean", // Indicates whether this preference is a priority for the user.
           "description": "string" // Details the importance and relevance of this preference in the user's life.
         }
