@@ -33,8 +33,8 @@ export function createTransportationInstruction() {
     "transportation": [
       {
         "method": "string", // The method of transportation (e.g., "walking", "biking", "driving", "train", "bus",...)
-        "selected": "boolean",  // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, 'radius' will not be applicable
-        "radius": "number" // Numeric value in miles representing the travel radius, applicable if 'selected' is true
+        "selected": "boolean",  // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, radius will be null
+        "radius": "number" // Numeric value (in miles) representing the comfortable travel radius when using this type. This is null if selected is false."
       },
       // Add more transportation options in similar format as needed
     ]
@@ -49,7 +49,7 @@ export function createCategoriesInstruction() {
         "userPreferences": "string", // A narrative that describes user preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
         "environmentDescriptors": ["string"], // Descriptors for the ambiance of places in this category, e.g., 'lively', 'quiet', 'family-friendly'.
         "relatedSubcategories": ["string"], // Subcategories within the main category, e.g., types of cuisines or forms of entertainment.
-        "costPreference": "string", // The user's budgetary preference, indicated by a price range.
+        "costPreference": "string", // Text string representing the user's preferred cost range for this category represented by one of these options '$', '$$', $$$, $$$$)
         "confidence": "number" // The system's confidence level in its recommendations, on a scale from 0 to 1.
       }
       // More categories can be added in this format
@@ -62,14 +62,14 @@ export function createSocialPreferencesInstruction() {
     {
       "socialPreferences": [
         {
-          "name": "string", // When looking for locations to go to the user cares about these priorities, for example 'Accessible', 'Safety', 'Affordable', 'Quiet', ...
-          "selected": "boolean", // Indicates if the preference is important to the user
-          "description": "string" // Description of the preference's significance
+          "name": "string", // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are not categories of locations or transportation modes, but adjectives describing lifestyle choices.
+          "selected": "boolean", // Indicates whether this preference is a priority for the user.
+          "description": "string" // Details the importance and relevance of this preference in the user's life.
         }
-        // More social preferences can be added as needed
+        // Additional preferences can be added as needed.
       ],
-      "otherPreferences": ["string"], // A set of 20 additional social preferences and priorities for broader user considerations, for example 'Family Friendly, 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', 'Quiet'
-      "lifestyleParagraph": "string" // A first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone.
+      "otherPreferences": ["string"], // Extends the list to include 20 more lifestyle preferences, such as 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', 'Quiet'.
+      "lifestyleParagraph": "string" // A narrative in the first-person that describes the user's daily activities, community involvement, social interactions, and overall lifestyle preferences. This should offer a comprehensive, personal view without repeating the specifics of social preferences.
     }
   `;
 }

@@ -447,7 +447,10 @@ const OnboardMethod = (props: OnboardPageProps) => {
       <div style={styles.container}>
         <div style={styles.halfWidth}>
           <Paper variant="outlined" style={styles.paper}>
-            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}
+            >
               Basic Info
             </Typography>
             <Typography
@@ -503,7 +506,10 @@ const OnboardMethod = (props: OnboardPageProps) => {
         </div>
         <div style={styles.halfWidth}>
           <Paper variant="outlined" style={styles.paper}>
-            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}
+            >
               AI Onboarding [Optional]
             </Typography>
             <Typography

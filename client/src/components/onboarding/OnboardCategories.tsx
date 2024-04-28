@@ -5,6 +5,7 @@ import { ref, get } from "firebase/database";
 import CategoryCard from "../CategoryCard";
 import { CategoryModel } from "../../models/CategoryModel";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
+import { Grid, Typography } from "@mui/material";
 
 const OnboardCategories = (props: OnboardPageProps) => {
   const [originalProfileData, setOriginalProfileData] = React.useState<
@@ -48,8 +49,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
     container: {
       display: "flex",
       flexDirection: "column" as "column",
-      justifyContent: "space-between",
-      padding: "20px",
       alignItems: "center",
       height: "80vh",
     },
@@ -72,14 +71,24 @@ const OnboardCategories = (props: OnboardPageProps) => {
 
   return (
     <div style={styles.container}>
-      <h1>Onboard Categories</h1>
+      <Typography variant="h4" sx={{ marginTop: "1rem" }}>
+        Categories
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        These are the categories we believe you would be interested, feel free
+        to edit or add more
+      </Typography>
       <div style={styles.profileContainer}>
         <div style={styles.scrollableContainer}>
-          {originalProfileData
-            .sort((a, b) => b.confidence - a.confidence)
-            .map((category) => (
-              <CategoryCard key={category.title} {...category} />
-            ))}
+          <Grid container spacing={2}>
+            {originalProfileData
+              .sort((a, b) => b.confidence - a.confidence)
+              .map((category) => (
+                <Grid item xs={12} sm={6} key={category.title}>
+                  <CategoryCard {...category} />
+                </Grid>
+              ))}
+          </Grid>
         </div>
       </div>
     </div>

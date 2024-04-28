@@ -1,5 +1,6 @@
 import React from "react";
 import { CategoryModel } from "../models/CategoryModel";
+import { Chip, Grid, Paper, Stack, Typography } from "@mui/material";
 
 const styles = {
   card: {
@@ -7,7 +8,7 @@ const styles = {
     borderRadius: "5px",
     padding: "20px",
     margin: "20px",
-    fontFamily: "Arial, sans-serif",
+    backgroundColor: "#F3F5EA",
   },
   title: {
     fontSize: "1.5em",
@@ -41,39 +42,38 @@ const styles = {
 
 const CategoryCard = (category: CategoryModel) => {
   return (
-    <div style={styles.card}>
-      <div style={styles.titleContainer}>
-        <div style={styles.title}>{category.title}</div>
-        <p style={styles.confidence}>
-          <span style={styles.label}>AI Confidence:</span> {category.confidence}
-        </p>
-      </div>
-
-      <p style={styles.description}>
-        <span style={styles.label}>User Preferences:</span>{" "}
+    <Paper style={styles.card}>
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Typography variant="h5">{category.title}</Typography>
+        <Typography variant="h5">{category.costPreference}</Typography>
+      </Stack>
+      <Typography mt={"1rem"} mb={"1rem"} variant="body1">
         {category.userPreferences}
-      </p>
-      <p style={styles.description}>
-        <span style={styles.label}>Cost Preference:</span>{" "}
-        {category.costPreference}
-      </p>
-      <p style={styles.description}>
-        <span style={styles.label}>Environment Descriptors:</span>
-        {category.environmentDescriptors.map((descriptor, index) => (
-          <span key={index} style={styles.token}>
-            {descriptor}
-          </span>
-        ))}
-      </p>
-      <p style={styles.description}>
-        <span style={styles.label}>Related Subcategories:</span>
-        {category.relatedSubcategories.map((subcategory, index) => (
-          <span key={index} style={styles.token}>
-            {subcategory}
-          </span>
-        ))}
-      </p>
-    </div>
+      </Typography>
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Stack direction={"column"} width="50%">
+          <Typography variant="body1">Subcategories</Typography>
+          <Grid container>
+            {category.relatedSubcategories.map((subcategory, index) => (
+              <Grid item xs={4} key={index}>
+                <Chip label={subcategory} style={{ margin: "5px" }} />
+              </Grid>
+            ))}
+          </Grid>
+        </Stack>
+        <Stack direction={"column"} justifyContent={"end"}>
+          <Typography variant="body1">Vibes</Typography>
+          {category.environmentDescriptors.map((descriptor, index) => (
+            <Chip
+              key={index}
+              color="success"
+              label={descriptor}
+              style={{ margin: "5px" }}
+            />
+          ))}
+        </Stack>
+      </Stack>
+    </Paper>
   );
 };
 

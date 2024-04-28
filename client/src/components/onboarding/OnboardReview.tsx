@@ -102,6 +102,7 @@ const OnboardReview = (props: OnboardPageProps) => {
       alignItems: "center",
       backgroundColor: "#F3F5EA",
       margin: "1rem 15rem 1rem",
+      maxWidth: "45rem",
     },
     subContainer: {
       display: "flex",
@@ -176,17 +177,39 @@ const OnboardReview = (props: OnboardPageProps) => {
 
         <Typography
           variant="body1"
-          sx={{ margin: "1rem", marginLeft: 0, marginBottom: "1.5rem" }}
-          gutterBottom
+          sx={{
+            marginTop: "1rem",
+            marginLeft: 0,
+            marginBottom: "0.5rem",
+            width: "100%",
+          }}
         >
           When deciding on the places I go frequently, I care about the
-          following priorities:{" "}
+          following priorities:
+        </Typography>
+        <Stack
+          direction={"row"}
+          alignSelf={"start"}
+          marginBottom="0.5rem"
+          width={"100%"}
+          sx={{
+            overflowX: "auto",
+            overflowY: "hidden",
+            paddingBottom: "0.5rem",
+          }}
+        >
           {socialPreferences?.map((preference) =>
             preference.selected ? (
-              <Chip label={preference.name} style={{ margin: "0 5px" }} />
+              <Chip
+                key={preference.name}
+                color="success"
+                label={preference.name}
+                style={{ margin: "0.5rem" }}
+              />
             ) : null
           )}
-        </Typography>
+        </Stack>
+
         <TextField
           label="Anything else you would like to add?"
           variant="filled"

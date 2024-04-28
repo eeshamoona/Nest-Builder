@@ -14,7 +14,7 @@ import OnboardReview from "../components/onboarding/OnboardReview";
 import OnboardMethod from "../components/onboarding/OnboardMethod";
 
 const steps = [
-  "Method",
+  "Intro",
   "Transportation",
   "Preferences",
   "Review",

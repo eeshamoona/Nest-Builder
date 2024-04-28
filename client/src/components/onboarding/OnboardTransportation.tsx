@@ -220,7 +220,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       display: "flex",
       flexDirection: "row" as "row",
       alignItems: "center",
-      marginBottom: "20px",
       gap: "0.5rem",
       width: "100%",
     },
@@ -288,6 +287,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
               sx={{
                 alignSelf: "center",
                 margin: "1rem",
+                marginTop: "0.5rem",
                 marginBottom: "1.5rem",
               }}
             >
