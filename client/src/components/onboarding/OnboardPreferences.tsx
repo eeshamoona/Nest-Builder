@@ -2,16 +2,31 @@ import React, { useCallback, useEffect, useState } from "react";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import { UserAuth } from "../../context/AuthContext";
-import { get, ref, update } from "firebase/database";
+import { get, ref, set, update } from "firebase/database";
 import { database } from "../../firebase.config";
 import { Typography, Button } from "@mui/material";
 import { Grid } from "@mui/material";
+import { TextField, IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 const OnboardPreferences = (props: OnboardPageProps) => {
   const auth = UserAuth();
   const [socialPreferences, setSocialPreferences] = useState<
     SocialPreferenceModel[]
   >([]);
+
+  const [newPreferenceName, setNewPreferenceName] = useState("");
+
+  const handleAddPreference = (preference: string) => {
+    console.log("Adding preference", preference);
+    if (preference) {
+      setSocialPreferences((prevState) => [
+        ...prevState,
+        { name: preference, selected: true },
+      ]);
+      setNewPreferenceName("");
+    }
+  };
 
   useEffect(() => {
     if (auth?.user) {
@@ -44,12 +59,22 @@ const OnboardPreferences = (props: OnboardPageProps) => {
 
   const saveData = useCallback(async () => {
     if (auth?.user) {
-      const updatePromises = socialPreferences.map((preference) => {
+      const updatePromises = socialPreferences.map(async (preference) => {
         const preferenceRef = ref(
           database,
           `users/${auth.user?.id}/socialPreferences/${preference.name}`
         );
-        return update(preferenceRef, { selected: preference.selected });
+        return get(preferenceRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              return update(preferenceRef, { selected: preference.selected });
+            } else {
+              return set(preferenceRef, preference);
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking document existence: ", error);
+          });
       });
 
       try {
@@ -91,6 +116,28 @@ const OnboardPreferences = (props: OnboardPageProps) => {
             </Button>
           </Grid>
         ))}
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            value={newPreferenceName}
+            onChange={(e) => setNewPreferenceName(e.target.value)}
+            label="Add a New Preference Here"
+            variant="outlined"
+            fullWidth
+            color="success"
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  onClick={() => {
+                    handleAddPreference(newPreferenceName);
+                  }}
+                  color="success"
+                >
+                  <AddIcon />
+                </IconButton>
+              ),
+            }}
+          />
+        </Grid>
       </Grid>
     </>
   );

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { UserAuth } from "../../context/AuthContext";
-import { get, ref } from "firebase/database";
+import { get, ref, set } from "firebase/database";
 import { database } from "../../firebase.config";
 import {
   Chip,
@@ -28,7 +28,7 @@ const OnboardReview = (props: OnboardPageProps) => {
     useState<TransportationModel[]>();
   const [socialPreferences, setSocialPreferences] =
     useState<SocialPreferenceModel[]>();
-  const [additionalInfo, setAdditionalInfo] = useState<string>();
+  const [additionalInfo, setAdditionalInfo] = useState<string>("");
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
@@ -43,6 +43,7 @@ const OnboardReview = (props: OnboardPageProps) => {
           setLifestylePreferences(
             lifestylePreferencesData.lifestylePreferences
           );
+          setAdditionalInfo(lifestylePreferencesData.additionalInfo);
         }
       });
 
@@ -103,8 +104,9 @@ const OnboardReview = (props: OnboardPageProps) => {
       padding: "20px",
       alignItems: "center",
       backgroundColor: "#F3F5EA",
-      margin: "1rem 15rem 1rem",
+      margin: "1rem 0",
       maxWidth: "45rem",
+      minWidth: " 43rem",
     },
     subContainer: {
       display: "flex",
@@ -114,6 +116,23 @@ const OnboardReview = (props: OnboardPageProps) => {
       justifyContent: "space-between",
     },
   };
+
+  const saveData = useCallback(async () => {
+    if (auth?.user) {
+      const lifestylePreferenceRef = ref(
+        database,
+        `users/${auth.user.id}/lifestylePreferences`
+      );
+      set(lifestylePreferenceRef, {
+        lifestylePreferences: lifestylePreferences,
+        additionalInfo: additionalInfo,
+      });
+    }
+  }, [additionalInfo, auth?.user, lifestylePreferences]);
+
+  useEffect(() => {
+    props.registerSave(saveData);
+  }, [props, props.registerSave, saveData]);
 
   return (
     <div style={styles.container}>
@@ -164,6 +183,8 @@ const OnboardReview = (props: OnboardPageProps) => {
             <Tooltip
               sx={{ cursor: "pointer" }}
               title={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
+              placement="top"
+              arrow
             >
               <InfoRoundedIcon />
             </Tooltip>

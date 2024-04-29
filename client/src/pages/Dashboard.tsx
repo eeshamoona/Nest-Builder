@@ -133,7 +133,10 @@ const Dashboard = () => {
         <button style={styles.button} onClick={() => navigate("/categories")}>
           Go to Categories
         </button>
-        <button style={styles.button} onClick={() => navigate("/onboarding")}>
+        <button
+          style={styles.button}
+          onClick={() => navigate("/onboarding/intro")}
+        >
           Go to Onboarding Flow
         </button>
       </div>

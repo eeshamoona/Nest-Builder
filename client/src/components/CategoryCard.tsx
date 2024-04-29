@@ -1,66 +1,249 @@
-import React from "react";
+import React, { useState } from "react";
 import { CategoryModel } from "../models/CategoryModel";
 import {
+  Autocomplete,
+  Button,
   Chip,
   Divider,
   Grid,
   IconButton,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const styles = {
   card: {
     border: "1px solid #ddd",
     borderRadius: "5px",
-    padding: "20px",
-    margin: "20px",
+    padding: "1rem",
     backgroundColor: "#F3F5EA",
   },
 };
 
-const CategoryCard = (category: CategoryModel) => {
+interface CategoryCardProps {
+  categoryProp: CategoryModel;
+  deleteCategoryCallback?: (category: CategoryModel) => void;
+}
+
+const CategoryCard = ({
+  categoryProp,
+  deleteCategoryCallback,
+}: CategoryCardProps) => {
+  const [editMode, setEditMode] = useState(false);
+  const [category, setCategory] = useState(categoryProp);
+
+  const [showPreferences, setShowPreferences] = useState(false);
+
+  const handleEditToggle = () => {
+    setEditMode(!editMode);
+  };
+
+  const handleChange = (field: string, value: string | string[]) => {
+    setCategory({ ...category, [field]: value });
+  };
+
+  const saveChanges = () => {
+    console.log("Saving data to the database...", category);
+    // Here you would typically call an API to save the updated category
+    setEditMode(false);
+  };
+
+  const handleDelete = () => {
+    console.log("Deleting category...", category);
+    if (deleteCategoryCallback) deleteCategoryCallback(category);
+  };
+
   return (
     <Paper style={styles.card}>
       <Stack direction={"row"} justifyContent={"space-between"}>
         <Stack direction={"row"} spacing={2}>
-          <Typography variant="h5">{category.title}</Typography>
-          <Divider orientation="vertical" flexItem />
-          <Typography variant="h5">{category.costPreference}</Typography>
-        </Stack>
-        <IconButton aria-label="edit" size="small">
-          <EditIcon fontSize="small" />
-        </IconButton>
-      </Stack>
-      <Typography mt={"1rem"} mb={"1rem"} variant="body1">
-        {category.userPreferences}
-      </Typography>
-      <Stack direction={"row"} justifyContent={"space-between"}>
-        <Stack direction={"column"} width="50%">
-          <Grid container spacing={1}>
-            {category.relatedSubcategories.map((subcategory, index) => (
-              <Grid item xs={6} key={index} style={{ display: "contents" }}>
-                <Chip
-                  label={subcategory}
-                  style={{ width: "fit-content", margin: "5px" }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Stack>
-        <Stack direction={"column"} justifyContent={"end"}>
-          <Stack direction={"row"} spacing={1}>
-            {category.environmentDescriptors.map((descriptor, index) => (
-              <Chip
-                key={index}
-                color="success"
-                label={descriptor}
-                style={{ margin: "5px" }}
+          {editMode ? (
+            <>
+              <TextField
+                variant="outlined"
+                label="Title"
+                value={category.title}
+                onChange={(e) => handleChange("title", e.target.value)}
               />
-            ))}
-          </Stack>
+              <TextField
+                variant="outlined"
+                label="Cost Preference"
+                value={category.costPreference}
+                onChange={(e) => handleChange("costPreference", e.target.value)}
+              />
+            </>
+          ) : (
+            <>
+              <Typography variant="h5">{category.title}</Typography>
+              <Divider orientation="vertical" flexItem />
+              <Typography variant="h5">{category.costPreference}</Typography>
+            </>
+          )}
+        </Stack>
+        <Stack direction={"row"} spacing={2}>
+          {editMode ? (
+            <Stack direction={"row"}>
+              <IconButton
+                onClick={saveChanges}
+                color="success"
+                sx={{
+                  height: "2.5rem",
+                  aspectRatio: 1,
+                }}
+              >
+                <CheckIcon />
+              </IconButton>
+              <IconButton
+                onClick={handleDelete}
+                color="error"
+                sx={{
+                  height: "2.5rem",
+                  aspectRatio: 1,
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Stack>
+          ) : (
+            <IconButton onClick={handleEditToggle} color="success">
+              <EditIcon />
+            </IconButton>
+          )}
+        </Stack>
+      </Stack>
+      {editMode ? (
+        <TextField
+          multiline
+          fullWidth
+          rows={4}
+          variant="outlined"
+          label="User Preferences"
+          value={category.userPreferences}
+          onChange={(e) => handleChange("userPreferences", e.target.value)}
+          margin="normal"
+        />
+      ) : (
+        <Stack direction={"row"}>
+          <Typography mt={"1rem"} mb={"1rem"} variant="body1">
+            {showPreferences
+              ? category.userPreferences
+              : `${category.userPreferences.substring(0, 250)}`}
+            <Button
+              size="small"
+              color="success"
+              variant="text"
+              onClick={() => setShowPreferences(!showPreferences)}
+            >
+              {showPreferences ? "Show less" : "... Show more"}
+            </Button>
+          </Typography>
+        </Stack>
+      )}
+      <Stack direction={"column"} spacing={2}>
+        <Stack direction={"row"}>
+          {editMode ? (
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={[]}
+              freeSolo
+              value={category.relatedSubcategories}
+              onChange={(event, newValue) => {
+                handleChange("relatedSubcategories", newValue);
+              }}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{
+                    marginTop: "0.25rem",
+                  }}
+                  variant="outlined"
+                  label="Add Subcategories"
+                  placeholder="Type and press enter"
+                />
+              )}
+            />
+          ) : (
+            <Stack direction="column">
+              <Typography variant="subtitle2" mb="0.5rem">
+                Related Subcategories:
+              </Typography>
+              <Grid container spacing={1}>
+                {category.relatedSubcategories.map((subcategory, index) => (
+                  <Grid item xs={6} key={index} style={{ display: "contents" }}>
+                    <Chip
+                      label={subcategory}
+                      style={{ width: "fit-content", margin: "5px" }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
+          )}
+        </Stack>
+        <Stack direction={"row"}>
+          {editMode ? (
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={[]}
+              freeSolo
+              fullWidth
+              value={category.environmentDescriptors}
+              onChange={(event, newValue) => {
+                handleChange("environmentDescriptors", newValue);
+              }}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    color="success"
+                    label={option}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Add Vibes"
+                  placeholder="Type and press enter"
+                />
+              )}
+            />
+          ) : (
+            <Stack direction="column">
+              <Typography variant="subtitle2" mb="0.5rem">
+                Vibes:
+              </Typography>
+              <Grid container spacing={1}>
+                {category.environmentDescriptors.map((subcategory, index) => (
+                  <Grid item xs={6} key={index} style={{ display: "contents" }}>
+                    <Chip
+                      label={subcategory}
+                      color="success"
+                      style={{ width: "fit-content", margin: "5px" }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Stack>
+          )}
         </Stack>
       </Stack>
     </Paper>

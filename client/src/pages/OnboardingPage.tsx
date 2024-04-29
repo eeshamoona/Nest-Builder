@@ -12,14 +12,14 @@ import OnboardPreferences from "../components/onboarding/OnboardPreferences";
 import OnboardCategories from "../components/onboarding/OnboardCategories";
 import OnboardReview from "../components/onboarding/OnboardReview";
 import OnboardMethod from "../components/onboarding/OnboardMethod";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const steps = [
-  "Intro",
-  "Transportation",
-  "Preferences",
-  "Review",
-  "Categories",
+  "intro",
+  "transportation",
+  "preferences",
+  "review",
+  "categories",
 ];
 
 const CustomStepIcon = (props: any) => {
@@ -30,6 +30,7 @@ const CustomStepIcon = (props: any) => {
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeStep, setActiveStep] = useState(0);
   const saveDataRef = useRef<(() => void) | null>(null);
 
@@ -42,6 +43,7 @@ const OnboardingPage = () => {
       saveDataRef.current();
     }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    navigate(`/onboarding/${steps[activeStep + 1].toLowerCase()}`);
   };
 
   const handleBack = () => {
@@ -49,7 +51,18 @@ const OnboardingPage = () => {
       saveDataRef.current();
     }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    navigate(`/onboarding/${steps[activeStep - 1].toLowerCase()}`);
   };
+
+  useEffect(() => {
+    const path = location.pathname.split("/").pop();
+    const index = steps.indexOf(path || "");
+    if (index !== -1) {
+      setActiveStep(index);
+    } else {
+      navigate("/");
+    }
+  }, [location, navigate]);
 
   const getStepContent = (
     step: number,
@@ -72,12 +85,6 @@ const OnboardingPage = () => {
   };
 
   const stepContent = getStepContent(activeStep, registerSave);
-
-  useEffect(() => {
-    if (stepContent === null) {
-      navigate("/");
-    }
-  }, [navigate, stepContent]);
 
   const styles = {
     container: {
@@ -113,16 +120,18 @@ const OnboardingPage = () => {
     <div style={styles.container}>
       <Stepper
         activeStep={activeStep}
-        // alternativeLabel
         style={{ margin: "1rem", marginTop: "3rem", width: "100%" }}
       >
         {steps.map((label, index) => (
           <Step
             key={label}
+            sx={{
+              textTransform: "capitalize",
+            }}
             onClick={() => {
-              // Only allow user to navigate to previous steps
               if (index <= activeStep) {
                 setActiveStep(index);
+                navigate(`/onboarding/${label.toLowerCase()}`);
               }
             }}
           >
@@ -131,9 +140,7 @@ const OnboardingPage = () => {
         ))}
       </Stepper>
       <div style={{ flex: 1, overflow: "auto" }}>
-        <Suspense fallback={<CircularProgress />}>
-          {stepContent || <div>Unknown step</div>}
-        </Suspense>
+        <Suspense fallback={<CircularProgress />}>{stepContent}</Suspense>
       </div>
       <div style={styles.buttonContainer}>
         <Button style={styles.button} onClick={handleBack}>

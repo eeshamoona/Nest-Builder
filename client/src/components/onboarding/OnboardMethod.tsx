@@ -413,14 +413,17 @@ const OnboardMethod = (props: OnboardPageProps) => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ marginTop: "1rem", textAlign: "center" }}>
+      <Typography
+        variant="h4"
+        sx={{ marginTop: "1rem", marginBottom: "0.5rem", textAlign: "center" }}
+      >
         Let’s Make Your New City Feel Like Home
       </Typography>
       <Typography variant="body2" sx={{ textAlign: "center" }}>
         Nested leverages Gemini 1.5 (Google’s LLM) to find places in your new
         city that can facilitate your lifestyle.
       </Typography>
-      <Typography variant="body2" mb="1rem" sx={{ textAlign: "center" }}>
+      <Typography variant="body2" mb="1.5rem" sx={{ textAlign: "center" }}>
         First, please answer some questions so Nested can provide better
         suggestions:
       </Typography>

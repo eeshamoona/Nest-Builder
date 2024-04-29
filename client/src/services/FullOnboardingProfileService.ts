@@ -45,10 +45,10 @@ export function createCategoriesInstruction() {
   return `
     "categories": [
       {
-        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping'. Do not include categories that are related to Transportation.
-        "userPreferences": "string", // A narrative that describes user preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
-        "environmentDescriptors": ["string"], // Descriptors for the ambiance of places in this category, e.g., 'lively', 'quiet', 'family-friendly'.
-        "relatedSubcategories": ["string"], // Subcategories within the main category, e.g., types of cuisines or forms of entertainment.
+        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping', etc.
+        "userPreferences": "string", // A narrative in the first-person that describes the user's preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
+        "environmentDescriptors": ["string"], // Up to 6 adjectives describing the environment the user prefers for this category in Title Case
+        "relatedSubcategories": ["string"], // Related subcategories within the main category, e.g., types of cuisines or forms of entertainment.
         "costPreference": "string", // Text string representing the user's preferred cost range for this category represented by one of these options '$', '$$', $$$, $$$$)
         "confidence": "number" // The system's confidence level in its recommendations, on a scale from 0 to 1.
       }

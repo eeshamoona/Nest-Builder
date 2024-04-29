@@ -76,7 +76,7 @@ function App() {
                 }
               />
               <Route
-                path="/onboarding"
+                path="/onboarding/*"
                 element={
                   <Protected>
                     <OnboardingPage />
