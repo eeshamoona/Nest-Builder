@@ -152,7 +152,7 @@ const MyNestPage = () => {
     },
     currentLocation: {
       position: "absolute" as "absolute",
-      bottom: "13rem",
+      bottom: "14rem",
       right: "2.6rem",
       zIndex: 100,
       backgroundColor: "white",
@@ -199,7 +199,7 @@ const MyNestPage = () => {
         variant="h3"
         sx={{ marginTop: "1rem", alignSelf: "center", fontWeight: "bold" }}
       >
-        Your Nest
+        My Nest
       </Typography>
       <Stack direction="row" justifyContent={"space-between"} p="0.5rem">
         <Typography variant="body1" sx={{ alignSelf: "end", maxWidth: "50%" }}>
