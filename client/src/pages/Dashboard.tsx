@@ -139,6 +139,9 @@ const Dashboard = () => {
         >
           Go to Onboarding Flow
         </button>
+        <button style={styles.button} onClick={() => navigate("/my-nest")}>
+          Go to My Nest
+        </button>
       </div>
     </div>
   );

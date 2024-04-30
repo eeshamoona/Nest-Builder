@@ -12,9 +12,18 @@ from scripts.system_instructions import generate_content
 from scripts.file_input_system_instructions import generate_content_with_file
 from scripts.people_info_api_request import fetch_people_info
 from scripts.google_drive_file_extractor import download_file
+from scripts.google_place_info_extractor import get_google_info
 
 app = Flask(__name__)
 CORS(app)  
+
+@app.route('/get-google-place-info', methods=['GET'])
+def get_google_place_info_route():
+    address = request.args.get('address', '')
+    business_name = request.args.get('business_name', '')
+    result = get_google_info(address, business_name)
+    print(jsonify(result))
+    return jsonify(result)
 
 @app.route('/get-google-drive-file', methods=['POST'])
 def get_google_drive_file_route():

@@ -10,10 +10,6 @@ import AddIcon from "@mui/icons-material/Add";
 import GenerateWithGemini from "../GenerateWithGemini";
 
 const OnboardCategories = (props: OnboardPageProps) => {
-  const [originalProfileData, setOriginalProfileData] = React.useState<
-    CategoryModel[]
-  >([]);
-
   const [categories, setCategories] = React.useState<
     {
       category: CategoryModel;
@@ -35,7 +31,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
             id,
           })
         );
-        setOriginalProfileData(categoriesArray);
         setCategories(
           categoriesArray.map((category) => ({
             category,
@@ -52,8 +47,10 @@ const OnboardCategories = (props: OnboardPageProps) => {
 
   // TODO: Might not need this as each card handles save on their own, this might be helpful for letting the search page know to start generating results...
   const saveData = useCallback(() => {
-    console.log("Need to still save categories: ", { originalProfileData });
-  }, [originalProfileData]);
+    console.log(
+      "Do we need to save anything here before going to the search page?"
+    );
+  }, []);
 
   useEffect(() => {
     props.registerSave(saveData);
@@ -80,7 +77,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
   };
 
   const handleAddNewCategory = () => {
-    console.log("Add new category");
     setCategories([
       ...categories,
       {
@@ -97,8 +93,6 @@ const OnboardCategories = (props: OnboardPageProps) => {
     ]);
   };
   const handleDeleteCategory = (category: CategoryModel) => {
-    console.log("Delete category: ", category);
-
     if (auth?.user) {
       const categoryRef = ref(
         database,
