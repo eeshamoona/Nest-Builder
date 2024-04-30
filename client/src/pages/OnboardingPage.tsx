@@ -42,16 +42,24 @@ const OnboardingPage = () => {
     if (saveDataRef.current) {
       saveDataRef.current();
     }
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    navigate(`/onboarding/${steps[activeStep + 1].toLowerCase()}`);
+    if (activeStep + 1 < steps.length) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      navigate(`/onboarding/${steps[activeStep + 1].toLowerCase()}`);
+    } else {
+      navigate("/");
+    }
   };
 
   const handleBack = () => {
     if (saveDataRef.current) {
       saveDataRef.current();
     }
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    navigate(`/onboarding/${steps[activeStep - 1].toLowerCase()}`);
+    if (activeStep - 1 >= 0) {
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+      navigate(`/onboarding/${steps[activeStep - 1].toLowerCase()}`);
+    } else {
+      navigate("/");
+    }
   };
 
   useEffect(() => {

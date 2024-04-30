@@ -3,20 +3,12 @@ import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { UserAuth } from "../../context/AuthContext";
 import { get, ref, set } from "firebase/database";
 import { database } from "../../firebase.config";
-import {
-  Chip,
-  Paper,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Chip, Paper, Stack, TextField, Typography } from "@mui/material";
 import User from "../../models/UserModel";
 import { TransportationModel } from "../../models/TransporationModel";
 import { getAge } from "../../utils/RandomUtils";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
+import GenerateWithGemini from "../GenerateWithGemini";
 
 const GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
 
@@ -177,18 +169,9 @@ const OnboardReview = (props: OnboardPageProps) => {
           <Typography variant="subtitle1">
             I have the following routines and preferences in my locations:{" "}
           </Typography>
-          <Stack direction={"row"} spacing={1}>
-            <AutoAwesomeIcon />
-            <Typography variant="subtitle2">Generated with Gemini</Typography>
-            <Tooltip
-              sx={{ cursor: "pointer" }}
-              title={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
-              placement="top"
-              arrow
-            >
-              <InfoRoundedIcon />
-            </Tooltip>
-          </Stack>
+          <GenerateWithGemini
+            prompt={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
+          />
         </div>
         <TextField
           multiline

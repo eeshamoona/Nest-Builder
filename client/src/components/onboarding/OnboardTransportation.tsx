@@ -7,6 +7,7 @@ import { TransportationModel } from "../../models/TransporationModel";
 import TransportationMethodItem from "../TransportationMethodItem";
 import { Paper, Stack, TextField, Typography } from "@mui/material";
 import GoogleAutocomplete from "react-google-autocomplete";
+import GenerateWithGemini from "../GenerateWithGemini";
 
 type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
@@ -310,12 +311,16 @@ const OnboardTransportation = (props: OnboardPageProps) => {
             />
           </div>
           <Paper style={styles.sidebar}>
-            <Typography
-              variant="h5"
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
               sx={{ fontWeight: "bold", margin: "1rem", marginBottom: 0 }}
             >
-              Transportation Methods
-            </Typography>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                Transportation Methods
+              </Typography>
+              <GenerateWithGemini prompt={"Something goes here"} />
+            </Stack>
             <Typography
               variant="body2"
               sx={{

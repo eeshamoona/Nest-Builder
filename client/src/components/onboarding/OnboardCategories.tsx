@@ -1,44 +1,56 @@
 import React, { useCallback, useEffect } from "react";
 import { UserAuth } from "../../context/AuthContext";
 import { database } from "../../firebase.config";
-import { ref, get } from "firebase/database";
+import { ref, get, remove } from "firebase/database";
 import CategoryCard from "../CategoryCard";
 import { CategoryModel } from "../../models/CategoryModel";
 import { OnboardPageProps } from "../../models/OnboardPageProps";
-import { Grid, IconButton, Tooltip, Typography } from "@mui/material";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
+import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-
-const GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
+import GenerateWithGemini from "../GenerateWithGemini";
 
 const OnboardCategories = (props: OnboardPageProps) => {
   const [originalProfileData, setOriginalProfileData] = React.useState<
     CategoryModel[]
   >([]);
+
+  const [categories, setCategories] = React.useState<
+    {
+      category: CategoryModel;
+      editMode: boolean;
+    }[]
+  >([]);
   const auth = UserAuth();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      if (auth?.user) {
-        const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
-        const categoriesSnapshot = await get(categoriesRef);
-        const categoriesData = categoriesSnapshot.val();
+  const fetchCategories = useCallback(async () => {
+    if (auth?.user) {
+      const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
+      const categoriesSnapshot = await get(categoriesRef);
+      const categoriesData = categoriesSnapshot.val();
 
-        if (categoriesData) {
-          const categoriesArray = Object.entries(categoriesData).map(
-            ([id, category]) => ({
-              ...(category as CategoryModel),
-              id,
-            })
-          );
-          setOriginalProfileData(categoriesArray);
-        }
+      if (categoriesData) {
+        const categoriesArray = Object.entries(categoriesData).map(
+          ([id, category]) => ({
+            ...(category as CategoryModel),
+            id,
+          })
+        );
+        setOriginalProfileData(categoriesArray);
+        setCategories(
+          categoriesArray.map((category) => ({
+            category,
+            editMode: false,
+          }))
+        );
       }
-    };
-
-    fetchCategories();
+    }
   }, [auth?.user]);
 
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  // TODO: Might not need this as each card handles save on their own, this might be helpful for letting the search page know to start generating results...
   const saveData = useCallback(() => {
     console.log("Need to still save categories: ", { originalProfileData });
   }, [originalProfileData]);
@@ -52,28 +64,54 @@ const OnboardCategories = (props: OnboardPageProps) => {
       display: "flex",
       flexDirection: "column" as "column",
       alignItems: "center",
-      height: "80vh",
+      height: "100%",
     },
     profileContainer: {
       display: "flex",
       gap: "1rem",
-      height: "80%",
-      margin: "10px",
+      overflowY: "auto" as "auto",
+      maxHeight: "100%",
     },
     scrollableContainer: {
       display: "flex",
       flexDirection: "column" as "column",
       gap: "1rem",
-      overflowY: "auto" as "auto",
     },
   };
 
   const handleAddNewCategory = () => {
     console.log("Add new category");
+    setCategories([
+      ...categories,
+      {
+        category: {
+          title: "",
+          userPreferences: "",
+          environmentDescriptors: [],
+          relatedSubcategories: [],
+          costPreference: "",
+          confidence: 0,
+        },
+        editMode: true,
+      },
+    ]);
   };
-
   const handleDeleteCategory = (category: CategoryModel) => {
     console.log("Delete category: ", category);
+
+    if (auth?.user) {
+      const categoryRef = ref(
+        database,
+        `users/${auth.user.id}/categories/${category.title}`
+      );
+      get(categoryRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          remove(categoryRef).then(() => {
+            fetchCategories();
+          });
+        }
+      });
+    }
   };
 
   return (
@@ -85,36 +123,24 @@ const OnboardCategories = (props: OnboardPageProps) => {
         These are the categories we believe you would be interested, feel free
         to edit or add more
       </Typography>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Tooltip
-          sx={{ cursor: "pointer" }}
-          title={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
-          placement="right"
-          arrow
-        >
-          <InfoRoundedIcon />
-        </Tooltip>
+      <Stack direction={"row"} justifyContent={"space-between"} width={"100%"}>
+        <GenerateWithGemini prompt={"Something to go here in markdown"} />
         <IconButton onClick={handleAddNewCategory} color="success">
           <AddIcon />
         </IconButton>
-      </div>
+      </Stack>
       <div style={styles.profileContainer}>
         <div style={styles.scrollableContainer}>
           <Grid container spacing={2}>
-            {originalProfileData
-              .sort((a, b) => b.confidence - a.confidence)
+            {categories
+              .sort((a, b) => b.category.confidence - a.category.confidence)
               .map((category) => (
-                <Grid item xs={12} sm={6} key={category.title}>
+                <Grid item xs={12} sm={6} key={category.category.title}>
                   <CategoryCard
-                    key={category.title}
-                    categoryProp={category}
+                    key={category.category.title}
+                    categoryProp={category.category}
                     deleteCategoryCallback={handleDeleteCategory}
+                    editModeProp={category.editMode}
                   />
                 </Grid>
               ))}

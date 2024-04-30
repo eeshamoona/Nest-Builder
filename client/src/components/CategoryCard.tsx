@@ -15,6 +15,9 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { set, update, get, ref } from "firebase/database";
+import { UserAuth } from "../context/AuthContext";
+import { database } from "../firebase.config";
 
 const styles = {
   card: {
@@ -28,13 +31,16 @@ const styles = {
 interface CategoryCardProps {
   categoryProp: CategoryModel;
   deleteCategoryCallback?: (category: CategoryModel) => void;
+  editModeProp?: boolean;
 }
 
 const CategoryCard = ({
   categoryProp,
   deleteCategoryCallback,
+  editModeProp,
 }: CategoryCardProps) => {
-  const [editMode, setEditMode] = useState(false);
+  const auth = UserAuth();
+  const [editMode, setEditMode] = useState(editModeProp || false);
   const [category, setCategory] = useState(categoryProp);
 
   const [showPreferences, setShowPreferences] = useState(false);
@@ -49,7 +55,20 @@ const CategoryCard = ({
 
   const saveChanges = () => {
     console.log("Saving data to the database...", category);
-    // Here you would typically call an API to save the updated category
+    // TODO: If title is not empty, save the data to the database
+    if (auth?.user && category.title.trim() !== "") {
+      const categoryRef = ref(
+        database,
+        `users/${auth.user?.id}/categories/${category.title}`
+      );
+      get(categoryRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          update(categoryRef, category);
+        } else {
+          set(categoryRef, category);
+        }
+      });
+    }
     setEditMode(false);
   };
 
@@ -67,12 +86,14 @@ const CategoryCard = ({
               <TextField
                 variant="outlined"
                 label="Title"
+                placeholder="Category Title"
                 value={category.title}
                 onChange={(e) => handleChange("title", e.target.value)}
               />
               <TextField
                 variant="outlined"
                 label="Cost Preference"
+                placeholder="$, $$, $$$, $$$$"
                 value={category.costPreference}
                 onChange={(e) => handleChange("costPreference", e.target.value)}
               />
@@ -123,6 +144,7 @@ const CategoryCard = ({
           rows={4}
           variant="outlined"
           label="User Preferences"
+          placeholder="Enter your preferences here"
           value={category.userPreferences}
           onChange={(e) => handleChange("userPreferences", e.target.value)}
           margin="normal"
@@ -152,6 +174,7 @@ const CategoryCard = ({
               id="tags-outlined"
               options={[]}
               freeSolo
+              fullWidth
               value={category.relatedSubcategories}
               onChange={(event, newValue) => {
                 handleChange("relatedSubcategories", newValue);

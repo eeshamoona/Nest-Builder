@@ -28,6 +28,8 @@ import UserModel from "../../models/UserModel";
 import googleDriveIcon from "../../assets/icons8-google-drive.svg";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import GenerateWithGemini from "../GenerateWithGemini";
+import { initialIntroPromptMarkdown } from "../../constants/OnboardingTooltipConstants";
 
 const OnboardMethod = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -489,12 +491,20 @@ const OnboardMethod = (props: OnboardPageProps) => {
         </div>
         <div style={styles.halfWidth}>
           <Paper variant="outlined" style={styles.paper}>
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              width={"100%"}
             >
-              AI Onboarding [Optional]
-            </Typography>
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}
+              >
+                AI Onboarding [Optional]
+              </Typography>
+
+              <GenerateWithGemini prompt={initialIntroPromptMarkdown} />
+            </Stack>
             <Typography
               variant="body2"
               sx={{ alignSelf: "center", marginBottom: "1.5rem" }}
