@@ -8,12 +8,10 @@ import requests
 def get_google_info(address, business_name):
     """
     Retrieves the place ID, Google Maps URL link, and a photo for a given address.
-
     Args:
         address (str): The full address of the place to search for.
-
     Returns:
-        tuple: A tuple containing the place ID, Google Maps URL link, and a photo, or None if not found.
+        dict: A dictionary containing the place ID, Google Maps URL link, and a photo for the given address.
     """
     API_KEY = os.getenv('REACT_APP_placesAPIKey', '')
     base_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
@@ -24,13 +22,9 @@ def get_google_info(address, business_name):
         "key": API_KEY
     }
 
-    print(f"Requesting: {base_url} with params: {params}")
-
     try:
         response = requests.get(base_url, params=params)
         data = response.json()
-
-        print(f"Response data: {data}")
 
         if data["status"] == "OK":
             candidates = data.get("candidates", [])
