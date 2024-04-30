@@ -103,6 +103,7 @@ export function transformApiResponse(data: ApiResponse): CategoryModel[] {
       userPreferences: properties.userPreferences.description || "",
       environmentDescriptors:
         properties.environmentDescriptors.description || [],
+      costPreference: "",
       relatedSubcategories: properties.relatedSubcategories.description || [],
       confidence: parseFloat(properties.confidence.description) || 0,
     };

@@ -8,7 +8,6 @@ const ResultCard = (result: ResultModel) => {
       borderRadius: "4px",
       padding: "10px",
       margin: "10px 0",
-      fontFamily: "Arial, sans-serif",
       transition: "0.3s",
       ":hover": {
         boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",

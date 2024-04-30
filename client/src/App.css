@@ -1,3 +1,31 @@
+@font-face {
+  font-family: "Product Sans Bold Italic";
+  src: url("../src/assets/product-sans/Product Sans Bold Italic.ttf")
+    format("truetype");
+  font-weight: 700; /* Bold weight */
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Product Sans Bold";
+  src: url("../src/assets/product-sans/Product Sans Bold.ttf")
+    format("truetype");
+  font-weight: 700; /* Bold weight */
+}
+
+@font-face {
+  font-family: "Product Sans Italic";
+  src: url("../src/assets/product-sans/Product Sans Italic.ttf")
+    format("truetype");
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Product Sans Regular";
+  src: url("../src/assets/product-sans/Product Sans Regular.ttf")
+    format("truetype");
+}
+
 .App-container {
   display: flex;
   flex-direction: row;

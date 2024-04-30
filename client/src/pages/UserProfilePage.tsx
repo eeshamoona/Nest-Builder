@@ -221,7 +221,7 @@ const UserProfilePage = () => {
             {originalProfileData
               .sort((a, b) => a.title.localeCompare(b.title))
               .map((category) => (
-                <CategoryCard key={category.title} {...category} />
+                <CategoryCard key={category.title} categoryProp={category} />
               ))}
           </div>
           {newProfileData && newProfileData.length > 0 && (
@@ -229,7 +229,7 @@ const UserProfilePage = () => {
               {newProfileData
                 .sort((a, b) => a.title.localeCompare(b.title))
                 .map((category) => (
-                  <CategoryCard key={category.title} {...category} />
+                  <CategoryCard key={category.title} categoryProp={category} />
                 ))}
             </div>
           )}
