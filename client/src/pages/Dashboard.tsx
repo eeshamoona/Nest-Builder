@@ -142,6 +142,9 @@ const Dashboard = () => {
         <button style={styles.button} onClick={() => navigate("/my-nest")}>
           Go to My Nest
         </button>
+        <button style={styles.button} onClick={() => navigate("/explore")}>
+          Go to Explore
+        </button>
       </div>
     </div>
   );
