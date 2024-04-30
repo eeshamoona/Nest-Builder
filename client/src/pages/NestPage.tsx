@@ -4,11 +4,34 @@ import { generateNestAPIRequest } from "../services/NestBuilderService";
 import { UserAuth } from "../context/AuthContext";
 import { database } from "../firebase.config";
 import { ref, get } from "firebase/database";
+import { CategoryModel } from "../models/CategoryModel";
 
 const NestPage = () => {
   const auth = UserAuth();
   const navigate = useNavigate();
   const [response, setResponse] = useState<any>();
+
+  async function fetchCategories(): Promise<CategoryModel[] | null> {
+    if (auth?.user) {
+      const categoriesRef = ref(database, `users/${auth.user.id}/categories`);
+      const categoriesSnapshot = await get(categoriesRef);
+      const categoriesData = categoriesSnapshot.val();
+
+      if (categoriesData) {
+        const categoriesArray = Object.entries(categoriesData).map(
+          ([id, category]) => ({
+            ...(category as CategoryModel),
+          })
+        );
+        console.log(JSON.stringify(categoriesArray[0]));
+        return categoriesArray;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   
   useEffect(() => {
     const fetchNest = async () => {
@@ -25,6 +48,7 @@ const NestPage = () => {
 
           setResponse(response);
         }
+        fetchCategories();
         runPrompt();
       }
     }
@@ -33,16 +57,6 @@ const NestPage = () => {
     }
   }, []);
 
-  // return (
-  //   <div>
-  //     <div>
-  //       {JSON.stringify(response)}
-  //     </div>
-  //     <div>
-  //       {response[0].title}
-  //     </div>
-  //   </div>
-  // )
   if (!response) {
     return <div />
   }

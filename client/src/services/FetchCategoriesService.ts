@@ -1,14 +1,12 @@
 import { database } from "../firebase.config";
 import { ref, get } from "firebase/database";
-import { useNavigate } from "react-router-dom";
 import { CategoryModel } from "../models/CategoryModel";
 import { UserAuth } from "../context/AuthContext";
 
 
 
-async function fetchUserCategories(): Promise<CategoryModel[]> {
+async function fetchUserCategories(): Promise<CategoryModel[] | null> {
   const auth = UserAuth();
-  const navigate = useNavigate();
   let categoriesArray: CategoryModel[];
 
   if (auth?.user) {
@@ -23,6 +21,14 @@ async function fetchUserCategories(): Promise<CategoryModel[]> {
           id,
         })
       );
+      return categoriesArray;
+    } else {
+      return null
     }
   }
+  else {
+    return null;
+  }
 }
+
+export { fetchUserCategories };
