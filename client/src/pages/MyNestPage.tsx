@@ -20,42 +20,7 @@ import EastIcon from "@mui/icons-material/East";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
-
-const defaultSavedLocations: SavedLocationModel[] = [
-  // Parks
-  {
-    title: "Millennium Park",
-    address: "Chicago, IL 60602",
-    personalizedSummary:
-      "Beautiful park with art installations, gardens, and events.",
-    reccomendationReasoning: "You like to be around nature and art.",
-    comments: "Great place to relax and enjoy the city.",
-    personalRating: 4,
-    category: "Park",
-  },
-  {
-    title: "Lincoln Park",
-    address: "2430 N Cannon Dr, Chicago, IL 60614",
-    personalizedSummary:
-      "Something for everyone, with animals, nature, and lake views.",
-    reccomendationReasoning: "You enjoy a variety of activities.",
-    comments:
-      "Great for a day trip with the zoo, conservatory, and lakefront access.",
-    personalRating: 5,
-    category: "Park",
-  },
-
-  // Grocery Stores
-  {
-    title: "Trader Joe's",
-    address: "44 E Ontario St, Chicago, IL 60611",
-    personalizedSummary: "Great deals on groceries and unique finds.",
-    reccomendationReasoning: "You like to find unique products.",
-    comments: "Love their unique products and affordable prices.",
-    personalRating: 5,
-    category: "Grocery",
-  },
-];
+import { DEFAULT_SAVED_LOCATIONS } from "../constants/SearchPageConstants";
 
 const MyNestPage = () => {
   const auth = UserAuth();
@@ -64,6 +29,9 @@ const MyNestPage = () => {
   const mapInstance = useRef<google.maps.Map | null>(null);
   const [homeAddress, setHomeAddress] = useState<string>(
     "1600 Amphitheatre Parkway, Mountain View, CA"
+  );
+  const [savedLocations, setSavedLocations] = useState<SavedLocationModel[]>(
+    DEFAULT_SAVED_LOCATIONS
   );
 
   useEffect(() => {
@@ -76,6 +44,14 @@ const MyNestPage = () => {
           if (userData.homeAddress) {
             setHomeAddress(userData.homeAddress);
           }
+        }
+      });
+
+      const nestRef = ref(database, `users/${userId}/nest`);
+      get(nestRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const nestData = snapshot.val();
+          setSavedLocations(Object.values(nestData));
         }
       });
     }
@@ -111,7 +87,7 @@ const MyNestPage = () => {
       });
 
       // Plot default saved locations
-      defaultSavedLocations.forEach((savedLocation) => {
+      savedLocations.forEach((savedLocation) => {
         geocoder.geocode(
           { address: savedLocation.address },
           (results, status) => {
@@ -127,7 +103,7 @@ const MyNestPage = () => {
         );
       });
     }
-  }, [homeAddress]);
+  }, [homeAddress, savedLocations]);
 
   const styles = {
     container: {
@@ -160,7 +136,7 @@ const MyNestPage = () => {
   };
 
   const categories = Array.from(
-    new Set(defaultSavedLocations.map((location) => location.category))
+    new Set(savedLocations.map((location) => location.category))
   ).sort();
 
   const deleteLocation = (location: SavedLocationModel) => {
@@ -219,7 +195,7 @@ const MyNestPage = () => {
             <Button
               variant="contained"
               color="success"
-              onClick={() => navigate("/search-prompt")}
+              onClick={() => navigate("/explore")}
               sx={styles.exploreButton}
             >
               <Typography variant="caption" style={{ fontSize: "0.75rem" }}>
@@ -259,7 +235,7 @@ const MyNestPage = () => {
                     padding: 0,
                   }}
                 >
-                  {defaultSavedLocations
+                  {savedLocations
                     .filter((location) => location.category === category)
                     .map((location) => (
                       <MyNestCard

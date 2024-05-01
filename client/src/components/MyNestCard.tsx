@@ -15,6 +15,9 @@ import {
 import GenerateWithGemini from "./GenerateWithGemini";
 import DeleteIcon from "@mui/icons-material/Delete";
 import googleMapsIcon from "../assets/icons8-google-maps.svg";
+import { UserAuth } from "../context/AuthContext";
+import { ref, get } from "firebase/database";
+import { database } from "../firebase.config";
 
 interface MyNestCardProps {
   location: SavedLocationModel;
@@ -22,16 +25,31 @@ interface MyNestCardProps {
 }
 
 const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
+  const auth = UserAuth();
   const [imageUrl, setImageUrl] = useState("https://via.placeholder.com/150");
   const [mapsLink, setMapsLink] = useState("https://www.google.com/maps");
+  const [distance, setDistance] = useState("N/A");
+  const [duration, setDuration] = useState("N/A");
 
   useEffect(() => {
     const fetchImage = async () => {
+      let tempHomeAddress = "1234 Main St, San Francisco, CA 94123";
+      if (auth?.user) {
+        const userRef = ref(database, `users/${auth.user.id}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          tempHomeAddress = userData.homeAddress;
+        }
+      }
+
       try {
         const response = await fetch(
           `http://localhost:5000/get-google-place-info?address=${encodeURIComponent(
             location.address
-          )}&business_name=${encodeURIComponent(location.title)}`,
+          )}&place=${encodeURIComponent(
+            location.place
+          )}&home_address=${encodeURIComponent(tempHomeAddress)}`,
           {
             method: "GET",
             headers: {
@@ -44,6 +62,8 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
           placeID: string;
           mapsLink: string;
           photoURL: string;
+          distance: string;
+          duration: string;
         } = await response.json();
         console.log("Found place ID", data.placeID);
 
@@ -53,6 +73,12 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
         if (data.photoURL) {
           setImageUrl(data.photoURL);
         }
+        if (data.distance) {
+          setDistance(data.distance);
+        }
+        if (data.duration) {
+          setDuration(data.duration);
+        }
       } catch (error) {
         console.error("Error fetching image from Google Places API:", error);
       }
@@ -61,7 +87,7 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
     if (location.address) {
       fetchImage();
     }
-  }, [location]);
+  }, [auth?.user, location]);
 
   const styles = {
     paper: {
@@ -85,7 +111,10 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
   return (
     <Paper elevation={1} style={styles.paper}>
       <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h6">{location.title}</Typography>
+        <Typography variant="h6">{location.place}</Typography>
+        {location.place !== location.title && (
+          <Typography variant="subtitle1">{location.title}</Typography>
+        )}
         <Stack direction={"row"} spacing={1}>
           <Tooltip placement="top" title="Go to Google Maps">
             <IconButton
@@ -121,7 +150,9 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
       <Stack direction="row" spacing={1} mb="0.5rem">
         <Typography variant="body2">{location.address}</Typography>
         <Divider orientation="vertical" flexItem />
-        <Typography variant="body2">0.2 miles</Typography>
+        <Typography variant="body2">{distance}</Typography>
+        <Divider orientation="vertical" flexItem />
+        <Typography variant="body2">{duration}</Typography>
       </Stack>
       <Stack direction="row" spacing={2} mb="0.5rem">
         <Stack direction="column" spacing={0} style={{ flex: 1.5 }}>

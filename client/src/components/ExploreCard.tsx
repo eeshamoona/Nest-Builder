@@ -106,6 +106,7 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
       const nestRef = ref(database, `users/${auth.user?.id}/nest`);
       push(nestRef, {
         title: result.title,
+        place: result.place,
         address: result.address,
         personalizedSummary: result.personalizedSummary,
         reccomendationReasoning: result.reccomendationReasoning,
