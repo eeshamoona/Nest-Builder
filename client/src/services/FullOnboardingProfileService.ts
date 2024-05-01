@@ -18,7 +18,7 @@ const task = `
 2. Analyze the JSON data to identify key search terms and locations silently.
 3. Access Google Maps & Places APIs for additional insights into the search data silently.
 4. Analyze patterns in the search data to deduce lifestyle preferences and routine activities of the user silently.
-5. Generate and output a JSON structure with transportation preferences of the user based on the analysis. The output should strictly adhere to the specified JSON format without additional commentary.
+5. Generate and output a JSON structure with preferences of the user based on the analysis. The output should strictly adhere to the specified JSON format without additional commentary.
 `;
 
 export function createAddressInstruction() {

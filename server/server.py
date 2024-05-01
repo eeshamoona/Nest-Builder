@@ -42,11 +42,12 @@ def fetch_people_info_route():
 
 @app.route('/generate-content', methods=['POST'])
 def generate_content_route():
+    print("Generating content")
     data = request.get_json()
     system_instruction = data.get('system_instruction', '')
     search_prompt = data.get('search_prompt', '')
     result = generate_content(system_instruction, search_prompt)
-    return result.replace("```json\n", "").replace("```", "")
+    return result
 
 @app.route('/generate-profile', methods=['POST'])
 def generate_profile_route():

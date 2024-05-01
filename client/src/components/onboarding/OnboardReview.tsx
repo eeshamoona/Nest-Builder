@@ -9,6 +9,7 @@ import { TransportationModel } from "../../models/TransporationModel";
 import { getAge } from "../../utils/RandomUtils";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import GenerateWithGemini from "../GenerateWithGemini";
+import { getTransportationString } from "../../services/ExploreService";
 
 const GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
 
@@ -16,8 +17,9 @@ const OnboardReview = (props: OnboardPageProps) => {
   const auth = UserAuth();
   const [lifestylePreferences, setLifestylePreferences] = useState<string>();
   const [addressParts, setAddressParts] = useState<string[]>(); // split the user's address into street, city, state, and zip code
-  const [transportationPreferences, setTransportationPreferences] =
-    useState<TransportationModel[]>();
+  const [transportationPreferences, setTransportationPreferences] = useState<
+    TransportationModel[]
+  >([]);
   const [socialPreferences, setSocialPreferences] =
     useState<SocialPreferenceModel[]>();
   const [additionalInfo, setAdditionalInfo] = useState<string>("");
@@ -75,8 +77,11 @@ const OnboardReview = (props: OnboardPageProps) => {
       );
       get(transportationRef).then((snapshot) => {
         if (snapshot.exists()) {
-          const transportationData = snapshot.val();
-          setTransportationPreferences(transportationData);
+          const transportationData: Record<string, TransportationModel> =
+            snapshot.val();
+          const transportationArray: TransportationModel[] =
+            Object.values(transportationData);
+          setTransportationPreferences(transportationArray);
           console.log("Transportation Data: ", transportationData);
         }
       });
@@ -145,25 +150,7 @@ const OnboardReview = (props: OnboardPageProps) => {
           {user?.gender}, and I moved/am moving to{" "}
           {addressParts ? addressParts[1] : ""}. My address is{" "}
           {addressParts ? addressParts[0] : ""}, and I prefer to travel by{" "}
-          {transportationPreferences &&
-            (() => {
-              const preferences = Object.entries(transportationPreferences)
-                .filter(([key, value]) => value.selected)
-                .sort(
-                  ([keyA, valueA], [keyB, valueB]) =>
-                    valueA.radius - valueB.radius
-                )
-                .map(
-                  ([key, value]) => `${value.method} (${value.radius} miles)`
-                );
-
-              if (preferences.length > 1) {
-                const lastPreference = preferences.pop();
-                return preferences.join(", ") + ", and " + lastPreference;
-              } else {
-                return preferences[0];
-              }
-            })()}
+          {getTransportationString(transportationPreferences || [])}.{" "}
         </Typography>
         <div style={styles.subContainer}>
           <Typography variant="subtitle1">
