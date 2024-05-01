@@ -140,10 +140,10 @@ export const generateAPIRequest = async (
           place: result.place,
           address: result.address,
           personalizedSummary: result.personalizedSummary,
-          recommendationReasoning: result.recommendationReasoning,
+          reccomendationReasoning: result.reccomendationReasoning,
           confidence: result.confidence,
           category: category.title,
-        };
+        } as ExploreCardModel;
       });
     })
     .catch((error) => {

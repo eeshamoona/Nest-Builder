@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import tempfile
 import os
 
-from scripts.system_instructions_dos import generate_content
+from scripts.system_instructions import generate_content
 from scripts.file_input_system_instructions import generate_content_with_file
 from scripts.people_info_api_request import fetch_people_info
 from scripts.google_drive_file_extractor import download_file
@@ -20,9 +20,9 @@ CORS(app)
 @app.route('/get-google-place-info', methods=['GET'])
 def get_google_place_info_route():
     address = request.args.get('address', '')
-    business_name = request.args.get('business_name', '')
-    result = get_google_info(address, business_name)
-    print(jsonify(result))
+    place = request.args.get('place', '')
+    home_address = request.args.get('home_address', '')
+    result = get_google_info(address, place, home_address)
     return jsonify(result)
 
 @app.route('/get-google-drive-file', methods=['POST'])

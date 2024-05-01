@@ -6,8 +6,10 @@ import User from "../models/UserModel";
 import { generateAPIRequest } from "../services/ExploreService";
 import { ExploreCardModel } from "../models/ExploreCardModel";
 import ExploreCard from "./ExploreCard";
-import { Grid } from "@mui/material";
-
+import { IconButton, Grid, Paper, Stack } from "@mui/material";
+import CategoryCard from "./CategoryCard";
+import Modal from "@mui/material/Modal";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 interface ExploreCategoryProps {
   user: User;
   address: string[];
@@ -22,6 +24,11 @@ interface ExploreCategoryProps {
 const ExploreCategory = React.memo((props: ExploreCategoryProps) => {
   const [results, setResults] = useState<ExploreCardModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [open, setOpen] = useState(false); // State to control the modal
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,18 +55,40 @@ const ExploreCategory = React.memo((props: ExploreCategoryProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const styles = {
+    modal: {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+
   return (
     <div>
       {isLoading ? (
         <div>
           <h1>Loading {props.category.title}...</h1>
-          {/* Display any other relevant information here */}
-          <p>Fetching data for user: {props.user.name}</p>
           <progress value={undefined} />
         </div>
       ) : (
         <>
-          <h1>{props.category.title}</h1>
+          <Stack direction="row" spacing={2}>
+            <h1>{props.category.title}</h1>
+            <IconButton color="success" onClick={handleOpen}>
+              <SettingsSuggestIcon />
+            </IconButton>
+          </Stack>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby={`${props.category.title}-modal-title`}
+            aria-describedby={`${props.category.title}-modal-description`}
+          >
+            <Paper sx={styles.modal} elevation={2}>
+              <CategoryCard categoryProp={props.category} />
+            </Paper>
+          </Modal>
           <Grid container spacing={2}>
             {results &&
               results.map((result) => (

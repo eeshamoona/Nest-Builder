@@ -1,23 +1,23 @@
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
-import traceback  # Import traceback for detailed error information
+from google.api_core.exceptions import DeadlineExceeded, ResourceExhausted
+import re
+import json
+import time
 
 load_dotenv()
 
+def extract_json_from_output(output):
+  replaced_output = output.replace("```json", "").replace("```", "")
+  return json.loads(replaced_output)
+
 def generate_content(system_instruction, search_prompt):
   API_KEY = os.getenv('REACT_APP_geminiAIKey', "")
-  print("API_KEY:", API_KEY)  # Print the API key to check if it's being loaded correctly
-  if not API_KEY:
-    print("API key is not set.")
-    return None
-
   genai.configure(api_key=API_KEY)
 
-  print("Searching for content related to:", search_prompt)
-
   GENERATION_CONFIG = {
-    "temperature": 1,
+   "temperature": 1,
     "top_p": 0.95,
     "top_k": 0,
   }
@@ -37,23 +37,34 @@ def generate_content(system_instruction, search_prompt):
   )
 
   response = None
-  try:
-    print("Before calling model.generate_content")
-    response = model.generate_content(search_prompt)
-    print("After calling model.generate_content")
-    print("Response:", response.text)
-    return response.text
-  except ValueError as ve:
-    print("Caught ValueError:", ve)
-    traceback.print_exc()  # Print the stack trace
-    if response is not None:
-      print(response.prompt_feedback)
-      print(response.candidates[0].finish_reason)
-      print(response.candidates[0].safety_ratings)
-  except Exception as e:
-    print("Caught Exception:", e)
-    traceback.print_exc()  # Print the stack trace
-  except:  # Catch all other exceptions
-    print("Caught an unexpected error")
-    traceback.print_exc()  # Print the stack trace
-  return None
+
+  for _ in range(1): 
+    try:
+      response = model.generate_content(["Follow the system instructions and", search_prompt])
+      print("Original Response", response.text)
+      newText = extract_json_from_output(response.text)
+      break  # If successful, break the loop
+    except DeadlineExceeded:
+      print("Deadline exceeded. Retrying in 1 second...")
+      time.sleep(1)
+    except json.JSONDecodeError:
+      print("JSON decode error. Retrying in 1 second...")
+      time.sleep(1)
+    except ResourceExhausted:
+      print("Resource exhausted. Retrying in 10 second...")
+      time.sleep(10)
+    except ValueError:
+      print("A value error occurred. Retrying in 1 second...")
+      # If the response doesn't contain text, check if the prompt was blocked.
+      if response is not None:
+        print(response.prompt_feedback)
+        # Also check the finish reason to see if the response was blocked.
+        print(response.candidates[0].finish_reason)
+        # If the finish reason was SAFETY, the safety ratings have more details.
+        print(response.candidates[0].safety_ratings)
+      time.sleep(1)  # Wait for 1 second
+  else:  # If all retries fail
+    print("Failed to generate content after 2 attempts.")
+    return None
+
+  return newText
