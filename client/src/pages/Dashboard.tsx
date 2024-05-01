@@ -130,20 +130,17 @@ const Dashboard = () => {
         <button style={styles.secondaryButton} onClick={signOut}>
           Sign Out
         </button>
-        <button style={styles.button} onClick={() => navigate("/categories")}>
-          Go to Categories
-        </button>
         <button
           style={styles.button}
           onClick={() => navigate("/onboarding/intro")}
         >
           Go to Onboarding Flow
         </button>
-        <button style={styles.button} onClick={() => navigate("/my-nest")}>
-          Go to My Nest
-        </button>
         <button style={styles.button} onClick={() => navigate("/explore")}>
           Go to Explore
+        </button>
+        <button style={styles.button} onClick={() => navigate("/my-nest")}>
+          Go to My Nest
         </button>
       </div>
     </div>

@@ -16,7 +16,7 @@ import GenerateWithGemini from "./GenerateWithGemini";
 import DeleteIcon from "@mui/icons-material/Delete";
 import googleMapsIcon from "../assets/icons8-google-maps.svg";
 import { UserAuth } from "../context/AuthContext";
-import { ref, get } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 import { database } from "../firebase.config";
 
 interface MyNestCardProps {
@@ -108,6 +108,68 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
     deleteLocationCallback(location);
   };
 
+  const handleChangeRating = (
+    event: React.SyntheticEvent,
+    newValue: number | null
+  ) => {
+    if (auth?.user) {
+      const nestRef = ref(database, `users/${auth.user.id}/nest/`);
+      get(nestRef).then((snapshot) => {
+        //find the location in the nest
+        const locationData = snapshot.val();
+        const locationArray = Object.values(
+          locationData
+        ) as SavedLocationModel[];
+        const locationIndex = locationArray.findIndex(
+          (loc: SavedLocationModel) => loc.place === location.place
+        );
+        const locationKey = Object.keys(locationData)[locationIndex];
+        if (locationIndex >= 0) {
+          const locationRef = ref(
+            database,
+            `users/${auth.user?.id}/nest/${locationKey}`
+          );
+          //update the rating
+          const updates = {
+            personalRating: newValue,
+          };
+          update(locationRef, updates);
+        }
+      });
+    }
+  };
+
+  const handleChangeComment = (
+    event: React.SyntheticEvent,
+    newComment: string | null
+  ) => {
+    if (auth?.user) {
+      const nestRef = ref(database, `users/${auth.user.id}/nest/`);
+      get(nestRef).then((snapshot) => {
+        //find the location in the nest
+        const locationData = snapshot.val();
+        const locationArray = Object.values(
+          locationData
+        ) as SavedLocationModel[];
+        const locationIndex = locationArray.findIndex(
+          (loc: SavedLocationModel) => loc.place === location.place
+        );
+        const locationKey = Object.keys(locationData)[locationIndex];
+        if (locationIndex >= 0) {
+          const locationRef = ref(
+            database,
+            `users/${auth.user?.id}/nest/${locationKey}`
+          );
+          //update the comment
+          const updates = {
+            comments: newComment,
+          };
+          update(locationRef, updates);
+        }
+      });
+    }
+  };
+
   return (
     <Paper elevation={1} style={styles.paper}>
       <Stack direction="row" justifyContent="space-between">
@@ -175,11 +237,18 @@ const MyNestCard = ({ location, deleteLocationCallback }: MyNestCardProps) => {
             placeholder="Add a comment about this place"
             rows={4}
             defaultValue={location.comments}
+            onBlur={(event) => handleChangeComment(event, event.target.value)}
             variant="outlined"
           />
           <Stack direction="row" spacing={1} mt="0.5rem">
             <Typography variant="body2">My Rating:</Typography>
-            <Rating name="rating" defaultValue={location.personalRating} />
+            <Rating
+              onChange={(event, newValue) =>
+                handleChangeRating(event, newValue)
+              }
+              name="rating"
+              defaultValue={location.personalRating}
+            />
           </Stack>
         </Stack>
       </Stack>

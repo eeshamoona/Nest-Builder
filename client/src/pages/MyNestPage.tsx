@@ -141,7 +141,27 @@ const MyNestPage = () => {
 
   const deleteLocation = (location: SavedLocationModel) => {
     console.log("Delete Location: ", location);
+
+    if (auth?.user) {
+      const userId = auth.user.id;
+      const nestRef = ref(database, `users/${userId}/nest`);
+      get(nestRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const nestData = snapshot.val();
+          const nestDataValues = Object.values(
+            nestData
+          ) as SavedLocationModel[];
+          const updatedNestData = nestDataValues.filter(
+            (savedLocation: SavedLocationModel) =>
+              savedLocation.address !== location.address
+          );
+          setSavedLocations(updatedNestData);
+          console.log("Updated Nest Data: ", updatedNestData);
+        }
+      });
+    }
   };
+
   const handleCenterClick = () => {
     if (mapInstance.current) {
       const geocoder = new google.maps.Geocoder();
