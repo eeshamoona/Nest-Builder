@@ -12,8 +12,8 @@ const GenerateWithGemini = ({ prompt }: GenerateWithGeminiProps) => {
   const theme = useTheme();
 
   return (
-    <Stack direction={"row"} spacing={1}>
-      <AutoAwesomeIcon fontSize="small" />
+    <Stack direction={"row"} spacing={1} alignItems={"center"}>
+      <AutoAwesomeIcon style={{ fontSize: "1rem" }} />
       <Typography variant="caption">
         Generated with{" "}
         <Link
@@ -29,7 +29,7 @@ const GenerateWithGemini = ({ prompt }: GenerateWithGeminiProps) => {
         placement="top"
         arrow
       >
-        <InfoRoundedIcon fontSize="small" />
+        <InfoRoundedIcon style={{ fontSize: "1rem" }} />
       </Tooltip>
     </Stack>
   );

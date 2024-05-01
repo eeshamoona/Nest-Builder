@@ -14,6 +14,7 @@ import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "./App.css";
+import MyNestPage from "./pages/MyNestPage";
 
 const THEME = createTheme({
   typography: {
@@ -80,6 +81,14 @@ function App() {
                 element={
                   <Protected>
                     <OnboardingPage />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/my-nest"
+                element={
+                  <Protected>
+                    <MyNestPage />
                   </Protected>
                 }
               />

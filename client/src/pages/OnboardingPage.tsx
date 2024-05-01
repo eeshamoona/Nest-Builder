@@ -13,6 +13,7 @@ import OnboardCategories from "../components/onboarding/OnboardCategories";
 import OnboardReview from "../components/onboarding/OnboardReview";
 import OnboardMethod from "../components/onboarding/OnboardMethod";
 import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
 
 const steps = [
   "intro",

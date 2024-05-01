@@ -54,8 +54,6 @@ const CategoryCard = ({
   };
 
   const saveChanges = () => {
-    console.log("Saving data to the database...", category);
-    // TODO: If title is not empty, save the data to the database
     if (auth?.user && category.title.trim() !== "") {
       const categoryRef = ref(
         database,
@@ -73,7 +71,6 @@ const CategoryCard = ({
   };
 
   const handleDelete = () => {
-    console.log("Deleting category...", category);
     if (deleteCategoryCallback) deleteCategoryCallback(category);
   };
 
