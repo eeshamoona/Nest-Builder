@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { CSSProperties } from "react";
 import { generateAPIRequest } from "../services/SearchPromptServices";
 import { UserAuth } from "../context/AuthContext";
 import ResultCard from "../components/ResultCard";
@@ -101,10 +100,10 @@ const SearchPage = () => {
     navigate(-1);
   };
 
-  const styles: { [key: string]: CSSProperties } = {
+  const styles = {
     header: {
       color: "#333",
-      textAlign: "center",
+      textAlign: "center" as "center",
       margin: "20px 0",
     },
     select: {
@@ -121,15 +120,14 @@ const SearchPage = () => {
     },
     container: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "column" as "column",
       alignItems: "center",
       padding: "20px",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
       width: "60%",
       margin: "0 auto",
     },
     section: {
-      fontFamily: "Arial, sans-serif",
       margin: "20px 0",
       alignSelf: "end",
     },
@@ -161,7 +159,7 @@ const SearchPage = () => {
     },
     userContainer: {
       display: "flex",
-      flexDirection: "row",
+      flexDirection: "row" as "row",
       width: "100%",
       justifyContent: "end",
       gap: "1rem",

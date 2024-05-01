@@ -3,5 +3,6 @@ export interface CategoryModel {
   userPreferences: string;
   environmentDescriptors: string[];
   relatedSubcategories: string[];
+  costPreference: string;
   confidence: number;
 }

@@ -66,22 +66,22 @@ const Dashboard = () => {
     }
   };
 
-  const styles: { [key: string]: React.CSSProperties } = {
+  const styles = {
     container: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "column" as "column",
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
       backgroundColor: "#f5f5f5",
       padding: "20px",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
     },
     image: {
       borderRadius: "50%",
       height: "100px",
       width: "100px",
-      objectFit: "cover",
+      objectFit: "cover" as "cover",
       marginBottom: "20px",
     },
     button: {
@@ -132,6 +132,12 @@ const Dashboard = () => {
         </button>
         <button style={styles.button} onClick={() => navigate("/categories")}>
           Go to Categories
+        </button>
+        <button
+          style={styles.button}
+          onClick={() => navigate("/onboarding/intro")}
+        >
+          Go to Onboarding Flow
         </button>
       </div>
     </div>

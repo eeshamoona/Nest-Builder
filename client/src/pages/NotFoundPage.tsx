@@ -1,19 +1,19 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
-  const styles: { [key: string]: CSSProperties } = {
+  const styles = {
     container: {
       display: "flex",
-      flexDirection: "column",
+      flexDirection: "column" as "column",
       alignItems: "center",
       justifyContent: "center",
       height: "100vh",
       backgroundColor: "#f5f5f5",
       padding: "20px",
-      boxSizing: "border-box",
+      boxSizing: "border-box" as "border-box",
     },
     button: {
       marginTop: "20px",

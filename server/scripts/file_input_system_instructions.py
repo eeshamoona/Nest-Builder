@@ -2,54 +2,102 @@ import tempfile
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
+from google.api_core.exceptions import DeadlineExceeded, ResourceExhausted
+import re
+import json
+import time
 
 load_dotenv()
 
+
+def extract_json_from_output(output):
+    # Regex to find JSON enclosed in ```json ``` markers
+    pattern = r'```json\n([\s\S]*?)\n```'
+    match = re.search(pattern, output)
+    
+    if match:
+        # Extracting the JSON string from the regex match
+        json_string = match.group(1)
+        
+        # Correctly handling escape sequences
+        # First, ensure backslashes are correctly interpreted
+        json_string = json_string.replace('\\\\', '\\')
+        # Then replace escaped double quotes
+        json_string = json_string.replace('\\"', '"')
+        
+        # Converting the JSON string into a Python dictionary
+        try:
+            return json.loads(json_string)
+        except json.JSONDecodeError as e:
+            print("Error decoding JSON:", e)
+            raise e
+    else:
+        print("No JSON found")
+        return None
+
 def generate_content_with_file(file, system_instruction):
   API_KEY = os.getenv('REACT_APP_geminiAIKey', "")
+  print("API_KEY:", API_KEY)
   genai.configure(api_key=API_KEY)
 
   GENERATION_CONFIG = {
-    "temperature": 1,
+   "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 0,
   }
 
-  JSON_PROMPT = """
-  IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
-    {
-      "<category_name>": {
-        "properties": {
-          "userPreferences": {
-            "description": "A paragraph about what the user usually prefers in this category based on the file input, important for context on the user, do not repeat the subcategories here if they are already in the subcategories field"
-          },
-          "environmentDescriptors": {
-            "description": "A list of 6 adjectives that describe the environment of the category, the user will pick some of these to describe the category"
-          },
-          "relatedSubcategories": {
-            "description": "A list of subcategories that are related to this category (e.g. for a restaurant category, the subcategories could be cuisines like 'Italian', 'Mexican', etc.)"
-          },
-          "confidence": {
-            "description": "A number between 0 (not confident) and 1 (confident) that represents how confident you are in the recommendations for this category"
-          }
-        }
-      }
-    }
-  """
-  system_instruction = system_instruction + " " + JSON_PROMPT
+  SAFETY_SETTINGS = [
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE"
+        },
+    ]
   
-  # Create a temporary file and save the uploaded file to it
-  temp_file = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
+  temp_file = tempfile.NamedTemporaryFile(suffix=".txt", delete=True)
   file.save(temp_file.name)
 
-  file_path = temp_file.name
-
-  sample_file = genai.upload_file(path=file_path, display_name="googleTakeoutData.txt")
+  with open(temp_file.name, 'r', encoding='utf-8') as f:
+      content = f.read(900000)
 
   model = genai.GenerativeModel(
-    "models/gemini-1.5-pro-latest",
-    system_instruction=system_instruction,
-    generation_config=GENERATION_CONFIG,
+      "models/gemini-1.5-pro-latest",
+      system_instruction=system_instruction,
+      generation_config=GENERATION_CONFIG,
+      safety_settings=SAFETY_SETTINGS,
   )
 
-  response = model.generate_content(["Follow the system instructions", sample_file.name])
 
-  return response.text
+  response = model.generate_content(["Follow the system instructions", content])
+
+  response = None
+
+  for _ in range(2):  # Retry up to 2 times
+      try:
+          response = model.generate_content(["Follow the system instructions", content])
+          print("Original Response", response.text)
+          newText = extract_json_from_output(response.text)
+          break  # If successful, break the loop
+      except DeadlineExceeded:
+          print("Deadline exceeded. Retrying in 1 second...")
+          time.sleep(1)
+      except json.JSONDecodeError:
+          print("JSON decode error. Retrying in 1 second...")
+          time.sleep(1)
+      except ResourceExhausted:
+          print("Resource exhausted. Retrying in 10 second...")
+          time.sleep(10)
+      except ValueError:
+          print("A value error occurred. Retrying in 1 second...")
+          # If the response doesn't contain text, check if the prompt was blocked.
+          if response is not None:
+              print(response.prompt_feedback)
+              # Also check the finish reason to see if the response was blocked.
+              print(response.candidates[0].finish_reason)
+              # If the finish reason was SAFETY, the safety ratings have more details.
+              print(response.candidates[0].safety_ratings)
+          time.sleep(1)  # Wait for 1 second
+  else:  # If all retries fail
+      print("Failed to generate content after 2 attempts.")
+      return None
+
+  return newText

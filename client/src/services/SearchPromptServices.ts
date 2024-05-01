@@ -16,18 +16,19 @@ const getSearchPrompt = (
 
 const JSON_PROMPT = `
 IMPORTANT: Your ONLY output should be an array of category recommendations in a structured JSON array format that matches the following model:
-{
-  'type': 'object',
-  'properties': {
-    'title': {'type': 'string'},
-    'place': {'type': 'string'},
-    'location': {'type': 'string'},
-    'cost': {'type':'string'},
-    'starReviewRating': {'type': 'number'},
-    'personalizedSummary': {'type': 'string'},
-    'finalRecommendation': {'type': 'string'}
+  {
+    'type': 'object',
+    'properties': {
+      'title': {'type': 'string'},
+      'place': {'type': 'string'},
+      'location': {'type': 'string'},
+      'cost': {'type':'string'},
+      'starReviewRating': {'type': 'number'},
+      'personalizedSummary': {'type': 'string'},
+      'finalRecommendation': {'type': 'string'}
+    }
   }
-}`;
+`;
 
 const generateAPIRequest = async (
   userId: string,

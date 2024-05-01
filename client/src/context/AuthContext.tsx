@@ -46,6 +46,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
           photoURL: photoURL || "",
           createdAt: new Date(metadata.creationTime || ""),
           lastLogin: new Date(metadata.lastSignInTime || ""),
+          homeAddress: "",
+          workAddress: "",
+          birthday: null,
+          gender: "",
         });
       } else {
         setUser(null);
@@ -84,6 +88,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
+    provider.addScope("https://www.googleapis.com/auth/user.gender.read");
+    provider.addScope("https://www.googleapis.com/auth/drive");
 
     setLoading(true);
     try {
