@@ -23,6 +23,7 @@ const ExplorePage = () => {
     TransportationModel[]
   >([]);
   const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const [loadingIndex, setLoadingIndex] = useState(0);
 
   useEffect(() => {
     if (auth?.user) {
@@ -176,18 +177,23 @@ const ExplorePage = () => {
         socialPreferences.length &&
         lifestylePreferences &&
         additionalInfo ? (
-          categories.map((category, index) => (
-            <ExploreCategory
-              key={index}
-              user={user}
-              address={addressParts}
-              category={category}
-              transportationPreferences={transportationPreferences}
-              socialPreferences={socialPreferences}
-              lifestylePreferences={lifestylePreferences}
-              additionalInfo={additionalInfo}
-            />
-          ))
+          <>
+            {categories.slice(0, loadingIndex + 1).map((category, index) => (
+              <ExploreCategory
+                key={index}
+                user={user}
+                address={addressParts}
+                category={category}
+                transportationPreferences={transportationPreferences}
+                socialPreferences={socialPreferences}
+                lifestylePreferences={lifestylePreferences}
+                additionalInfo={additionalInfo}
+                onLoadComplete={() =>
+                  setLoadingIndex((prevIndex) => prevIndex + 1)
+                }
+              />
+            ))}
+          </>
         ) : (
           <div>
             Retrieving Your Information...

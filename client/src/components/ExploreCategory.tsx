@@ -6,6 +6,7 @@ import User from "../models/UserModel";
 import { generateAPIRequest } from "../services/ExploreService";
 import { ExploreCardModel } from "../models/ExploreCardModel";
 import ExploreCard from "./ExploreCard";
+import { Grid } from "@mui/material";
 
 interface ExploreCategoryProps {
   user: User;
@@ -15,77 +16,62 @@ interface ExploreCategoryProps {
   socialPreferences: SocialPreferenceModel[];
   lifestylePreferences: string;
   additionalInfo: string;
+  onLoadComplete: () => void;
 }
 
-const ExploreCategory = ({
-  user,
-  address,
-  category,
-  transportationPreferences,
-  socialPreferences,
-  lifestylePreferences,
-  additionalInfo,
-}: ExploreCategoryProps) => {
+const ExploreCategory = React.memo((props: ExploreCategoryProps) => {
   const [results, setResults] = useState<ExploreCardModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Fetching data for category", category.title);
-      const response = await generateAPIRequest(
-        user,
-        address,
-        transportationPreferences,
-        lifestylePreferences,
-        additionalInfo,
-        socialPreferences,
-        category,
-        category.title
+      console.log("Fetching data for category", props.category.title);
+      const response: ExploreCardModel[] = await generateAPIRequest(
+        props.user,
+        props.address,
+        props.transportationPreferences,
+        props.lifestylePreferences,
+        props.additionalInfo,
+        props.socialPreferences,
+        props.category,
+        props.category?.title
       );
+      console.log("Response IN HERE", response);
       setResults(response);
+      props.onLoadComplete();
       setIsLoading(false);
     };
 
     console.log("ENTERED HERE");
-    if (
-      user &&
-      address.length &&
-      category &&
-      transportationPreferences.length &&
-      socialPreferences.length &&
-      lifestylePreferences &&
-      additionalInfo
-    ) {
-      fetchData();
-    }
-  }, [
-    user,
-    address,
-    category,
-    transportationPreferences,
-    socialPreferences,
-    lifestylePreferences,
-    additionalInfo,
-  ]);
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div>
       {isLoading ? (
         <div>
-          <h1>Loading {category.title}...</h1>
+          <h1>Loading {props.category.title}...</h1>
           {/* Display any other relevant information here */}
-          <p>Fetching data for user: {user.name}</p>
+          <p>Fetching data for user: {props.user.name}</p>
           <progress value={undefined} />
         </div>
       ) : (
         <>
-          <h1>{category.title}</h1>
-          {results.map((result) => (
-            <ExploreCard key={result.title} result={result} />
-          ))}
+          <h1>{props.category.title}</h1>
+          <Grid container spacing={2}>
+            {results &&
+              results.map((result) => (
+                <Grid item xs={12} sm={6} md={4} key={result.title}>
+                  <ExploreCard result={result} />
+                </Grid>
+              ))}
+          </Grid>
         </>
       )}
     </div>
   );
-};
+});
 
 export default ExploreCategory;

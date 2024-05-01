@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import tempfile
 import os
 
-from scripts.system_instructions import generate_content
+from scripts.system_instructions_dos import generate_content
 from scripts.file_input_system_instructions import generate_content_with_file
 from scripts.people_info_api_request import fetch_people_info
 from scripts.google_drive_file_extractor import download_file

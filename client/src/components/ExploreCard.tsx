@@ -7,15 +7,21 @@ import {
   Stack,
   FormHelperText,
   Link,
+  IconButton,
 } from "@mui/material";
 import GenerateWithGemini from "./GenerateWithGemini";
 import { ExploreCardModel } from "../models/ExploreCardModel";
+import { push, ref } from "firebase/database";
+import { database } from "../firebase.config";
+import { UserAuth } from "../context/AuthContext";
+import EggIcon from "@mui/icons-material/Egg";
 
 interface ExploreCardProps {
   result: ExploreCardModel;
 }
 
 const ExploreCard = ({ result }: ExploreCardProps) => {
+  const auth = UserAuth();
   const [imageUrl, setImageUrl] = useState("https://via.placeholder.com/150");
   const [mapsLink, setMapsLink] = useState("https://www.google.com/maps");
 
@@ -72,10 +78,32 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
     },
   };
 
+  const handleAddToNest = () => {
+    if (auth?.user) {
+      const nestRef = ref(database, `users/${auth.user?.id}/nest`);
+      push(nestRef, {
+        title: result.title,
+        address: result.address,
+        personalizedSummary: result.personalizedSummary,
+        reccomendationReasoning: result.reccomendationReasoning,
+        comments: "",
+        personalRating: 0,
+        category: result.category,
+      });
+    }
+  };
+
   return (
     <Paper elevation={1} style={styles.paper}>
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h6">{result.title}</Typography>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems={"center"}
+      >
+        <Typography variant="h6">{result.place}</Typography>
+        {result.place !== result.title && (
+          <Typography variant="subtitle1">{result.title}</Typography>
+        )}
         <Stack direction={"row"} spacing={1}></Stack>
       </Stack>
       <Stack direction="row" spacing={1} mb="0.5rem">
@@ -118,6 +146,9 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
         <FormHelperText style={{ fontSize: "10px", marginLeft: "2px" }}>
           Used to provide better recommendations
         </FormHelperText>
+        <IconButton onClick={handleAddToNest} color="success">
+          <EggIcon />
+        </IconButton>
       </Stack>
     </Paper>
   );

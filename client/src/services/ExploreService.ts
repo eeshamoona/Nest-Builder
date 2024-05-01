@@ -1,4 +1,5 @@
 import { CategoryModel } from "../models/CategoryModel";
+import { ExploreCardModel } from "../models/ExploreCardModel";
 import { SocialPreferenceModel } from "../models/SocialPreferenceModel";
 import { TransportationModel } from "../models/TransporationModel";
 import User from "../models/UserModel";
@@ -84,7 +85,7 @@ export const getCategoryPrompt = (
 
 export function exploreInstruction() {
   return `
-  Generate and output a JSON structure with results of your search based on analysis using Google Maps and Google Places API. The output should strictly adhere to this JSON format without additional commentary:  
+  Generate and output an array of at least three JSON objects that follow this JSON structure with results of your search based on analysis using Google Maps and Google Places API. The output should strictly adhere to this JSON format without additional commentary:  
     {
       "title": "string", // A concise title summarizing the recommendation.
       "place": "string", // The name of the recommended location.
@@ -106,7 +107,7 @@ export const generateAPIRequest = async (
   socialPreferences: SocialPreferenceModel[],
   category: CategoryModel,
   categoryTitle: string
-) => {
+): Promise<ExploreCardModel[]> => {
   const userProfileString = getUserProfileData(
     user,
     addressParts,
@@ -128,8 +129,23 @@ export const generateAPIRequest = async (
       search_prompt: categoryPrompt,
     }),
   })
-    .then((response) => response.json())
-    .then((data) => data)
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Data:", data);
+      return data.map((result: any) => {
+        return {
+          title: result.title,
+          place: result.place,
+          address: result.address,
+          personalizedSummary: result.personalizedSummary,
+          recommendationReasoning: result.recommendationReasoning,
+          confidence: result.confidence,
+          category: category.title,
+        };
+      });
+    })
     .catch((error) => {
       console.error("Error:", error);
     });
