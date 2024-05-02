@@ -1,4 +1,4 @@
-import { Typography, Stack, Button } from "@mui/material";
+import { Typography, Stack, Button, Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { UserAuth } from "../context/AuthContext";
 import { ref, get } from "firebase/database";
@@ -11,6 +11,9 @@ import ExploreCategory from "../components/ExploreCategory";
 import GenerateWithGemini from "../components/GenerateWithGemini";
 import EggIcon from "@mui/icons-material/Egg";
 import { useNavigate } from "react-router-dom";
+import FaceRetouchingNaturalIcon from "@mui/icons-material/FaceRetouchingNatural";
+import NestedLogo from "../assets/nested-logo.png";
+import { explorePromptMarkdown } from "../constants/OnboardingTooltipConstants";
 
 const ExplorePage = () => {
   const auth = UserAuth();
@@ -135,11 +138,28 @@ const ExplorePage = () => {
       bottom: "2rem",
       right: "2rem",
       width: "fit-content" as "fit-content",
+      padding: "0.5rem",
+      fontSize: "1rem",
+      paddingRight: "1rem",
+      borderRadius: "0.5rem",
     },
   };
 
   return (
     <div style={styles.container}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "1rem",
+          left: "2rem",
+        }}
+      >
+        <img
+          src={NestedLogo}
+          alt="Nested Logo"
+          style={{ width: "5rem", height: "5rem" }}
+        />{" "}
+      </Box>
       <Typography
         variant="h3"
         sx={{ marginTop: "1rem", alignSelf: "center", fontWeight: "bold" }}
@@ -151,12 +171,21 @@ const ExplorePage = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
         m="0.5rem"
+        mt="1rem"
       >
+        <Button
+          variant="outlined"
+          color="success"
+          startIcon={<FaceRetouchingNaturalIcon />}
+          onClick={() => navigate("/onboarding/intro")}
+        >
+          Edit My Profile
+        </Button>
         <Typography variant="body1">
           Nested believes these places are a good fit for your lifestyle, read
           the explanation to see why!
         </Typography>
-        <GenerateWithGemini prompt="Explore" />
+        <GenerateWithGemini prompt={explorePromptMarkdown} />
       </Stack>
 
       <Stack direction="column" spacing={2} style={styles.scrollContainer}>
@@ -219,7 +248,7 @@ const ExplorePage = () => {
         style={styles.nestButton}
         onClick={() => navigate("/my-nest")}
       >
-        <EggIcon />
+        <EggIcon style={{ fontSize: "2rem", marginRight: "10px" }} />
         Go To My Nest
       </Button>
     </div>

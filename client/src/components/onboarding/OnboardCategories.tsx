@@ -8,6 +8,7 @@ import { OnboardPageProps } from "../../models/OnboardPageProps";
 import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GenerateWithGemini from "../GenerateWithGemini";
+import { categoriesPromptMarkdown } from "../../constants/OnboardingTooltipConstants";
 
 const OnboardCategories = (props: OnboardPageProps) => {
   const [categories, setCategories] = React.useState<
@@ -118,7 +119,7 @@ const OnboardCategories = (props: OnboardPageProps) => {
         to edit or add more
       </Typography>
       <Stack direction={"row"} justifyContent={"space-between"} width={"100%"}>
-        <GenerateWithGemini prompt={"Something to go here in markdown"} />
+        <GenerateWithGemini prompt={categoriesPromptMarkdown} />
         <IconButton onClick={handleAddNewCategory} color="success">
           <AddIcon />
         </IconButton>

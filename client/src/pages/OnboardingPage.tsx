@@ -6,6 +6,8 @@ import {
   CircularProgress,
   StepIcon,
   Button,
+  Box,
+  Stack,
 } from "@mui/material";
 import OnboardTransportation from "../components/onboarding/OnboardTransportation";
 import OnboardPreferences from "../components/onboarding/OnboardPreferences";
@@ -14,6 +16,7 @@ import OnboardReview from "../components/onboarding/OnboardReview";
 import OnboardMethod from "../components/onboarding/OnboardMethod";
 import { useLocation, useNavigate } from "react-router-dom";
 import React from "react";
+import NestedLogo from "../assets/nested-logo.png";
 
 const steps = [
   "intro",
@@ -47,7 +50,7 @@ const OnboardingPage = () => {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       navigate(`/onboarding/${steps[activeStep + 1].toLowerCase()}`);
     } else {
-      navigate("/");
+      navigate("/explore");
     }
   };
 
@@ -59,7 +62,7 @@ const OnboardingPage = () => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
       navigate(`/onboarding/${steps[activeStep - 1].toLowerCase()}`);
     } else {
-      navigate("/");
+      navigate("/explore");
     }
   };
 
@@ -127,27 +130,36 @@ const OnboardingPage = () => {
 
   return (
     <div style={styles.container}>
-      <Stepper
-        activeStep={activeStep}
-        style={{ margin: "1rem", marginTop: "3rem", width: "100%" }}
-      >
-        {steps.map((label, index) => (
-          <Step
-            key={label}
-            sx={{
-              textTransform: "capitalize",
-            }}
-            onClick={() => {
-              if (index <= activeStep) {
-                setActiveStep(index);
-                navigate(`/onboarding/${label.toLowerCase()}`);
-              }
-            }}
-          >
-            <StepLabel StepIconComponent={CustomStepIcon}>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <Stack direction={"row"} alignItems={"center"} width="100%">
+        <Box>
+          <img
+            src={NestedLogo}
+            alt="Nested Logo"
+            style={{ width: "5rem", height: "5rem", marginBottom: "-2rem" }}
+          />
+        </Box>
+        <Stepper
+          activeStep={activeStep}
+          style={{ margin: "1rem", marginTop: "3rem", flex: 1 }}
+        >
+          {steps.map((label, index) => (
+            <Step
+              key={label}
+              sx={{
+                textTransform: "capitalize",
+              }}
+              onClick={() => {
+                if (index <= activeStep) {
+                  setActiveStep(index);
+                  navigate(`/onboarding/${label.toLowerCase()}`);
+                }
+              }}
+            >
+              <StepLabel StepIconComponent={CustomStepIcon}>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Stack>
       <div style={{ flex: 1, overflow: "auto" }}>
         <Suspense fallback={<CircularProgress />}>{stepContent}</Suspense>
       </div>
@@ -156,7 +168,7 @@ const OnboardingPage = () => {
           Back
         </Button>
         <Button style={styles.button} onClick={handleNext}>
-          Next
+          {activeStep === steps.length - 1 ? "Finish and Explore" : "Next"}
         </Button>
       </div>
     </div>

@@ -14,6 +14,7 @@ import { get, push, ref } from "firebase/database";
 import { database } from "../firebase.config";
 import { UserAuth } from "../context/AuthContext";
 import EggIcon from "@mui/icons-material/Egg";
+import CheckIcon from "@mui/icons-material/Check";
 
 interface ExploreCardProps {
   result: ExploreCardModel;
@@ -25,6 +26,7 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
   const [mapsLink, setMapsLink] = useState("https://www.google.com/maps");
   const [distance, setDistance] = useState("N/A");
   const [duration, setDuration] = useState("N/A");
+  const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -114,6 +116,7 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
         personalRating: 0,
         category: result.category,
       });
+      setIsAdded(true);
     }
   };
 
@@ -170,7 +173,7 @@ const ExploreCard = ({ result }: ExploreCardProps) => {
       <Stack direction="row" spacing={1} justifyContent={"space-between"}>
         <GenerateWithGemini prompt={result.reccomendationReasoning} />
         <IconButton onClick={handleAddToNest} color="success">
-          <EggIcon />
+          {isAdded ? <CheckIcon /> : <EggIcon />}
         </IconButton>
       </Stack>
     </Paper>

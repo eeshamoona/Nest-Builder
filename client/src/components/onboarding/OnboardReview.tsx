@@ -10,8 +10,7 @@ import { getAge } from "../../utils/RandomUtils";
 import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import GenerateWithGemini from "../GenerateWithGemini";
 import { getTransportationString } from "../../services/ExploreService";
-
-const GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS: string = `Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results. Construct a first-person narrative describing the user's daily activities, community engagement, social settings, and lifestyle preferences in a personal, conversational tone`;
+import { reviewPromptMarkdown } from "../../constants/OnboardingTooltipConstants";
 
 const OnboardReview = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -156,9 +155,7 @@ const OnboardReview = (props: OnboardPageProps) => {
           <Typography variant="subtitle1">
             I have the following routines and preferences in my locations:{" "}
           </Typography>
-          <GenerateWithGemini
-            prompt={GEMINI_LIFESTYLE_PARAGRAPH_INSTRUCTIONS}
-          />
+          <GenerateWithGemini prompt={reviewPromptMarkdown} />
         </div>
         <TextField
           multiline

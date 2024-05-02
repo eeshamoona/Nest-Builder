@@ -8,6 +8,7 @@ import TransportationMethodItem from "../TransportationMethodItem";
 import { Paper, Stack, TextField, Typography } from "@mui/material";
 import GoogleAutocomplete from "react-google-autocomplete";
 import GenerateWithGemini from "../GenerateWithGemini";
+import { transportationPromptMarkdown } from "../../constants/OnboardingTooltipConstants";
 
 type TransportationMethod = "walking" | "driving" | "biking" | "train" | "bus";
 
@@ -16,7 +17,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const [homeAddress, setHomeAddress] = useState<string>(
-    "1600 Amphitheatre Parkway, Mountain View, CA"
+    "1 Microsoft Way, Redmond, WA 98052"
   );
   //TODO: Add min to max radius range in either ft or miles for each transportation method
   const [transportation, setTransportation] = useState({
@@ -274,7 +275,6 @@ const OnboardTransportation = (props: OnboardPageProps) => {
       >
         How Do You Like to Get Around?
       </Typography>
-
       <Stack direction={"row"} spacing={2}>
         <Stack direction={"column"} spacing={2} sx={{ marginTop: "1rem" }}>
           <div style={styles.address}>
@@ -319,7 +319,7 @@ const OnboardTransportation = (props: OnboardPageProps) => {
               <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Transportation Methods
               </Typography>
-              <GenerateWithGemini prompt={"Something goes here"} />
+              <GenerateWithGemini prompt={transportationPromptMarkdown} />
             </Stack>
             <Typography
               variant="body2"

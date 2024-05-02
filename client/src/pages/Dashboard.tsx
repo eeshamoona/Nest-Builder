@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
-import { formatDistanceToNow } from "date-fns";
 import { useCallback, useEffect } from "react";
 import { database } from "../firebase.config";
 import { ref, set, update, get } from "firebase/database";
@@ -110,22 +109,8 @@ const Dashboard = () => {
 
   return (
     <div style={styles.container}>
-      <h1>Dashboard</h1>
-      <img
-        style={styles.image}
-        src={auth?.user?.photoURL}
-        alt={auth?.user?.name}
-      />
-      <p>Hi, {auth?.user?.name}!</p>
-      <p>Your email is: {auth?.user?.email}</p>
-      <p>
-        Nesting since {formatDistanceToNow(auth?.user?.createdAt || new Date())}{" "}
-        ago
-      </p>{" "}
-      <p>
-        Last login {formatDistanceToNow(auth?.user?.lastLogin || new Date())}{" "}
-        ago
-      </p>
+      <h1>Welcome to Nested {auth?.user?.name.split(" ")[0]}!</h1>
+      <p>Get started by going through our onboarding flow.</p>
       <div style={styles.buttonContainer}>
         <button style={styles.secondaryButton} onClick={signOut}>
           Sign Out
@@ -135,12 +120,6 @@ const Dashboard = () => {
           onClick={() => navigate("/onboarding/intro")}
         >
           Go to Onboarding Flow
-        </button>
-        <button style={styles.button} onClick={() => navigate("/explore")}>
-          Go to Explore
-        </button>
-        <button style={styles.button} onClick={() => navigate("/my-nest")}>
-          Go to My Nest
         </button>
       </div>
     </div>

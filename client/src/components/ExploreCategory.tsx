@@ -6,7 +6,7 @@ import User from "../models/UserModel";
 import { generateAPIRequest } from "../services/ExploreService";
 import { ExploreCardModel } from "../models/ExploreCardModel";
 import ExploreCard from "./ExploreCard";
-import { IconButton, Grid, Paper, Stack } from "@mui/material";
+import { IconButton, Grid, Paper, Stack, Button, Box } from "@mui/material";
 import CategoryCard from "./CategoryCard";
 import Modal from "@mui/material/Modal";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
@@ -96,6 +96,18 @@ const ExploreCategory = React.memo((props: ExploreCategoryProps) => {
                   <ExploreCard result={result} />
                 </Grid>
               ))}
+            <Grid item xs={12}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  variant="text"
+                  color="success"
+                  fullWidth
+                  sx={{ height: "36px" }}
+                >
+                  Load More
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
         </>
       )}

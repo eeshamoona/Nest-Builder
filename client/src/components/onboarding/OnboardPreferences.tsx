@@ -4,10 +4,12 @@ import { SocialPreferenceModel } from "../../models/SocialPreferenceModel";
 import { UserAuth } from "../../context/AuthContext";
 import { get, ref, set, update } from "firebase/database";
 import { database } from "../../firebase.config";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { Grid } from "@mui/material";
 import { TextField, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import GenerateWithGemini from "../GenerateWithGemini";
+import { preferencesPromptMarkdown } from "../../constants/OnboardingTooltipConstants";
 
 const OnboardPreferences = (props: OnboardPageProps) => {
   const auth = UserAuth();
@@ -94,15 +96,14 @@ const OnboardPreferences = (props: OnboardPageProps) => {
       <Typography variant="h4" sx={{ marginTop: "1rem", textAlign: "center" }}>
         What is important to you?
       </Typography>
-      <Typography
-        variant="body2"
-        sx={{ marginBottom: "2rem", textAlign: "center" }}
-      >
+      <Typography variant="body2" sx={{ textAlign: "center" }}>
         We use these lifestyle preferences to help you narrow down the best
         places to visit, so please select at least 3. You can always change
         these later.
       </Typography>
-
+      <Box width={"100%"} display="flex" justifyContent="flex-end" mb="1rem">
+        <GenerateWithGemini prompt={preferencesPromptMarkdown} />
+      </Box>
       <Grid container spacing={2} sx={{ marginBottom: "1rem" }}>
         {socialPreferences.map((preference, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
