@@ -20,9 +20,9 @@ CORS(app)
 @app.route('/get-google-place-info', methods=['GET'])
 def get_google_place_info_route():
     address = request.args.get('address', '')
-    business_name = request.args.get('business_name', '')
-    result = get_google_info(address, business_name)
-    print(jsonify(result))
+    place = request.args.get('place', '')
+    home_address = request.args.get('home_address', '')
+    result = get_google_info(address, place, home_address)
     return jsonify(result)
 
 @app.route('/get-google-drive-file', methods=['POST'])
@@ -42,11 +42,12 @@ def fetch_people_info_route():
 
 @app.route('/generate-content', methods=['POST'])
 def generate_content_route():
+    print("Generating content")
     data = request.get_json()
     system_instruction = data.get('system_instruction', '')
     search_prompt = data.get('search_prompt', '')
     result = generate_content(system_instruction, search_prompt)
-    return result.replace("```json\n", "").replace("```", "")
+    return result
 
 @app.route('/generate-profile', methods=['POST'])
 def generate_profile_route():

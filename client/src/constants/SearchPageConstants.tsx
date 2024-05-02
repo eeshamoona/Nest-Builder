@@ -51,8 +51,35 @@ const DEFAULT_CATEGORIES = [
   "Parks",
   "Gyms",
 ];
+const DEFAULT_SAVED_LOCATIONS = [
+  // Parks
+  {
+    title: "Stroll Through Discovery Park",
+    place: "Discovery Park",
+    address: "3800 Magnolia Blvd W, Seattle, WA 98199",
+    personalizedSummary:
+      "Expansive park with stunning views, trails, and beaches.",
+    reccomendationReasoning: "You enjoy scenic walks and nature.",
+    comments: "Beautiful views of the Puget Sound and Olympic Mountains.",
+    personalRating: 5,
+    category: "Park",
+  },
+  // Museums
+  {
+    title: "Journey Through the Museum of Flight",
+    place: "Museum of Flight",
+    address: "9400 E Marginal Way S, Seattle, WA 98108",
+    personalizedSummary:
+      "Explore the history of aviation with planes, exhibits, and flight simulators.",
+    reccomendationReasoning: "You're fascinated by airplanes and technology.",
+    comments:
+      "Interactive exhibits and the chance to see historic aircraft up close.",
+    personalRating: 5,
+    category: "Museum",
+  },
+];
 
-const DEFAULT_USER_PREFERENCES = `I'm a 23 year old new grad software engineer living in River North, Chicago. Zip code = 60654. I have a daily gym routine and usually go there in the mornings. I love Italian cuisine for lunch and frequent dog parks, probably suggesting I have a pet or want one`;
+const DEFAULT_USER_PREFERENCES = "";
 
 export {
   PRICE_OPTIONS,
@@ -61,4 +88,5 @@ export {
   DEFAULT_PRIORITIES,
   DEFAULT_CATEGORIES,
   DEFAULT_USER_PREFERENCES,
+  DEFAULT_SAVED_LOCATIONS,
 };

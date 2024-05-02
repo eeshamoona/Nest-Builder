@@ -17,45 +17,10 @@ import { database } from "../firebase.config";
 import { get, ref } from "firebase/database";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EastIcon from "@mui/icons-material/East";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
-
-const defaultSavedLocations: SavedLocationModel[] = [
-  // Parks
-  {
-    title: "Millennium Park",
-    address: "Chicago, IL 60602",
-    personalizedSummary:
-      "Beautiful park with art installations, gardens, and events.",
-    reccomendationReasoning: "You like to be around nature and art.",
-    comments: "Great place to relax and enjoy the city.",
-    personalRating: 4,
-    category: "Park",
-  },
-  {
-    title: "Lincoln Park",
-    address: "2430 N Cannon Dr, Chicago, IL 60614",
-    personalizedSummary:
-      "Something for everyone, with animals, nature, and lake views.",
-    reccomendationReasoning: "You enjoy a variety of activities.",
-    comments:
-      "Great for a day trip with the zoo, conservatory, and lakefront access.",
-    personalRating: 5,
-    category: "Park",
-  },
-
-  // Grocery Stores
-  {
-    title: "Trader Joe's",
-    address: "44 E Ontario St, Chicago, IL 60611",
-    personalizedSummary: "Great deals on groceries and unique finds.",
-    reccomendationReasoning: "You like to find unique products.",
-    comments: "Love their unique products and affordable prices.",
-    personalRating: 5,
-    category: "Grocery",
-  },
-];
+import { DEFAULT_SAVED_LOCATIONS } from "../constants/SearchPageConstants";
+import NestedLogo from "../assets/nested-logo.png";
 
 const MyNestPage = () => {
   const auth = UserAuth();
@@ -63,7 +28,10 @@ const MyNestPage = () => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<google.maps.Map | null>(null);
   const [homeAddress, setHomeAddress] = useState<string>(
-    "1600 Amphitheatre Parkway, Mountain View, CA"
+    "1 Microsoft Way, Redmond, WA 98052"
+  );
+  const [savedLocations, setSavedLocations] = useState<SavedLocationModel[]>(
+    DEFAULT_SAVED_LOCATIONS
   );
 
   useEffect(() => {
@@ -76,6 +44,14 @@ const MyNestPage = () => {
           if (userData.homeAddress) {
             setHomeAddress(userData.homeAddress);
           }
+        }
+      });
+
+      const nestRef = ref(database, `users/${userId}/nest`);
+      get(nestRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const nestData = snapshot.val();
+          setSavedLocations(Object.values(nestData));
         }
       });
     }
@@ -111,7 +87,7 @@ const MyNestPage = () => {
       });
 
       // Plot default saved locations
-      defaultSavedLocations.forEach((savedLocation) => {
+      savedLocations.forEach((savedLocation) => {
         geocoder.geocode(
           { address: savedLocation.address },
           (results, status) => {
@@ -120,14 +96,14 @@ const MyNestPage = () => {
               new google.maps.marker.AdvancedMarkerElement({
                 map: mapInstance.current,
                 position: location,
-                title: savedLocation.title,
+                title: savedLocation.place,
               });
             }
           }
         );
       });
     }
-  }, [homeAddress]);
+  }, [homeAddress, savedLocations]);
 
   const styles = {
     container: {
@@ -142,7 +118,7 @@ const MyNestPage = () => {
     },
     scrollContainer: {
       overflow: "auto",
-      maxHeight: "80vh",
+      maxHeight: "72vh",
       margin: 0,
     },
     exploreButton: {
@@ -152,7 +128,7 @@ const MyNestPage = () => {
     },
     currentLocation: {
       position: "absolute" as "absolute",
-      bottom: "14rem",
+      bottom: "15.5rem",
       right: "2.6rem",
       zIndex: 100,
       backgroundColor: "white",
@@ -160,12 +136,32 @@ const MyNestPage = () => {
   };
 
   const categories = Array.from(
-    new Set(defaultSavedLocations.map((location) => location.category))
+    new Set(savedLocations.map((location) => location.category))
   ).sort();
 
   const deleteLocation = (location: SavedLocationModel) => {
     console.log("Delete Location: ", location);
+
+    if (auth?.user) {
+      const userId = auth.user.id;
+      const nestRef = ref(database, `users/${userId}/nest`);
+      get(nestRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const nestData = snapshot.val();
+          const nestDataValues = Object.values(
+            nestData
+          ) as SavedLocationModel[];
+          const updatedNestData = nestDataValues.filter(
+            (savedLocation: SavedLocationModel) =>
+              savedLocation.address !== location.address
+          );
+          setSavedLocations(updatedNestData);
+          console.log("Updated Nest Data: ", updatedNestData);
+        }
+      });
+    }
   };
+
   const handleCenterClick = () => {
     if (mapInstance.current) {
       const geocoder = new google.maps.Geocoder();
@@ -185,15 +181,17 @@ const MyNestPage = () => {
   return (
     <div style={styles.container}>
       <Box
-        onClick={() => navigate("/dashboard")}
         sx={{
           position: "absolute",
-          top: "2rem",
+          top: "1rem",
           left: "2rem",
-          cursor: "pointer",
         }}
       >
-        <KeyboardBackspaceIcon fontSize="large" />
+        <img
+          src={NestedLogo}
+          alt="Nested Logo"
+          style={{ width: "5rem", height: "5rem" }}
+        />{" "}
       </Box>
       <Typography
         variant="h3"
@@ -201,12 +199,7 @@ const MyNestPage = () => {
       >
         My Nest
       </Typography>
-      <Stack direction="row" justifyContent={"space-between"} p="0.5rem">
-        <Typography variant="body1" sx={{ alignSelf: "end", maxWidth: "50%" }}>
-          Your saved locations are the foundation of your nest. Engage with them
-          - add new ones, leave comments, and explore. Together, we can
-          transform any place into your home.
-        </Typography>
+      <Stack direction="row" justifyContent={"end"} p="0.5rem">
         <Stack
           direction="column"
           spacing={1}
@@ -219,7 +212,7 @@ const MyNestPage = () => {
             <Button
               variant="contained"
               color="success"
-              onClick={() => navigate("/search-prompt")}
+              onClick={() => navigate("/explore")}
               sx={styles.exploreButton}
             >
               <Typography variant="caption" style={{ fontSize: "0.75rem" }}>
@@ -232,6 +225,11 @@ const MyNestPage = () => {
       </Stack>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
+          <Typography variant="body1">
+            Your saved locations are the foundation of your nest. Engage with
+            them - add new ones, leave comments, and explore. Together, we can
+            transform any place into your home.
+          </Typography>
           <div style={styles.scrollContainer}>
             {categories.map((category) => (
               <Accordion
@@ -259,7 +257,7 @@ const MyNestPage = () => {
                     padding: 0,
                   }}
                 >
-                  {defaultSavedLocations
+                  {savedLocations
                     .filter((location) => location.category === category)
                     .map((location) => (
                       <MyNestCard

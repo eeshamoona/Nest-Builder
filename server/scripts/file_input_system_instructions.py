@@ -2,7 +2,8 @@ import tempfile
 from dotenv import load_dotenv
 import os
 import google.generativeai as genai
-from google.api_core.exceptions import DeadlineExceeded, ResourceExhausted
+from google.api_core.exceptions import ResourceExhausted
+from google.api_core.exceptions import DeadlineExceeded
 import re
 import json
 import time

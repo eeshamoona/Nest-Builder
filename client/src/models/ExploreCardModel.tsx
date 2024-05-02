@@ -1,10 +1,9 @@
-export interface SavedLocationModel {
+export interface ExploreCardModel {
   title: string;
   place: string;
   address: string;
   personalizedSummary: string;
   reccomendationReasoning: string;
-  comments: string;
-  personalRating: number;
+  confidence: number;
   category: string;
 }
