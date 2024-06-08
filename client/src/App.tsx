@@ -10,12 +10,16 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { Loader } from "@googlemaps/js-api-loader";
 import "./App.css";
 import OnboardingPage from "./pages/OnboardingPage";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  ThemeProvider as MaterialUIThemeProvider,
+  createTheme,
+} from "@mui/material/styles";
 import "./App.css";
 import MyNestPage from "./pages/MyNestPage";
 import ExplorePage from "./pages/ExplorePage";
+import "@fontsource/inter";
 
-const THEME = createTheme({
+const MATERIAL_THEME = createTheme({
   typography: {
     fontFamily: `"Product Sans Regular", "Product Sans Bold", "Product Sans Italic", "Product Sans Light"`,
   },
@@ -39,7 +43,7 @@ function App() {
 
   return (
     <div className="App">
-      <ThemeProvider theme={THEME}>
+      <MaterialUIThemeProvider theme={MATERIAL_THEME}>
         <AuthContextProvider>
           <Router>
             <Routes>
@@ -90,7 +94,7 @@ function App() {
             </Routes>
           </Router>
         </AuthContextProvider>
-      </ThemeProvider>
+      </MaterialUIThemeProvider>
     </div>
   );
 }

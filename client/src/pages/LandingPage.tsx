@@ -2,13 +2,18 @@ import React, { useEffect, useMemo } from "react";
 import { Link, animateScroll as scroll } from "react-scroll";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
+import WelcomePage from "../components/landing/WelcomePage";
+import AboutUsPage from "../components/landing/AboutUsPage";
+import HowItWorksPage from "../components/landing/HowItWorksPage";
+import SuccessPage from "../components/landing/SuccessPage";
+import TryItOutPage from "../components/landing/TryItOutPage";
+import NestedLogo from "../assets/nested-logo.png";
+import { Typography } from "@mui/material";
 
 interface SectionProps {
   id: string;
   title: string;
   content: React.ReactNode;
-  buttonText?: string; // Optional button text
-  buttonAction?: () => void; // Optional function for button click
 }
 
 const LandingPage: React.FC = () => {
@@ -31,28 +36,17 @@ const LandingPage: React.FC = () => {
       alignItems: "center",
       padding: "20px",
       boxSizing: "border-box" as "border-box",
-      backgroundColor: "#f4f4f4",
+      backgroundColor: "#f9faf6",
       color: "#333",
-    },
-    button: {
-      marginTop: "10px",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      border: "none",
-      backgroundColor: "#007BFF",
-      color: "white",
-      cursor: "pointer",
-      fontSize: "1em",
     },
     header: {
       position: "fixed" as "fixed",
       top: 0,
-      height: "5vh",
+      height: "10vh",
       width: "100%",
       zIndex: 1000,
-      padding: "10px 20px",
       boxSizing: "border-box" as "border-box",
-      backgroundColor: "#f4f4f4",
+      backgroundColor: "#f9faf6",
     },
     nav: {
       display: "flex",
@@ -65,9 +59,16 @@ const LandingPage: React.FC = () => {
       fontSize: "1.2em",
       cursor: "pointer",
     },
-
+    buttonStyle: {
+      padding: "10px 20px",
+      borderRadius: "5px",
+      border: "none",
+      backgroundColor: "#63a757",
+      color: "#fff",
+      cursor: "pointer",
+    },
     activeLink: {
-      color: "#007BFF",
+      color: "#63a757",
       textDecoration: "none",
       fontSize: "1.2em",
     },
@@ -76,67 +77,36 @@ const LandingPage: React.FC = () => {
       left: 0,
       bottom: 0,
       width: "100%",
-      margin: "1rem",
+      marginLeft: "1rem",
     },
   };
 
-  //TODO: Move section's content to a separate file
   const sections: SectionProps[] = useMemo(
     () => [
       {
         id: "hero",
         title: "Welcome to Nested",
-        content: (
-          <div
-            style={{
-              maxWidth: "600px",
-              margin: "0 auto",
-              textAlign: "center",
-            }}
-          >
-            <p>
-              Moving to a new city is overwhelming. Nested, powered by Gemini AI
-              and Google Maps, eliminates stress by finding essential amenities
-              near you. From gyms to grocery stores, explore options based on
-              location, budget, and lifestyle.
-            </p>
-            <h3> Find your happily ever after, build your nest.</h3>
-          </div>
-        ),
-        buttonText: "Get Started",
-        buttonAction: () => {
-          navigate("/login");
-        },
+        content: WelcomePage(),
+      },
+      {
+        id: "how-it-works",
+        title: "How It Works",
+        content: HowItWorksPage(),
       },
       {
         id: "about",
         title: "About Us",
-        content: "[Describe team, motivation, and the problem]",
+        content: AboutUsPage(),
       },
       {
-        id: "features",
-        title: "Features",
-        content: (
-          <ul>
-            <li>[List feature 1]</li>
-            <li>[List feature 2]</li>
-            <li>[List feature 3]</li>
-          </ul>
-        ),
+        id: "success",
+        title: "Our Success",
+        content: SuccessPage(),
       },
       {
         id: "try-it-out",
         title: "Try It Out!",
-        content: (
-          <p>
-            [Explain the benefits of trying your app and the free Google login
-            option]
-          </p>
-        ),
-        buttonText: "Try with Google",
-        buttonAction: () => {
-          navigate("/login");
-        },
+        content: TryItOutPage(),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,6 +133,11 @@ const LandingPage: React.FC = () => {
     <div>
       <header style={styles.header}>
         <nav style={styles.nav}>
+          <img
+            src={NestedLogo}
+            alt="Nested Logo"
+            style={{ width: "5rem", height: "5rem" }}
+          />
           {sections.map((section) => (
             <Link
               key={section.id}
@@ -172,8 +147,16 @@ const LandingPage: React.FC = () => {
               offset={0}
               duration={500}
               activeClass="active"
-              style={styles.link}
-              activeStyle={styles.activeLink}
+              style={
+                section.id === "try-it-out"
+                  ? { ...styles.link, ...styles.buttonStyle }
+                  : styles.link
+              }
+              activeStyle={
+                section.id === "try-it-out"
+                  ? { ...styles.activeLink, ...styles.buttonStyle }
+                  : styles.activeLink
+              }
             >
               {section.title}
             </Link>
@@ -184,19 +167,15 @@ const LandingPage: React.FC = () => {
       <main>
         {sections.map((section) => (
           <section key={section.id} id={section.id} style={styles.section}>
-            <h2>{section.title}</h2>
             {section.content}
-            {section.buttonText && (
-              <button style={styles.button} onClick={section.buttonAction}>
-                {section.buttonText}
-              </button>
-            )}
           </section>
         ))}
       </main>
 
       <footer style={styles.footer}>
-        <p>&copy;2024 MS..AI</p>
+        <Typography variant="body2" color="textSecondary" align="left">
+          Last Updated: June 7th 2024 by Eesha Moona
+        </Typography>
       </footer>
     </div>
   );
