@@ -16,7 +16,7 @@ interface SectionProps {
   content: React.ReactNode;
 }
 
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = UserAuth();
@@ -136,7 +136,8 @@ const LandingPage: React.FC = () => {
           <img
             src={NestedLogo}
             alt="Nested Logo"
-            style={{ width: "5rem", height: "5rem" }}
+            onClick={() => scroll.scrollToTop()}
+            style={{ width: "5rem", height: "5rem", cursor: "pointer" }}
           />
           {sections.map((section) => (
             <Link
