@@ -89,7 +89,7 @@ const AboutUsPage = () => {
           <BioCard key={member.name} member={member} />
         ))}
       </Stack>
-      <Typography variant="h5" align="center" sx={{ marginTop: "4rem" }}>
+      {/* <Typography variant="h5" align="center" sx={{ marginTop: "4rem" }}>
         Plus support from
       </Typography>
       <Stack
@@ -114,7 +114,7 @@ const AboutUsPage = () => {
         {supporters.map((member) => (
           <AboutUsTeamMember key={member.name} member={member} />
         ))}
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

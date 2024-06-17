@@ -145,7 +145,7 @@ const LandingPage = () => {
               to={section.id}
               spy={true}
               smooth={true}
-              offset={0}
+              offset={section.id === "try-it-out" ? 100 : 0}
               duration={500}
               activeClass="active"
               style={
@@ -153,11 +153,7 @@ const LandingPage = () => {
                   ? { ...styles.link, ...styles.buttonStyle }
                   : styles.link
               }
-              activeStyle={
-                section.id === "try-it-out"
-                  ? { ...styles.activeLink, ...styles.buttonStyle }
-                  : styles.activeLink
-              }
+              activeStyle={styles.activeLink}
             >
               {section.title}
             </Link>

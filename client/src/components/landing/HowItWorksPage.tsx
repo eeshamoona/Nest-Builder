@@ -68,7 +68,7 @@ const HowItWorksPage = () => {
           </ListItem>
         </List>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={6} textAlign={"center"}>
         <YouTube
           videoId={`Qyf--S0LUlk`}
           title={"Nested Demo Video"}
