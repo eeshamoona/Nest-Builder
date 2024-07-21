@@ -1,14 +1,21 @@
 import React from "react";
 import { Avatar, Box, Stack, Typography } from "@mui/material";
-import BioCard from "../BioCard";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import { SvgIcon } from "@mui/material";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import { TeamMember } from "../../models/TeamMemberModel";
+import EeshaImage from "../../assets/Eesha_Moona_Image.png";
+import ShaanImage from "../../assets/Shaan_Ahuja_Image.png";
 
-//TODO: Privatize all of this information so that it isn't on the public repo... maybe a not-committed file?
 const coreTeam: TeamMember[] = [
   {
     name: "Eesha Moona",
     title: "Developer",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
+    imageUrl: EeshaImage,
     bio: "Eesha is a full-stack developer with experience in React, Node.js, and Firebase.",
     email: "eeshamoona@gmail.com",
     github: "https://github.com/eeshamoona",
@@ -18,60 +25,20 @@ const coreTeam: TeamMember[] = [
   {
     name: "Shaan Ahuja",
     title: "Product Manager",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
+    imageUrl: ShaanImage,
     bio: "Shaan is a product manager with experience in Agile methodologies and user research.",
     email: "shaanahuja737@gmail.com",
     linkedin: "https://www.linkedin.com/in/shaan-ahuja/",
   },
 ];
 
-const supporters: TeamMember[] = [
-  {
-    name: "Chris Bennett",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/alicejohnson",
-  },
-  {
-    name: "Craig Ibbotson",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/craig-ibbotson/",
-  },
-  {
-    name: "Varnit Sinha",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/varnits/",
-  },
-  {
-    name: "John Kim",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/john-r-kim/",
-  },
-  {
-    name: "David Sullivan",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/david-sullivan17/",
-  },
-  {
-    name: "Sebastien Johnson",
-    title: "Motorola Solutions",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/sebastien-johnson/",
-  },
-  {
-    name: "Priya Goel",
-    title: "Bank of America",
-    imageUrl: "https://image-placeholder.com/100/cccccc",
-    linkedin: "https://www.linkedin.com/in/priya-goel-2023/",
-  },
-  // Add more supporters here
-];
-
 const AboutUsPage = () => {
+
+  const handleEmailClick = (member: TeamMember) => {
+    const email = member.email || "";
+    window.location.href = `mailto:${email}`;
+  };
+
   return (
     <Box
       sx={{
@@ -85,64 +52,94 @@ const AboutUsPage = () => {
         The Core Team
       </Typography>
       <Stack direction="row" spacing={4} justifyContent="center">
-        {coreTeam.map((member) => (
-          <BioCard key={member.name} member={member} />
-        ))}
-      </Stack>
-      {/* <Typography variant="h5" align="center" sx={{ marginTop: "4rem" }}>
-        Plus support from
-      </Typography>
-      <Stack
-        direction="row"
-        spacing={4}
-        justifyContent="center"
+      {coreTeam.map((member) => (
+      <Box
+      sx={{
+        width: "27rem",
+        maxWidth: "100%",
+        boxShadow: "lg",
+        borderRadius: 4,
+      }}
+    >
+      <Box
         sx={{
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          scrollbarWidth: "thin",
-          scrollbarColor: (theme) =>
-            `${theme.palette.divider} ${theme.palette.background.paper}`,
-          "&::-webkit-scrollbar": {
-            width: "0.4em",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "rgba(0,0,0,.1)",
-            borderRadius: "20px",
-          },
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignContent: "center",
+          alignItems: "center",
+          paddingTop: "2rem",
+          paddingBottom: "1rem",
+          gap: "2rem",
         }}
       >
-        {supporters.map((member) => (
-          <AboutUsTeamMember key={member.name} member={member} />
-        ))}
-      </Stack> */}
+        <Avatar
+          alt={member.name}
+          src={member.imageUrl}
+          style={{ width: "4rem", height: "4rem" }}
+        />
+        <Typography variant="h4" align="center" gutterBottom>
+          {member.name}
+        </Typography>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        {member.bio && ( 
+          <Typography variant="body1" sx={{ textAlign: "center" }}>
+            {member.bio}
+          </Typography>
+        )}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "1rem",
+          margin: "0.5rem",
+          width: "100%",
+        }}
+      >
+        {member.github && ( 
+          <IconButton href={member.github} target="_blank" rel="noreferrer">
+            <SvgIcon>
+              <GitHubIcon />
+            </SvgIcon>
+          </IconButton>
+        )}
+        {member.linkedin && ( 
+          <IconButton href={member.linkedin} target="_blank" rel="noreferrer">
+            <SvgIcon>
+              <LinkedInIcon />
+            </SvgIcon>
+          </IconButton>
+        )}
+        {member.instagram && ( 
+          <IconButton href={member.instagram} target="_blank" rel="noreferrer">
+            <SvgIcon>
+              <InstagramIcon />
+            </SvgIcon>
+          </IconButton>
+        )}
+        {member.twitter && ( 
+          <IconButton href={member.twitter} target="_blank" rel="noreferrer">
+            <SvgIcon>
+              <TwitterIcon />
+            </SvgIcon>
+          </IconButton>
+        )}
+      </Box>
+      <Box
+        sx={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}
+      >
+        <Button variant="outlined" color="success" onClick={() => handleEmailClick(member)}>
+          Message Me
+        </Button>
+      </Box>
+    </Box>
+      ))}
+      </Stack>
+
     </Box>
   );
 };
 
-const AboutUsTeamMember = ({ member }: { member: TeamMember }) => {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        cursor: "pointer",
-      }}
-    >
-      <Avatar
-        alt={member.name}
-        src={member.imageUrl}
-        sx={{ width: "3rem", height: "3rem", marginTop: "2rem" }}
-        onClick={() => window.open(member.linkedin, "_blank")}
-      />
-      <Typography variant="h6">{member.name}</Typography>
-      <Typography variant="body2">{member.title}</Typography>
-      {member.email && (
-        <Typography variant="body2" color="text.secondary">
-          {member.email}
-        </Typography>
-      )}
-    </Box>
-  );
-};
 export default AboutUsPage;
