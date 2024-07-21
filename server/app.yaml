@@ -1,0 +1,19 @@
+runtime: python39  # Adjust based on your Python version
+entrypoint: gunicorn -b :$PORT server:app  # Adjust according to your entry point
+
+instance_class: F2  # Choose an appropriate instance class
+
+env_variables:
+  STORAGE_BUCKET: "nest-builder.appspot.com"
+  REACT_APP_geminiAIKey: "projects/335426098638/secrets/nested_gemini_key"
+  REACT_APP_googleMapsAPIKey: "projects/335426098638/secrets/nested_google_maps_key"
+  REACT_APP_placesAPIKey: "projects/335426098638/secrets/nested_places_key"
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.65
+
+handlers:
+- url: /.*
+  script: auto  # Automatically route requests to your application

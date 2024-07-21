@@ -1,0 +1,70 @@
+# Settings for Cloud Run
+runConfig:
+  minInstances: 2
+  maxInstances: 100
+  concurrency: 100
+  cpu: 2
+  memoryMiB: 1024
+
+# Environment variables and secrets
+env:
+  - variable: STORAGE_BUCKET
+    value: nest-builder.appspot.com
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: REACT_APP_geminiAIKey
+    valueFrom:
+      secretKeyRef:
+        name: nested_gemini_key
+
+  - variable: REACT_APP_googleMapsAPIKey
+    valueFrom:
+      secretKeyRef:
+        name: nested_google_maps_key
+
+  - variable: REACT_APP_placesAPIKey
+    valueFrom:
+      secretKeyRef:
+        name: nested_places_key
+
+  - variable: REACT_APP_peopleAPIKey
+    valueFrom:
+      secretKeyRef:
+        name: nested_people_key
+
+  - variable: REACT_APP_apiKey
+    valueFrom:
+      secretKeyRef:
+        name: firebase_api_key
+
+  - variable: REACT_APP_authDomain
+    valueFrom:
+      secretKeyRef:
+        name: firebase_authdomain_key
+
+  - variable: REACT_APP_projectId
+    valueFrom:
+      secretKeyRef:
+        name: firebase_project_id
+
+  - variable: REACT_APP_storageBucket
+    valueFrom:
+      secretKeyRef:
+        name: firebase_storagebucket
+
+  - variable: REACT_APP_messagingSenderId
+    valueFrom:
+      secretKeyRef:
+        name: firebase_messaging_sender_id
+
+  - variable: REACT_APP_appId
+    valueFrom:
+      secretKeyRef:
+        name: firebase_app_id
+
+  - variable: REACT_APP_measurementId
+    valueFrom:
+      secretKeyRef:
+        name: firebase_measurement_id
