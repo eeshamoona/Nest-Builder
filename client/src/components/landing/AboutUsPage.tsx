@@ -14,9 +14,9 @@ import ShaanImage from "../../assets/Shaan_Ahuja_Image.png";
 const coreTeam: TeamMember[] = [
   {
     name: "Eesha Moona",
-    title: "Developer",
+    title: "Developer @ Motorola Solutions",
     imageUrl: EeshaImage,
-    bio: "Eesha is a full-stack developer with experience in React, Node.js, and Firebase.",
+    bio: "Eesha is a full-stack developer with extensive experience in building robust applications using React, Node.js, and Firebase. Her technical expertise and passion for coding have been instrumental in bringing Nested to life. Eesha's commitment to creating seamless user experiences ensures that our application runs smoothly and efficiently, helping users transition to new cities with ease.",
     email: "eeshamoona@gmail.com",
     github: "https://github.com/eeshamoona",
     linkedin: "https://www.linkedin.com/in/eeshamoona",
@@ -24,9 +24,9 @@ const coreTeam: TeamMember[] = [
   },
   {
     name: "Shaan Ahuja",
-    title: "Product Manager",
+    title: "Product Manager @ Doss",
     imageUrl: ShaanImage,
-    bio: "Shaan is a product manager with experience in Agile methodologies and user research.",
+    bio: "Shaan is an experienced product manager specializing in Agile methodologies and user research. With a keen eye for detail and a deep understanding of user needs, Shaan has played a pivotal role in shaping the vision and strategy for Nested. His ability to bridge the gap between technical and non-technical teams ensures that our product meets and exceeds user expectations.",
     email: "shaanahuja737@gmail.com",
     linkedin: "https://www.linkedin.com/in/shaan-ahuja/",
   },
@@ -78,10 +78,16 @@ const AboutUsPage = () => {
           src={member.imageUrl}
           style={{ width: "4rem", height: "4rem" }}
         />
+        <Box>
         <Typography variant="h4" align="center" gutterBottom>
           {member.name}
         </Typography>
+        <Typography variant="subtitle1" align="center" gutterBottom>
+          {member.title}
+        </Typography>
+        </Box>
       </Box>
+ 
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         {member.bio && ( 
           <Typography variant="body1" sx={{ textAlign: "center" }}>
