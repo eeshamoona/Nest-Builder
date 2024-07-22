@@ -3,7 +3,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { Link as ScrollLink } from 'react-scroll';
 import Image from 'next/image';
-import logo from '../../public/nested-logo.png';
+import logo from '../../../public/nested-logo.png';
 
 const Header = () => {
   return (
