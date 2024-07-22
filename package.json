@@ -1,0 +1,19 @@
+{
+  "name": "nest-builder",
+  "version": "1.0.0",
+  "description": "Nested: Move to a new city with ease, assisted by tailored suggestions based on your lifestyle and Google Maps history—find nearby grocery stores, gyms, museums, and more!",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eeshamoona/Nest-Builder.git"
+  },
+  "author": "Eesha Moona",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eeshamoona/Nest-Builder/issues"
+  },
+  "homepage": "https://github.com/eeshamoona/Nest-Builder#readme"
+}
