@@ -6,21 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ci": "rm -rf node_modules && rm package-lock.json && npm install && npm install next@latest react@latest react-dom@latest"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.4",
     "@mui/material": "^5.16.4",
     "firebase": "^10.12.4",
-    "react": "^18",
-    "react-dom": "^18"
+    "mini-css-extract-plugin": "^2.9.0",
+    "next-compose-plugins": "^2.2.1",
+    "next-transpile-modules": "^10.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scroll": "^1.9.0",
+    "webpack": "^5.93.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
+    "@babel/preset-env": "^7.24.8",
+    "@babel/preset-react": "^7.24.7",
+    "@types/mini-css-extract-plugin": "^2.5.1",
+    "@types/next": "^9.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-scroll": "^1.8.10",
+    "@types/webpack": "^5.28.5",
     "autoprefixer": "^10.4.19",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",

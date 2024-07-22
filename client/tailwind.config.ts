@@ -1,20 +1,23 @@
-import type { Config } from "tailwindcss";
+import { Config } from 'tailwindcss';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      fontFamily: {
+        'product-sans-bold-italic': ['Product Sans Bold Italic', ...defaultTheme.fontFamily.sans],
+        'product-sans-bold': ['Product Sans Bold', ...defaultTheme.fontFamily.sans],
+        'product-sans-italic': ['Product Sans Italic', ...defaultTheme.fontFamily.sans],
+        'product-sans-regular': ['Product Sans Regular', ...defaultTheme.fontFamily.sans],
       },
     },
   },
   plugins: [],
 };
+
 export default config;
