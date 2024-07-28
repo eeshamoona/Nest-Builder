@@ -1,6 +1,0 @@
-Flask==3.0.3
-Flask_Cors==4.0.0
-protobuf==5.26.1
-python-dotenv==1.0.1
-Werkzeug==3.0.2
-gunicorn==20.1.0  # Specify the version of Gunicorn you wish to use
