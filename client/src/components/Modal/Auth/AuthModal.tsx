@@ -34,7 +34,7 @@ const AuthModal: React.FC = () => {
     // Simulate the Google sign-in process
     return new Promise<{ isNewUser: boolean }>((resolve) => {
       setTimeout(() => {
-        const isNewUser = Math.random() < 0.8; // Randomly decide if the user is new or existing
+        const isNewUser = Math.random() < 0.5; // Randomly decide if the user is new or existing
         resolve({ isNewUser });
       }, 1000); // Simulate network delay
     });
@@ -51,7 +51,7 @@ const AuthModal: React.FC = () => {
         setTimeout(() => {
           onClose();
           // Perform the actual redirect here for when the user is already registered (need to either go to onboarding or dashboard)
-        }, 3000);
+        }, 5000);
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
