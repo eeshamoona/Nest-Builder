@@ -16,12 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { FaGoogle, FaUser, FaEnvelope } from "react-icons/fa";
 import { authModalState } from "@/atoms/authModalAtom";
 import AuthInitialSignIn from "./AuthInitialSignIn";
 import AuthWelcomeBack from "./AuthWelcomeBack";
 import AuthNextSteps from "./AuthNextSteps";
 import AuthRegisterForm from "./AuthRegisterForm";
+import { useAuth } from "@/utils/hooks/useAuth";
 
 const AuthModal: React.FC = () => {
   const [modalState, setModalState] = useRecoilState(authModalState);
@@ -30,29 +30,23 @@ const AuthModal: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const mockGoogleSignIn = async () => {
-    // Simulate the Google sign-in process
-    return new Promise<{ isNewUser: boolean }>((resolve) => {
-      setTimeout(() => {
-        const isNewUser = Math.random() < 0.5; // Randomly decide if the user is new or existing
-        resolve({ isNewUser });
-      }, 1000); // Simulate network delay
-    });
-  };
+  const { user, loading, googleSignIn, logOut } = useAuth();
+
+  // const mockGoogleSignIn = async () => {
+  //   // Simulate the Google sign-in process
+  //   return new Promise<{ isNewUser: boolean }>((resolve) => {
+  //     setTimeout(() => {
+  //       const isNewUser = Math.random() < 0.5; // Randomly decide if the user is new or existing
+  //       resolve({ isNewUser });
+  //     }, 1000); // Simulate network delay
+  //   });
+  // };
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await mockGoogleSignIn();
-      if (result.isNewUser) {
-        setIsRegistered(false);
-      } else {
-        setIsRegistered(true);
-        // Redirect after a short delay
-        setTimeout(() => {
-          onClose();
-          // Perform the actual redirect here for when the user is already registered (need to either go to onboarding or dashboard)
-        }, 5000);
-      }
+      const result = await googleSignIn();
+      console.log("Google sign-in result: ", result);
+      console.log("User: ", user);
     } catch (error) {
       console.error("Error signing in with Google:", error);
     }
@@ -80,7 +74,7 @@ const AuthModal: React.FC = () => {
         <ModalBody>
           <VStack spacing={4} pb={"1rem"}>
             {isRegistered === null ? (
-              <AuthInitialSignIn handleGoogleSignIn={handleGoogleSignIn} />
+              <AuthInitialSignIn />
             ) : isRegistered ? (
               <AuthWelcomeBack />
             ) : formSubmitted ? (
