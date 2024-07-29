@@ -9,8 +9,13 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { FaRocket, FaFlask } from "react-icons/fa";
+import AuthModal from "@/components/Modal/Auth/AuthModal";
+import { useSetRecoilState } from "recoil";
+import { authModalState } from "@/atoms/authModalAtom";
 
 const LandingPage = () => {
+  const setAuthModalState = useSetRecoilState(authModalState);
+
   return (
     <Flex
       height="100vh"
@@ -65,6 +70,9 @@ const LandingPage = () => {
                 size={{ base: "sm", md: "md" }}
                 leftIcon={<Icon as={FaFlask} />}
                 width="100%"
+                onClick={() =>
+                  setAuthModalState({ isOpen: true, mode: "register" })
+                }
               >
                 Beta Access
               </Button>
@@ -73,6 +81,7 @@ const LandingPage = () => {
               Try Nested with your own data.
             </Text>
           </VStack>
+          <AuthModal />
         </Flex>
       </Flex>
       <Flex
