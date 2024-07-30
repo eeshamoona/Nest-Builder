@@ -1,3 +1,4 @@
+import { userAtom } from "@/atoms/userAtom";
 import {
   VStack,
   Text,
@@ -9,22 +10,31 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { FaUser, FaEnvelope } from "react-icons/fa";
+import { useRecoilState } from "recoil";
 
 type AuthRegisterFormProps = {
-  name: string;
-  email: string;
-  setName: (name: string) => void;
-  setEmail: (email: string) => void;
   handleSubmit: () => void;
 };
 
 const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
-  name,
-  email,
-  setName,
-  setEmail,
   handleSubmit,
 }: AuthRegisterFormProps) => {
+  const [userState, setUserState] = useRecoilState(userAtom);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const changedName = e.target.value;
+    setUserState((prevState) => {
+      if (!prevState.user) return prevState;
+      return {
+        ...prevState,
+        user: {
+          ...prevState.user,
+          name: changedName,
+        },
+      };
+    });
+  };
+
   return (
     <VStack spacing={4} align="center">
       <Text fontSize="xl" fontWeight="bold" textAlign="center">
@@ -41,8 +51,8 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
         </InputLeftElement>
         <Input
           placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={userState.user?.name || ""}
+          onChange={handleChange}
         />
       </InputGroup>
       <InputGroup>
@@ -51,8 +61,8 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
         </InputLeftElement>
         <Input
           placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={userState.user?.email || ""}
+          disabled
         />
       </InputGroup>
       <Button size={"sm"} onClick={handleSubmit} colorScheme="blue">
@@ -61,4 +71,5 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
     </VStack>
   );
 };
+
 export default AuthRegisterForm;

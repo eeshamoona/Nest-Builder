@@ -12,9 +12,20 @@ import { FaRocket, FaFlask } from "react-icons/fa";
 import AuthModal from "@/components/Modal/Auth/AuthModal";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
+import { userAtom } from "@/atoms/userAtom";
+import { useAuth } from "@/utils/hooks/useAuth";
 
 const LandingPage = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
+  const setUserState = useSetRecoilState(userAtom);
+
+  //TODO: Determine if these initial states are a good idea
+  const handleButtonClick = () => {
+    setUserState({
+      user: null,
+    });
+    setAuthModalState({ isOpen: true, mode: "login" });
+  };
 
   return (
     <Flex
@@ -70,9 +81,7 @@ const LandingPage = () => {
                 size={{ base: "sm", md: "md" }}
                 leftIcon={<Icon as={FaFlask} />}
                 width="100%"
-                onClick={() =>
-                  setAuthModalState({ isOpen: true, mode: "register" })
-                }
+                onClick={handleButtonClick}
               >
                 Beta Access
               </Button>

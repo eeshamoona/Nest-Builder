@@ -1,21 +1,26 @@
 import { atom } from "recoil";
-import { User } from "firebase/auth";
 
-enum UserStatus {
+export enum UserStatus {
   admin = "admin",
   whitelist = "whitelist",
   new = "new",
   banned = "banned",
 }
 
+export interface User {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL: string;
+  status: UserStatus | null;
+}
+
 export interface UserAtom {
   user: User | null;
-  status: UserStatus | null;
 }
 
 const defaultUserState: UserAtom = {
   user: null,
-  status: null,
 };
 
 export const userAtom = atom<UserAtom>({

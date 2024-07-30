@@ -19,7 +19,7 @@ const AuthNextSteps: React.FC<AuthNextStepsProps> = () => {
           In the meantime, feel free to explore our demo or visit our GitHub
           repository.
         </Text>
-        <HStack spacing={4} width={{ base: "100%", md: "50%" }}>
+        <HStack spacing={4} width={{ base: "100%" }}>
           <Button as="a" href="/demo" target="_blank" variant="solid">
             Explore Demo
           </Button>

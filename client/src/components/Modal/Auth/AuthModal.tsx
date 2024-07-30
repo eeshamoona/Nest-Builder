@@ -14,7 +14,7 @@ import {
   InputLeftElement,
   Icon,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import AuthInitialSignIn from "./AuthInitialSignIn";
@@ -22,48 +22,57 @@ import AuthWelcomeBack from "./AuthWelcomeBack";
 import AuthNextSteps from "./AuthNextSteps";
 import AuthRegisterForm from "./AuthRegisterForm";
 import { useAuth } from "@/utils/hooks/useAuth";
+import { userAtom } from "@/atoms/userAtom";
+import { UserStatus } from "@/atoms/userAtom";
+import { addUserToGraylist } from "@/utils/functions/authFunctions";
 
 const AuthModal: React.FC = () => {
   const [modalState, setModalState] = useRecoilState(authModalState);
-  const [isRegistered, setIsRegistered] = useState<boolean | null>(null);
+  const [userState, setUserState] = useRecoilState(userAtom);
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
 
   const { user, loading, googleSignIn, logOut } = useAuth();
 
-  // const mockGoogleSignIn = async () => {
-  //   // Simulate the Google sign-in process
-  //   return new Promise<{ isNewUser: boolean }>((resolve) => {
-  //     setTimeout(() => {
-  //       const isNewUser = Math.random() < 0.5; // Randomly decide if the user is new or existing
-  //       resolve({ isNewUser });
-  //     }, 1000); // Simulate network delay
-  //   });
-  // };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await googleSignIn();
-      console.log("Google sign-in result: ", result);
-      console.log("User: ", user);
-    } catch (error) {
-      console.error("Error signing in with Google:", error);
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     // Handle form submission for new users here
     setFormSubmitted(true);
-  };
+    if (userState.user) {
+      addUserToGraylist(userState.user);
+      setUserState((prevState) => {
+        if (!prevState.user) return prevState;
+        return {
+          ...prevState,
+          user: {
+            ...prevState.user,
+            status: null,
+          },
+        };
+      });
+    } else {
+      console.error("User not found, failed to add to graylist");
+    }
+  }, [userState.user, setUserState]); // Include setUserState in the dependency array
 
   const onClose = () => {
     setModalState({ ...modalState, isOpen: false });
-    setIsRegistered(null);
+    logOut();
     setFormSubmitted(false);
-    setName("");
-    setEmail("");
   };
+
+  const renderContent = useMemo(() => {
+    if (userState.user === null) {
+      return <AuthInitialSignIn />;
+    } else if (
+      userState.user?.status === UserStatus.whitelist ||
+      userState.user?.status === UserStatus.admin
+    ) {
+      return <AuthWelcomeBack />;
+    } else if (userState.user?.status === UserStatus.new) {
+      return <AuthRegisterForm handleSubmit={handleSubmit} />;
+    } else {
+      return <AuthNextSteps />;
+    }
+  }, [userState, handleSubmit]);
 
   return (
     <Modal isOpen={modalState.isOpen} onClose={onClose}>
@@ -73,21 +82,7 @@ const AuthModal: React.FC = () => {
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4} pb={"1rem"}>
-            {isRegistered === null ? (
-              <AuthInitialSignIn />
-            ) : isRegistered ? (
-              <AuthWelcomeBack />
-            ) : formSubmitted ? (
-              <AuthNextSteps />
-            ) : (
-              <AuthRegisterForm
-                name={name}
-                email={email}
-                setName={setName}
-                setEmail={setEmail}
-                handleSubmit={handleSubmit}
-              />
-            )}
+            {renderContent}
           </VStack>
         </ModalBody>
       </ModalContent>

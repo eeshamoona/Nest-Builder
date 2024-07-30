@@ -1,6 +1,6 @@
 // useAuth.ts
 import { useRecoilState } from "recoil";
-import { userAtom, loadingAtom } from "@/atoms/userAtom";
+import { userAtom, loadingAtom, UserStatus } from "@/atoms/userAtom";
 import {
   GoogleAuthProvider,
   signOut,
@@ -10,6 +10,8 @@ import {
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
+import { checkUserStatus } from "../functions/authFunctions";
+import { User } from "@/atoms/userAtom";
 
 export function useAuth() {
   const [user, setUser] = useRecoilState(userAtom);
@@ -18,41 +20,26 @@ export function useAuth() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("User signed in: ", user);
+        window.close();
+        const status = await checkUserStatus(user.email || "");
+        setUser({
+          user: {
+            uid: user.uid,
+            name: user.displayName || "",
+            email: user.email || "",
+            photoURL: user.photoURL || "",
+            status: status || UserStatus.new,
+          } as User,
+        });
       } else {
-        console.log("No user signed in");
+        console.error("User not found.");
       }
     });
 
     return () => {
       unsubscribe();
     };
-  }, []);
-
-  const storeGoogleToken = async () => {
-    console.log("Storing Google token");
-    try {
-      const result = await getRedirectResult(auth);
-      if (result) {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        if (credential) {
-          const token = credential.accessToken;
-          if (!token) {
-            console.log("No token from credential. Credential: ", credential);
-          } else {
-            localStorage.setItem("accessToken", token);
-            console.log("Token stored successfully!");
-          }
-        } else {
-          console.log("No credential from result. Result: ", result);
-        }
-      } else {
-        console.log("No result from redirect. Auth: ", auth);
-      }
-    } catch (error) {
-      console.error("Error getting redirect result: ", error);
-    }
-  };
+  }, [setUser]);
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -63,16 +50,12 @@ export function useAuth() {
     setLoading(true);
     try {
       console.log("Signing in with Google");
-      await signInWithRedirect(auth, provider).then(async () => {
-        console.log("Signed in with Google");
-        await storeGoogleToken();
-      });
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google: ", error);
     }
     setLoading(false);
   };
-
   const logOut = async () => {
     setLoading(true);
     localStorage.removeItem("accessToken");

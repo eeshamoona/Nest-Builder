@@ -6,10 +6,9 @@ import { FaGoogle } from "react-icons/fa";
 type GoogleSignInButtonProps = {};
 
 const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = () => {
-  const { googleSignIn } = useAuth();
-
   const handleGoogleSignIn = () => {
-    window.open("/sign-in", "_blank");
+    const signInUrl = "/sign-in"; // The URL where your sign-in process is handled
+    window.open(signInUrl, "_blank");
   };
   return (
     <Button
