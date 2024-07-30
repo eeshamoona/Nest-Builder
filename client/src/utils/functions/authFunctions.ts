@@ -13,14 +13,17 @@ export async function checkUserStatus(
 
   try {
     const whitelistRef = doc(firestore, "config", "whitelist");
+    const graylistRef = doc(firestore, "config", "graylist");
     const adminRef = doc(firestore, "config", "admin");
 
-    const [whitelistDoc, adminDoc] = await Promise.all([
+    const [whitelistDoc, graylistDoc, adminDoc] = await Promise.all([
       getDoc(whitelistRef),
+      getDoc(graylistRef),
       getDoc(adminRef),
     ]);
 
     const whitelistData = whitelistDoc.exists() ? whitelistDoc.data() : null;
+    const graylistData = graylistDoc.exists() ? graylistDoc.data() : null;
     const adminData = adminDoc.exists() ? adminDoc.data() : null;
 
     if (!whitelistData && !adminData) {
@@ -31,6 +34,7 @@ export async function checkUserStatus(
     }
 
     const isWhitelisted = whitelistData && email in whitelistData;
+    const isGraylisted = graylistData && email in graylistData;
     const isAdmin = adminData && email in adminData;
 
     if (isAdmin) {
@@ -39,6 +43,9 @@ export async function checkUserStatus(
     } else if (isWhitelisted) {
       console.log(`${email} is approved!`);
       return UserStatus.whitelist;
+    } else if (isGraylisted) {
+      console.log(`${email} is graylisted.`);
+      return UserStatus.pending;
     } else {
       console.log(`${email} is a new nester.`);
       return UserStatus.new;

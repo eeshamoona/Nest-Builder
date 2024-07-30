@@ -25,6 +25,7 @@ import { useAuth } from "@/utils/hooks/useAuth";
 import { userAtom } from "@/atoms/userAtom";
 import { UserStatus } from "@/atoms/userAtom";
 import { addUserToGraylist } from "@/utils/functions/authFunctions";
+import AuthAdminWelcome from "./AuthAdminWelcome";
 
 const AuthModal: React.FC = () => {
   const [modalState, setModalState] = useRecoilState(authModalState);
@@ -44,7 +45,7 @@ const AuthModal: React.FC = () => {
           ...prevState,
           user: {
             ...prevState.user,
-            status: null,
+            status: UserStatus.pending,
           },
         };
       });
@@ -62,15 +63,17 @@ const AuthModal: React.FC = () => {
   const renderContent = useMemo(() => {
     if (userState.user === null) {
       return <AuthInitialSignIn />;
-    } else if (
-      userState.user?.status === UserStatus.whitelist ||
-      userState.user?.status === UserStatus.admin
-    ) {
+    } else if (userState.user?.status === UserStatus.whitelist) {
       return <AuthWelcomeBack />;
+    } else if (userState.user?.status === UserStatus.admin) {
+      //TODO: Change to AuthAdminWelcome
+      return <AuthAdminWelcome />;
     } else if (userState.user?.status === UserStatus.new) {
       return <AuthRegisterForm handleSubmit={handleSubmit} />;
-    } else {
+    } else if (userState.user?.status === UserStatus.pending) {
       return <AuthNextSteps />;
+    } else {
+      return <Text>Error loading content, please reload!</Text>;
     }
   }, [userState, handleSubmit]);
 

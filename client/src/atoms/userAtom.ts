@@ -4,6 +4,7 @@ export enum UserStatus {
   admin = "admin",
   whitelist = "whitelist",
   new = "new",
+  pending = "pending",
   banned = "banned",
 }
 

@@ -1,9 +1,15 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import { VStack, Text, Image, Spinner, Box, Fade } from "@chakra-ui/react";
 
 type AuthWelcomeBackProps = {};
 
 const AuthWelcomeBack: React.FC<AuthWelcomeBackProps> = () => {
+  useEffect(() => {
+    //Wait for a little bit then navigate to the dashboard
+    setTimeout(() => {
+      window.location.href = "/dashboard";
+    }, 3000);
+  });
   return (
     <VStack spacing={6} align="center">
       <Fade in>

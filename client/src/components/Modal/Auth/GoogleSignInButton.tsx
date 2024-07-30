@@ -17,7 +17,7 @@ const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = () => {
       onClick={handleGoogleSignIn}
       colorScheme="blue"
     >
-      Sign In with Google
+      Sign in with Google
     </Button>
   );
 };
