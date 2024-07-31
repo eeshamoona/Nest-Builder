@@ -6,7 +6,6 @@ import { RecoilRoot } from "recoil";
 
 // Represents the root component of the application, every page will be rendered inside this component
 function MyApp({ Component, pageProps }: AppProps) {
-  //TODO: Add Router to handle navigation
   return (
     <RecoilRoot>
       <ChakraProvider theme={theme}>

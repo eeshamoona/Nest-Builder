@@ -9,16 +9,22 @@ import {
   Badge,
   keyframes,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 type AuthAdminWelcomeProps = {};
 
 const AuthAdminWelcome: React.FC<AuthAdminWelcomeProps> = () => {
+  const router = useRouter();
+
   useEffect(() => {
-    //Wait for a little bit then navigate to the dashboard
-    setTimeout(() => {
-      window.location.href = "/admin-dashboard";
+    // Wait for a little bit then navigate to the dashboard
+    const timer = setTimeout(() => {
+      router.push("/admin-dashboard");
     }, 3000);
-  });
+
+    // Cleanup the timer on component unmount
+    return () => clearTimeout(timer);
+  }, [router]);
 
   // Animation keyframes for a glowing effect
   const glow = keyframes`

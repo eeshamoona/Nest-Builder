@@ -5,7 +5,7 @@ import {
   VStack,
   AspectRatio,
   Flex,
-  Link,
+  Link as ChakraLink,
   Icon,
 } from "@chakra-ui/react";
 import { FaRocket, FaFlask } from "react-icons/fa";
@@ -14,6 +14,7 @@ import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import { userAtom } from "@/atoms/userAtom";
 import { useAuth } from "@/utils/hooks/useAuth";
+import Link from "next/link";
 
 const LandingPage = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
@@ -59,6 +60,7 @@ const LandingPage = () => {
         <Flex width="100%" maxWidth={{ base: "100%", lg: "50%" }} mx="auto">
           <VStack flex="1" p="0.5rem">
             <Box p="0.1rem" w="100%">
+              <Link href="/demo" passHref>
               <Button
                 colorScheme="green"
                 size={{ base: "sm", md: "md" }}
@@ -67,6 +69,7 @@ const LandingPage = () => {
               >
                 Launch Demo
               </Button>
+              </Link>
             </Box>
             <Text fontSize="sm" textAlign="center">
               No sign-up required. Data-safe demo.
@@ -112,13 +115,13 @@ const LandingPage = () => {
         </AspectRatio>
         <Text fontSize="sm" textAlign="center" color="gray.600" mt={2}>
           Nested in action at the&nbsp;
-          <Link
+          <ChakraLink
             href="https://devpost.com/software/nested"
             isExternal
             color="blue.500"
           >
             Google Gen AI Hackathon 2024
-          </Link>
+          </ChakraLink>
         </Text>
       </Flex>
     </Flex>

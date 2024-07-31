@@ -1,15 +1,21 @@
 import React, { use, useEffect } from "react";
 import { VStack, Text, Image, Spinner, Box, Fade } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 type AuthWelcomeBackProps = {};
 
 const AuthWelcomeBack: React.FC<AuthWelcomeBackProps> = () => {
+  const router = useRouter();
+
   useEffect(() => {
-    //Wait for a little bit then navigate to the dashboard
-    setTimeout(() => {
-      window.location.href = "/dashboard";
+    // Wait for a little bit then navigate to the dashboard
+    const timer = setTimeout(() => {
+      router.push("/dashboard");
     }, 3000);
-  });
+
+    // Cleanup the timer on component unmount
+    return () => clearTimeout(timer);
+  }, [router]);
   return (
     <VStack spacing={6} align="center">
       <Fade in>

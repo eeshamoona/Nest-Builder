@@ -10,14 +10,16 @@ import {
   Icon,
   HStack,
   Box,
-  Link,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { FaHome, FaInfoCircle, FaCog, FaEnvelope } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { SiDevpost } from "react-icons/si";
 import React, { useMemo } from "react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { userAtom, UserStatus } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
+import Link from "next/link";
 
 type NavbarProps = {};
 
@@ -33,78 +35,64 @@ const Navbar: React.FC<NavbarProps> = () => {
     ) {
       console.log("User is whitelisted or admin");
       return null;
+    } else {
+      return isMobile ? (
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Open Menu"
+            icon={<HamburgerIcon />}
+            variant="unstyled"
+            color="green.600"
+            width="fit-content"
+          />
+          <MenuList>
+            <MenuItem
+              as={ChakraLink}
+              href="https://github.com/eeshamoona/Nest-Builder"
+              icon={<Icon as={FaGithub} />}
+              color="gray.700"
+            >
+              GitHub Repo
+            </MenuItem>
+            <MenuItem
+              as={ChakraLink}
+              href="https://devpost.com/software/nested"
+              icon={<Icon as={SiDevpost} />}
+              color="gray.700"
+            >
+              Deposit Entry
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      ) : (
+        <HStack spacing={6}>
+          <ChakraLink
+            href="https://github.com/eeshamoona/Nest-Builder"
+            _hover={{ textDecoration: "none", color: "green.500" }}
+            _active={{ color: "green.500" }}
+            isExternal
+          >
+            <Box display="flex" alignItems="center" color="gray.700">
+              <Icon as={FaGithub} mr={2} />
+              <Text>GitHub Repo</Text>
+            </Box>
+          </ChakraLink>
+          <ChakraLink
+            href="https://devpost.com/software/nested"
+            _hover={{ textDecoration: "none", color: "green.500" }}
+            _active={{ color: "green.500" }}
+            isExternal
+          >
+            <Box display="flex" alignItems="center" color="gray.700">
+              <Icon as={SiDevpost} mr={2} />
+              <Text>Deposit Entry</Text>
+            </Box>
+          </ChakraLink>
+        </HStack>
+      );
     }
-
-    return isMobile ? (
-      <Menu>
-        <MenuButton
-          as={IconButton}
-          aria-label="Open Menu"
-          icon={<HamburgerIcon />}
-          variant="unstyled"
-          color="green.600"
-          width="fit-content"
-        />
-        <MenuList>
-          <MenuItem icon={<Icon as={FaHome} />} color="gray.700">
-            Home
-          </MenuItem>
-          <MenuItem icon={<Icon as={FaInfoCircle} />} color="gray.700">
-            About Us
-          </MenuItem>
-          <MenuItem icon={<Icon as={FaCog} />} color="gray.700">
-            Our Success
-          </MenuItem>
-          <MenuItem icon={<Icon as={FaEnvelope} />} color="gray.700">
-            Contact
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    ) : (
-      <HStack spacing={6}>
-        <Link
-          href="#"
-          _hover={{ textDecoration: "none", color: "green.500" }}
-          _active={{ color: "green.500" }}
-        >
-          <Box display="flex" alignItems="center" color="gray.700">
-            <Icon as={FaHome} mr={2} />
-            <Text>Home</Text>
-          </Box>
-        </Link>
-        <Link
-          href="#"
-          _hover={{ textDecoration: "none", color: "green.500" }}
-          _active={{ color: "green.500" }}
-        >
-          <Box display="flex" alignItems="center" color="gray.700">
-            <Icon as={FaInfoCircle} mr={2} />
-            <Text>About Us</Text>
-          </Box>
-        </Link>
-        <Link
-          href="#"
-          _hover={{ textDecoration: "none", color: "green.500" }}
-          _active={{ color: "green.500" }}
-        >
-          <Box display="flex" alignItems="center" color="gray.700">
-            <Icon as={FaCog} mr={2} />
-            <Text>Our Success</Text>
-          </Box>
-        </Link>
-        <Link
-          href="#"
-          _hover={{ textDecoration: "none", color: "green.500" }}
-          _active={{ color: "green.500" }}
-        >
-          <Box display="flex" alignItems="center" color="gray.700">
-            <Icon as={FaEnvelope} mr={2} />
-            <Text>Contact</Text>
-          </Box>
-        </Link>
-      </HStack>
-    );
-  }, [isMobile, userState.user?.status]);
+  }, [isMobile, userState.user]);
 
   return (
     <Flex
@@ -116,7 +104,13 @@ const Navbar: React.FC<NavbarProps> = () => {
       boxShadow="sm"
     >
       <Flex align={"center"} justify={"start"} gap={"0.5rem"}>
-        <Image src="/images/nested-logo.svg" alt="Nested Logo" height="3rem" />
+        <Link href="/" passHref>
+          <Image
+            src="/images/nested-logo.svg"
+            alt="Nested Logo"
+            height="3rem"
+          />
+        </Link>
         <Text
           fontSize="2xl"
           fontWeight="bold"
