@@ -1,4 +1,4 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { VStack, Text, Image, Spinner, Box, Fade } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 

@@ -7,8 +7,8 @@ import {
   VStack,
   HStack,
   Button,
-  Spacer,
 } from "@chakra-ui/react";
+import withAuth from "@/components/Modal/Auth/withAuth";
 
 type AdminDashboardProps = {};
 
@@ -101,4 +101,4 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   );
 };
 
-export default AdminDashboard;
+export default withAuth(AdminDashboard);

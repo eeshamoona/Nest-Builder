@@ -9,7 +9,6 @@ import {
   StepTitle,
   StepSeparator,
   Flex,
-  Text,
   Icon,
   useSteps,
   Heading,
@@ -18,6 +17,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useRecoilValue } from "recoil";
 import { onboardingStepAtom } from "@/atoms/onboardingStepAtom";
+import withAuth from "@/components/Modal/Auth/withAuth";
 
 type OnboardingFlowProps = {};
 
@@ -102,4 +102,4 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   );
 };
 
-export default OnboardingFlow;
+export default withAuth(OnboardingFlow);

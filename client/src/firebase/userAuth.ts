@@ -1,11 +1,5 @@
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { app, firestore } from "./firebaseConfig";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { firestore } from "./firebaseConfig";
 
 export const isUserWhitelisted = async (email: string) => {
   const whitelistRef = doc(firestore, "config", "whitelist");

@@ -13,7 +13,6 @@ import AuthModal from "@/components/Modal/Auth/AuthModal";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import { userAtom } from "@/atoms/userAtom";
-import { useAuth } from "@/utils/hooks/useAuth";
 import Link from "next/link";
 
 const LandingPage = () => {

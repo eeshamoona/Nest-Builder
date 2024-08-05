@@ -93,7 +93,7 @@ const Intro: React.FC<IntroProps> = () => {
             Upload Google Takeout
           </Button>
         </Card>
-      </Flex> 
+      </Flex>
     </Flex>
   );
 };

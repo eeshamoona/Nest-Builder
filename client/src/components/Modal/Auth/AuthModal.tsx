@@ -1,18 +1,12 @@
 import {
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   VStack,
   Text,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Icon,
 } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";

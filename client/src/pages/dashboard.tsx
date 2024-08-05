@@ -8,6 +8,7 @@ import {
   HStack,
   Divider,
 } from "@chakra-ui/react";
+import withAuth from "@/components/Modal/Auth/withAuth";
 
 type DashboardProps = {};
 
@@ -59,4 +60,4 @@ const Dashboard: React.FC<DashboardProps> = () => {
   );
 };
 
-export default Dashboard;
+export default withAuth(Dashboard);

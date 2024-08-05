@@ -3,7 +3,6 @@ import {
   Box,
   Highlight,
   SimpleGrid,
-  Image,
   Heading,
   Text,
   useBreakpointValue,

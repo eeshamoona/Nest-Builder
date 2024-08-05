@@ -12,7 +12,7 @@ import {
   Box,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { FaGithub } from "react-icons/fa";
 import { SiDevpost } from "react-icons/si";
 import React, { useMemo } from "react";
