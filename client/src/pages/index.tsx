@@ -30,7 +30,7 @@ const LandingPage = () => {
 
   return (
     <Flex
-      height="100vh"
+      height="100%"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
@@ -61,14 +61,14 @@ const LandingPage = () => {
           <VStack flex="1" p="0.5rem">
             <Box p="0.1rem" w="100%">
               <Link href="/demo" passHref>
-              <Button
-                colorScheme="green"
-                size={{ base: "sm", md: "md" }}
-                leftIcon={<Icon as={FaRocket} />}
-                width="100%"
-              >
-                Launch Demo
-              </Button>
+                <Button
+                  colorScheme="green"
+                  size={{ base: "sm", md: "md" }}
+                  leftIcon={<Icon as={FaRocket} />}
+                  width="100%"
+                >
+                  Launch Demo
+                </Button>
               </Link>
             </Box>
             <Text fontSize="sm" textAlign="center">

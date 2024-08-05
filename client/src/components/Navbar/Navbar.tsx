@@ -49,6 +49,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           <MenuList>
             <MenuItem
               as={ChakraLink}
+              target="_blank"
               href="https://github.com/eeshamoona/Nest-Builder"
               icon={<Icon as={FaGithub} />}
               color="gray.700"
@@ -57,11 +58,12 @@ const Navbar: React.FC<NavbarProps> = () => {
             </MenuItem>
             <MenuItem
               as={ChakraLink}
+              target="_blank"
               href="https://devpost.com/software/nested"
               icon={<Icon as={SiDevpost} />}
               color="gray.700"
             >
-              Deposit Entry
+              Devpost Entry
             </MenuItem>
           </MenuList>
         </Menu>
@@ -86,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           >
             <Box display="flex" alignItems="center" color="gray.700">
               <Icon as={SiDevpost} mr={2} />
-              <Text>Deposit Entry</Text>
+              <Text>Devpost Entry</Text>
             </Box>
           </ChakraLink>
         </HStack>

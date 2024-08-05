@@ -10,7 +10,7 @@ const AuthWelcomeBack: React.FC<AuthWelcomeBackProps> = () => {
   useEffect(() => {
     // Wait for a little bit then navigate to the dashboard
     const timer = setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/onboarding");
     }, 3000);
 
     // Cleanup the timer on component unmount

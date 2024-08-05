@@ -7,13 +7,13 @@ import {
   Heading,
   Text,
   useBreakpointValue,
+  Link,
   VStack,
 } from "@chakra-ui/react";
 import SidePanel from "@/components/DemoProfiles/SidePanel";
 import AnimatedButton from "@/components/DemoProfiles/AnimatedButton";
 import { Profile } from "@/atoms/demoProfileAtom";
 import profilesData from "@/data/profilesData";
-import Link from "next/link";
 
 const DemoPage: React.FC = () => {
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -32,7 +32,7 @@ const DemoPage: React.FC = () => {
   if (isMobile) {
     return (
       <Box
-        height="100vh"
+        height="100%"
         display="flex"
         flexDirection="column"
         justifyContent="center"
@@ -53,7 +53,7 @@ const DemoPage: React.FC = () => {
 
   return (
     <Box
-      height="100vh"
+      height="100%"
       display="flex"
       flexDirection="column"
       justifyContent="center"
@@ -107,7 +107,7 @@ const DemoPage: React.FC = () => {
           />
         )}
       </Box>
-      <Link href="https://storyset.com/people" passHref>
+      <Link href="https://storyset.com/people" isExternal>
         <Text fontSize="sm" textAlign="center" mt={4} color="green.500">
           People illustrations by Storyset
         </Text>

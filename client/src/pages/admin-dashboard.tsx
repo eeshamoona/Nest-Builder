@@ -14,7 +14,7 @@ type AdminDashboardProps = {};
 
 const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   return (
-    <Flex direction="column" height="100vh">
+    <Flex direction="column" height="100%">
       {/* Header */}
       <Box bg="blue.600" p={4} color="white">
         <Heading as="h1" size="lg">

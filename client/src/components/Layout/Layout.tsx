@@ -7,10 +7,10 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <Navbar />
-      <main>{children}</main>
-    </>
+      <main style={{ flex: 1 }}>{children}</main>
+    </div>
   );
 };
 
