@@ -7,6 +7,8 @@ import {
   ModalCloseButton,
   VStack,
   Text,
+  Button,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { useCallback, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -27,6 +29,31 @@ const AuthModal: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const { user, loading, googleSignIn, logOut } = useAuth();
+
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+
+  const handleClose = () => {
+    if (userState.user === null) {
+      handleConfirmClose();
+    } else {
+      setConfirmOpen(true);
+    }
+  };
+
+  const handleConfirmClose = () => {
+    setConfirmOpen(false);
+    onClose();
+  };
+
+  const handleConfirmLogout = () => {
+    setConfirmOpen(false);
+    setUserState((prevState) => {
+      return {
+        user: null,
+      };
+    });
+    logOut();
+  };
 
   const handleSubmit = useCallback(() => {
     // Handle form submission for new users here
@@ -50,7 +77,6 @@ const AuthModal: React.FC = () => {
 
   const onClose = () => {
     setModalState({ ...modalState, isOpen: false });
-    logOut();
     setFormSubmitted(false);
   };
 
@@ -72,18 +98,40 @@ const AuthModal: React.FC = () => {
   }, [userState, handleSubmit]);
 
   return (
-    <Modal isOpen={modalState.isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader />
-        <ModalCloseButton />
-        <ModalBody>
-          <VStack spacing={4} pb={"1rem"}>
-            {renderContent}
-          </VStack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+    <>
+      <Modal isOpen={modalState.isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader />
+          <ModalCloseButton onClick={handleClose} />
+          <ModalBody>
+            <VStack spacing={4} pb={"1rem"}>
+              {renderContent}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isConfirmOpen} onClose={() => setConfirmOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Logout</ModalHeader>
+          <ModalCloseButton onClick={() => setConfirmOpen(false)} />
+          <ModalBody>
+            Are you sure you want to log out or do you just want to close the
+            modal?
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={handleConfirmClose} size="sm" mr={3}>
+              Close Modal
+            </Button>
+            <Button onClick={handleConfirmLogout} size="sm" variant={"outline"}>
+              Logout
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

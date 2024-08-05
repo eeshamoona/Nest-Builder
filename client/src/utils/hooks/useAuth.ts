@@ -6,16 +6,19 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithRedirect,
-  getRedirectResult,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
 import { checkUserStatus } from "../functions/authFunctions";
 import { User } from "@/atoms/userAtom";
+import { useRouter } from "next/router";
+import { useToast } from "@chakra-ui/react";
 
 export function useAuth() {
   const [user, setUser] = useRecoilState(userAtom);
   const [loading, setLoading] = useRecoilState(loadingAtom);
+  const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -40,7 +43,6 @@ export function useAuth() {
       unsubscribe();
     };
   }, [setUser]);
-
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     // provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
@@ -58,11 +60,32 @@ export function useAuth() {
   };
   const logOut = async () => {
     setLoading(true);
-    localStorage.removeItem("accessToken");
-    await signOut(auth);
-    setLoading(false);
+    try {
+      localStorage.removeItem("accessToken");
+      setUser({
+        user: null,
+      });
+      router.push("/");
+      toast({
+        title: "Logged out successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Failed to log out.",
+        description: "Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
-
   return {
     user,
     loading,

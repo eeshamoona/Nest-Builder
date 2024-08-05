@@ -21,6 +21,10 @@ import withAuth from "@/components/Modal/Auth/withAuth";
 
 type OnboardingFlowProps = {};
 
+/**
+ * The onboarding flow component that guides users through the onboarding process.
+ * @returns
+ */
 const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   const { steps } = useRecoilValue(onboardingStepAtom);
   const { activeStep, setActiveStep } = useSteps({

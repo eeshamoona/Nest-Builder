@@ -21,9 +21,6 @@ const LandingPage = () => {
 
   //TODO: Determine if these initial states are a good idea
   const handleButtonClick = () => {
-    setUserState({
-      user: null,
-    });
     setAuthModalState({ isOpen: true, mode: "login" });
   };
 
