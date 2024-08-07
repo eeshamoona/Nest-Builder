@@ -6,7 +6,7 @@ type AuthNextStepsProps = {};
 const AuthNextSteps: React.FC<AuthNextStepsProps> = () => {
   return (
     <VStack spacing={8} align="center" p={4}>
-      <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+      <Text fontSize="2xl" textAlign="center">
         Thanks for Registering!
       </Text>
 

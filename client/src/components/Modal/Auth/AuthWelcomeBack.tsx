@@ -26,22 +26,22 @@ const AuthWelcomeBack: React.FC<AuthWelcomeBackProps> = () => {
             boxSize="120px"
           />
         </Box>
-        <Text
-          fontSize="3xl"
-          fontWeight="extrabold"
-          color="gray.700"
-          textAlign="center"
-        >
+        <Text fontSize="3xl" fontWeight="extrabold" textAlign="center">
           Welcome Back!
         </Text>
-        <Text fontSize="md" color="gray.500" textAlign="center">
+        <Text fontSize="md" textAlign="center">
           We’re thrilled to see you again. You’ll be redirected to your
           personalized Nested experience shortly.
         </Text>
         <Box display="flex" alignItems="center" justifyContent="center" mt={4}>
-          <Spinner size="lg" color="blue.500" thickness="4px" speed="0.65s" />
+          <Spinner
+            size="lg"
+            color="primary.500"
+            thickness="4px"
+            speed="0.65s"
+          />
         </Box>
-        <Text fontSize="sm" color="gray.400" textAlign="center" mt={2}>
+        <Text fontSize="sm" textAlign="center" mt={2}>
           Loading your personalized content...
         </Text>
       </Fade>

@@ -43,22 +43,22 @@ const AuthAdminWelcome: React.FC<AuthAdminWelcomeProps> = () => {
             animation={`${glow} 1.5s ease-in-out infinite alternate`}
           />
         </Box>
-        <Text
-          fontSize="4xl"
-          fontWeight="extrabold"
-          color="gray.700"
-          textAlign="center"
-        >
+        <Text fontSize="4xl" textAlign="center">
           Welcome, Admin!
         </Text>
-        <Text fontSize="md" color="gray.500" textAlign="center">
+        <Text fontSize="md" textAlign="center">
           We&apos;re honored to have you back. Your administrative dashboard is
           loading.
         </Text>
         <Box display="flex" alignItems="center" justifyContent="center" mt={4}>
-          <Spinner size="lg" color="gold" thickness="4px" speed="0.65s" />
+          <Spinner
+            size="lg"
+            color="secondary.600"
+            thickness="4px"
+            speed="0.65s"
+          />
         </Box>
-        <Text fontSize="sm" color="gray.400" textAlign="center" mt={2}>
+        <Text fontSize="sm" textAlign="center" mt={2}>
           Loading your special admin content...
         </Text>
         <Box display="flex" alignItems="center" justifyContent="center" mt={4}>

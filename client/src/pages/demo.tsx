@@ -36,8 +36,6 @@ const DemoPage: React.FC = () => {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        bg={"gray.50"}
-        color="#333"
         p={4}
       >
         <Heading as="h1" size="2xl">
@@ -57,8 +55,6 @@ const DemoPage: React.FC = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      bg={"gray.50"}
-      color="#333"
       p={4}
     >
       <Heading as="h1" size="2xl" mb={2}>

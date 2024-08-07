@@ -71,6 +71,7 @@ export function useAuth() {
         status: "success",
         duration: 3000,
         isClosable: true,
+        position: "bottom-left",
       });
       await signOut(auth);
     } catch (error) {
@@ -81,6 +82,7 @@ export function useAuth() {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "bottom-left",
       });
     } finally {
       setLoading(false);

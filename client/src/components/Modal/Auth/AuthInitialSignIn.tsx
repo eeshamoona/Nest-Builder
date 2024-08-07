@@ -7,7 +7,7 @@ type AuthInitialSignInProps = {};
 const AuthInitialSignIn: React.FC<AuthInitialSignInProps> = ({}) => {
   return (
     <VStack spacing={4} align="center">
-      <Text fontSize="xl" fontWeight="bold" textAlign="center">
+      <Text fontSize="xl" textAlign="center">
         Welcome to Nested!
       </Text>
       <Text textAlign="center">

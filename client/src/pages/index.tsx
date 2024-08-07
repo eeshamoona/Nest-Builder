@@ -7,6 +7,7 @@ import {
   Flex,
   Link as ChakraLink,
   Icon,
+  useColorMode,
 } from "@chakra-ui/react";
 import { FaRocket, FaFlask } from "react-icons/fa";
 import AuthModal from "@/components/Modal/Auth/AuthModal";
@@ -18,11 +19,14 @@ import Link from "next/link";
 const LandingPage = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const setUserState = useSetRecoilState(userAtom);
+  const { colorMode } = useColorMode();
 
   //TODO: Determine if these initial states are a good idea
   const handleButtonClick = () => {
     setAuthModalState({ isOpen: true, mode: "login" });
   };
+
+  const color = colorMode === "dark" ? "primary.400" : "primary.500";
 
   return (
     <Flex
@@ -30,8 +34,6 @@ const LandingPage = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      bg={"gray.50"}
-      color={"gray.800"}
       p={4}
     >
       <Text fontSize="5rem" fontWeight={"bold"} textAlign="center">
@@ -103,18 +105,17 @@ const LandingPage = () => {
             as="iframe"
             src="https://www.youtube.com/embed/Qyf--S0LUlk"
             allowFullScreen
-            bg="gray.100"
             width="100%"
             height="100%"
             borderRadius="md"
           />
         </AspectRatio>
-        <Text fontSize="sm" textAlign="center" color="gray.600" mt={2}>
+        <Text fontSize="sm" textAlign="center" mt={2}>
           Nested in action at the&nbsp;
           <ChakraLink
             href="https://devpost.com/software/nested"
             isExternal
-            color="blue.500"
+            color={color}
           >
             Google Gen AI Hackathon 2024
           </ChakraLink>

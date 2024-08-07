@@ -25,7 +25,7 @@ export default function GoogleSignIn() {
     <Box textAlign="center" p={5}>
       {status === "pending" && (
         <>
-          <Spinner size="xl" color="blue.500" />
+          <Spinner size="xl" color="primary.500" />
           <Text fontSize="lg" mt={3}>
             Redirecting to Google Sign-In...
           </Text>

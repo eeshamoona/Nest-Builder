@@ -58,8 +58,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
             <StepIndicator>
               <StepStatus
                 complete={<Icon as={FaCheckCircle} />}
-                incomplete={<Icon as={step.stepIcon} color={"gray"} />}
-                active={<Icon as={step.stepIcon} color={"green"} />}
+                incomplete={<Icon as={step.stepIcon} />}
+                active={<Icon as={step.stepIcon} />}
               />
             </StepIndicator>
             <Box flexShrink="0">
@@ -76,7 +76,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
       </Flex>
 
       <Flex
-        bg={"gray.50"}
         w={"100%"}
         alignContent={"center"}
         gap={4}
@@ -90,7 +89,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
         >
           Previous
         </Button>
-        <Heading as="h6" size="xs" mt={4} textAlign="start" fontWeight="bold">
+        <Heading as="h6" size="xs" mt={4} textAlign="start">
           {`${steps[activeStep].nextStep}`}
         </Heading>
         <Button

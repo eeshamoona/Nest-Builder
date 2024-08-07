@@ -37,7 +37,7 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
 
   return (
     <VStack spacing={4} align="center">
-      <Text fontSize="xl" fontWeight="bold" textAlign="center">
+      <Text fontSize="xl" textAlign="center">
         Join the Nested Community
       </Text>
       <Text>
@@ -47,7 +47,7 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       </Text>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
-          <Icon as={FaUser} color="gray.300" />
+          <Icon as={FaUser} />
         </InputLeftElement>
         <Input
           placeholder="Full Name"
@@ -57,7 +57,7 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       </InputGroup>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
-          <Icon as={FaEnvelope} color="gray.300" />
+          <Icon as={FaEnvelope} />
         </InputLeftElement>
         <Input
           placeholder="Email Address"

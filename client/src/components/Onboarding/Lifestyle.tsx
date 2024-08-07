@@ -11,7 +11,6 @@ const Lifestyle: React.FC<LifestyleProps> = () => {
       justify="center"
       height={"100%"}
       width={"100%"}
-      bg={"gray.50"}
     >
       <div>Have a good coding</div>
     </Flex>

@@ -16,7 +16,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   return (
     <Flex direction="column" height="100%">
       {/* Header */}
-      <Box bg="blue.600" p={4} color="white">
+      <Box bg="primary.600" p={4} color="white">
         <Heading as="h1" size="lg">
           Admin Dashboard
         </Heading>
@@ -28,7 +28,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
           as="nav"
           spacing={4}
           p={4}
-          bg="gray.200"
           minWidth="200px"
           height="100%"
           alignItems="flex-start"
@@ -94,7 +93,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
       </Flex>
 
       {/* Footer */}
-      <Box bg="blue.600" p={4} color="white" textAlign="center">
+      <Box bg="primary.600" p={4} color="white" textAlign="center">
         <Text>© 2024 Nested. All rights reserved.</Text>
       </Box>
     </Flex>

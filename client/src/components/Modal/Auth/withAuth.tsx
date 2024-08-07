@@ -60,7 +60,6 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          bg={"gray.50"}
           color="#333"
           p={4}
         >

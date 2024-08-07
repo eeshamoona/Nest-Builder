@@ -24,7 +24,7 @@ const PublicMenu = () => {
         aria-label="Open Menu"
         icon={<HamburgerIcon />}
         variant="unstyled"
-        color="green.600"
+        color="primary.600"
         width="fit-content"
       />
       <MenuList>
@@ -33,7 +33,6 @@ const PublicMenu = () => {
           target="_blank"
           href="https://github.com/eeshamoona/Nest-Builder"
           icon={<Icon as={FaGithub} />}
-          color="gray.700"
         >
           GitHub Repo
         </MenuItem>
@@ -42,7 +41,6 @@ const PublicMenu = () => {
           target="_blank"
           href="https://devpost.com/software/nested"
           icon={<Icon as={SiDevpost} />}
-          color="gray.700"
         >
           Devpost Entry
         </MenuItem>
@@ -52,22 +50,22 @@ const PublicMenu = () => {
     <HStack spacing={6}>
       <ChakraLink
         href="https://github.com/eeshamoona/Nest-Builder"
-        _hover={{ textDecoration: "none", color: "green.500" }}
-        _active={{ color: "green.500" }}
+        _hover={{ textDecoration: "none", color: "primary.500" }}
+        _active={{ color: "primary.500" }}
         isExternal
       >
-        <Box display="flex" alignItems="center" color="gray.700">
+        <Box display="flex" alignItems="center">
           <Icon as={FaGithub} mr={2} />
           <Text>GitHub Repo</Text>
         </Box>
       </ChakraLink>
       <ChakraLink
         href="https://devpost.com/software/nested"
-        _hover={{ textDecoration: "none", color: "green.500" }}
-        _active={{ color: "green.500" }}
+        _hover={{ textDecoration: "none", color: "primary.500" }}
+        _active={{ color: "primary.500" }}
         isExternal
       >
-        <Box display="flex" alignItems="center" color="gray.700">
+        <Box display="flex" alignItems="center">
           <Icon as={SiDevpost} mr={2} />
           <Text>Devpost Entry</Text>
         </Box>

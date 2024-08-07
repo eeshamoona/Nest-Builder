@@ -19,20 +19,20 @@ const Dashboard: React.FC<DashboardProps> = () => {
         Dashboard
       </Heading>
       <VStack spacing={4} align="stretch">
-        <Box p={4} bg="gray.100" borderRadius="md">
-          <Text fontSize="lg" fontWeight="bold">
+        <Box p={4} borderRadius="md">
+          <Text fontSize="lg"  >
             My Nest Management
           </Text>
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm">
             Add, remove, and manage locations.
           </Text>
         </Box>
         <Divider />
-        <Box p={4} bg="gray.100" borderRadius="md">
-          <Text fontSize="lg" fontWeight="bold">
+        <Box p={4} borderRadius="md">
+          <Text fontSize="lg"  >
             Reports
           </Text>
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm">
             View system reports and logs.
           </Text>
           <HStack mt={2}>
@@ -42,11 +42,11 @@ const Dashboard: React.FC<DashboardProps> = () => {
           </HStack>
         </Box>
         <Divider />
-        <Box p={4} bg="gray.100" borderRadius="md">
-          <Text fontSize="lg" fontWeight="bold">
+        <Box p={4}  borderRadius="md">
+          <Text fontSize="lg"  >
             Settings
           </Text>
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize="sm">
             Configure system settings.
           </Text>
           <HStack mt={2}>

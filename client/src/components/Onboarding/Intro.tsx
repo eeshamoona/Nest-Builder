@@ -6,12 +6,17 @@ import {
   Heading,
   Input,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import React from "react";
 
 type IntroProps = {};
 
 const Intro: React.FC<IntroProps> = () => {
+  const { colorMode } = useColorMode();
+
+  const bgColor = colorMode === "dark" ? "primary.800" : "primary.100";
+
   return (
     <Flex
       direction="column"
@@ -19,7 +24,6 @@ const Intro: React.FC<IntroProps> = () => {
       justify="center"
       height="100%"
       width="100%"
-      bg="gray.50"
       p={4}
     >
       <Heading as="h1" mt={4} size="lg" textAlign="center">
@@ -51,7 +55,7 @@ const Intro: React.FC<IntroProps> = () => {
           p={6}
           boxShadow="md"
           borderRadius="md"
-          bg="white"
+          bg={bgColor}
         >
           <Heading as="h2" size="md" textAlign="start">
             Basic Info
@@ -79,7 +83,7 @@ const Intro: React.FC<IntroProps> = () => {
           p={6}
           boxShadow="md"
           borderRadius="md"
-          bg="white"
+          bg={bgColor}
         >
           <Heading as="h2" size="md" textAlign="start">
             AI Onboarding [Optional]
