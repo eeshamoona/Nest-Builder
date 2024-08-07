@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "Product Sans";
+  src: url("/fonts/product-sans/ProductSans-Regular.ttf") format("truetype"),
+    url("/fonts/product-sans/ProductSans-Italic.ttf") format("truetype"),
+    url("/fonts/product-sans/ProductSans-Bold.ttf") format("truetype"),
+    url("/fonts/product-sans/ProductSans-BoldItalic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
